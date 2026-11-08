@@ -1,35 +1,58 @@
-# Siapegawai — prototipe v4 (iterasi Quality Control)
+<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-Redesign berbasis dokumen `Siapegawai_UI_Design_Direction_dan_Quality_Control.md` tanggal 7 November 2026. Tidak ada klaim bahwa prototipe ini adalah layanan resmi BKN.
+<p align="center">
+<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+</p>
 
-## Jalankan
+## About Laravel
 
-Buka `index.html` lewat browser modern. Struktur tidak membutuhkan proses build:
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-- `index.html` — layout semantik, navigasi, dialog privasi, dan SVG icons outline.
-- `css/styles.css` — komponen, layout, warna, responsive.
-- `js/app.js` — data soal demo, interaksi bank soal, tryout, nilai, riwayat browser.
-- `assets/*` — wordmark resmi Siapegawai dan ilustrasi Nara, Bima, Laras dari aset yang disediakan.
+- [Simple, fast routing engine](https://laravel.com/docs/routing).
+- [Powerful dependency injection container](https://laravel.com/docs/container).
+- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+- [Robust background job processing](https://laravel.com/docs/queues).
+- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-Opsional: jalankan server lokal dengan `python -m http.server 8000` di direktori ini, lalu buka `http://localhost:8000`. Font Plus Jakarta Sans mengambil dari Google Fonts saat tersedia; jika tidak, fallback ke font sistem.
+Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-## Halaman
+## Learning Laravel
 
-1. **Beranda** — penjelasan produk, CTA mencoba latihan, preview soal asli, karakter ASN.
-2. **Latihan SKD** — 9 soal contoh (3 TWK, 3 TIU, 3 TKP) dan timer 12 menit; input radio, navigasi, penanda ragu, submit + konfirmasi, hasil dan pembahasan.
-3. **Bank soal** — 12 contoh soal dengan pencarian, filter kategori, jumlah hasil dinamis, reset hasil kosong, pembahasan disclosure.
-4. **Kelas** — draft silabus saja; kelas belum dibuka dan pengajar belum dikonfirmasi untuk publik.
-5. **Paket** — hanya paket contoh gratis yang tersedia. Konsep paket berbayar dinyatakan belum tersedia, tanpa tombol pembelian/pendaftaran.
-6. **Progres saya** — riwayat latihan lokal, detail pembahasan untuk sesi baru, konfirmasi hapus. Riwayat lama v3 hanya menyimpan nilai ringkas dan tidak dapat membuka pembahasan.
+Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
-## Batasan dan kejujuran klaim
+In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-- Soal, jawaban, dan pembahasan bersifat **konten awal untuk demonstrasi produk**; perlu validasi oleh tutor untuk penggunaan komersial.
-- Semua kategori, skor, timer, dan nilai **bukan** simulasi resmi CAT BKN, passing grade BKN, atau prediksi kelulusan. Dalam prototipe, satu jawaban cocok dengan kunci contoh = satu poin, termasuk TKP.
-- Riwayat disimpan dengan `localStorage` pada browser tempat sesi dijalankan jika penyimpanan tersedia. Tidak ada akun, server, sinkronisasi, backup, atau layanan pengumpulan data pribadi.
-- Tidak ada pendaftaran minat, transaksi, pembayaran, sistem kelas langsung, generator AI, atau leaderboard.
-- Logo, atribut karakter, ejaan `Siapegawai`, dan palet mengikuti aset pengguna. Ikon adalah SVG outline lokal (selaras secara visual dengan pendekatan Tabler), bukan pemanggilan library eksternal Tabler.
+You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
 
-## QC
+## Agentic Development
 
-Lihat `QC-v4.md` untuk daftar perubahan, bukti pengujian, dan hal-hal yang belum terverifikasi. Pada iterasi ini pengujian otomatis dilakukan di Chromium melalui injeksi halaman dengan aset inline dan polyfill localStorage karena navigasi origin lokal diblokir lingkungan pengujian. Maka pengujian tersebut **tidak membuktikan** kemampuan browser biasa melakukan reload lintas sesi, kompatibilitas penuh screen reader, atau performa nyata hosting.
+Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+
+```bash
+composer require laravel/boost --dev
+
+php artisan boost:install
+```
+
+Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+
+## Contributing
+
+Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+
+## Code of Conduct
+
+In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+
+## Security Vulnerabilities
+
+If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+
+## License
+
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
