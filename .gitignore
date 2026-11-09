@@ -25,3 +25,14 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Siapegawai local update and backup artifacts
+/.siapegawai-backup/
+/siapegawai-update.php
+/siapegawai-update-v*.php
+/command-output.txt
+
+# Local database backups
+/database/backups/
+/*.sql
+/*.sql.gz
