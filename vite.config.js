@@ -1,24 +1,24 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
-import { bunny } from 'laravel-vite-plugin/fonts';
 import tailwindcss from '@tailwindcss/vite';
 
+// Explicit entries keep Admin Workspace CSS/JS separate from public v4.
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
-            refresh: true,
-            fonts: [
-                bunny('Instrument Sans', {
-                    weights: [400, 500, 600],
-                }),
+            input: [
+                'resources/css/app.css',
+                'resources/js/app.js',
+                'resources/css/admin-v1.css',
+                'resources/js/admin-questions.js',
+                'resources/js/admin-tryouts.js',
+                'resources/js/admin-participants.js',
+                'resources/css/member-cat.css',
+                'resources/css/s7-member.css',
+                'resources/js/member-cat.js',
             ],
+            refresh: true,
         }),
         tailwindcss(),
     ],
-    server: {
-        watch: {
-            ignored: ['**/storage/framework/views/**'],
-        },
-    },
 });

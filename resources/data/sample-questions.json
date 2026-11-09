@@ -1,0 +1,158 @@
+[
+  {
+    "id": "twk-01",
+    "cat": "TWK",
+    "q": "Apa kedudukan Pancasila dalam sistem ketatanegaraan Indonesia?",
+    "options": [
+      "Dasar negara dan pandangan hidup bangsa",
+      "Pedoman teknis penyusunan APBD",
+      "Aturan pelaksanaan satu kementerian",
+      "Peraturan daerah tingkat provinsi"
+    ],
+    "a": 0,
+    "why": "Pancasila merupakan dasar negara dan menjadi pedoman nilai dalam kehidupan berbangsa dan bernegara."
+  },
+  {
+    "id": "twk-02",
+    "cat": "TWK",
+    "q": "Semboyan Bhinneka Tunggal Ika terutama mengajarkan tentang ...",
+    "options": [
+      "Keseragaman budaya di seluruh daerah",
+      "Persatuan di tengah keberagaman",
+      "Pembatasan penggunaan bahasa daerah",
+      "Pemisahan kelompok sosial"
+    ],
+    "a": 1,
+    "why": "Bhinneka Tunggal Ika berarti berbeda-beda tetapi tetap satu, menekankan persatuan dalam keberagaman."
+  },
+  {
+    "id": "twk-03",
+    "cat": "TWK",
+    "q": "Lembaga negara yang berwenang menguji undang-undang terhadap UUD 1945 adalah ...",
+    "options": [
+      "Komisi Yudisial",
+      "Badan Pemeriksa Keuangan",
+      "Mahkamah Konstitusi",
+      "Mahkamah Agung"
+    ],
+    "a": 2,
+    "why": "Mahkamah Konstitusi berwenang menguji undang-undang terhadap Undang-Undang Dasar 1945."
+  },
+  {
+    "id": "tiu-01",
+    "cat": "TIU",
+    "q": "Jika 3 buku seharga Rp45.000, berapa harga 7 buku dengan harga satuan yang sama?",
+    "options": [
+      "Rp90.000",
+      "Rp100.000",
+      "Rp105.000",
+      "Rp115.000"
+    ],
+    "a": 2,
+    "why": "Harga satu buku adalah Rp45.000 ÷ 3 = Rp15.000. Jadi 7 buku = 7 × Rp15.000 = Rp105.000."
+  },
+  {
+    "id": "tiu-02",
+    "cat": "TIU",
+    "q": "Lanjutkan deret bilangan: 2, 5, 10, 17, 26, ...",
+    "options": [
+      "35",
+      "36",
+      "37",
+      "39"
+    ],
+    "a": 2,
+    "why": "Selisihnya berturut-turut 3, 5, 7, 9, sehingga selisih berikutnya 11. Hasilnya 26 + 11 = 37."
+  },
+  {
+    "id": "tiu-03",
+    "cat": "TIU",
+    "q": "Semua analis adalah pegawai. Sebagian pegawai adalah peneliti. Kesimpulan yang pasti benar adalah ...",
+    "options": [
+      "Semua peneliti adalah analis",
+      "Sebagian analis adalah peneliti",
+      "Semua analis adalah pegawai",
+      "Tidak ada pegawai yang menjadi analis"
+    ],
+    "a": 2,
+    "why": "Pernyataan yang pasti benar adalah premis pertama: semua analis merupakan pegawai. Hubungan analis dengan peneliti tidak dapat disimpulkan."
+  },
+  {
+    "id": "tkp-01",
+    "cat": "TKP",
+    "q": "Seorang warga kesulitan menggunakan layanan digital. Respons paling tepat sebagai petugas adalah ...",
+    "options": [
+      "Mengarahkan untuk datang lagi bersama keluarga",
+      "Memberikan panduan dengan sabar dan memastikan layanan dapat diakses",
+      "Meminta warga mempelajari aplikasi sendiri",
+      "Mendahulukan pengguna yang sudah mahir"
+    ],
+    "a": 1,
+    "why": "Dalam konteks latihan pelayanan publik, pendekatan inklusif dan bantuan yang jelas lebih mendukung akses layanan bagi seluruh warga."
+  },
+  {
+    "id": "tkp-02",
+    "cat": "TKP",
+    "q": "Tugas tim berubah karena aturan baru, sedangkan tenggat tetap dekat. Langkah paling konstruktif adalah ...",
+    "options": [
+      "Tetap menggunakan cara lama",
+      "Menunggu rekan kerja menyelesaikan seluruh perubahan",
+      "Menolak perubahan karena tenggat singkat",
+      "Mengklarifikasi aturan, membagi prioritas, dan menyesuaikan rencana tim"
+    ],
+    "a": 3,
+    "why": "Adaptasi yang terencana membantu tim memahami perubahan, menjaga koordinasi, dan memprioritaskan pekerjaan yang paling penting."
+  },
+  {
+    "id": "tkp-03",
+    "cat": "TKP",
+    "q": "Kamu menemukan kesalahan angka pada laporan tim yang belum dikirim. Apa tindakan terbaik?",
+    "options": [
+      "Memperbaiki bersama pemilik data dan memberi tahu penanggung jawab",
+      "Membiarkan agar jadwal tidak terganggu",
+      "Mengubah angka diam-diam tanpa pemeriksaan",
+      "Meminta pihak lain mengambil alih tanpa menjelaskan"
+    ],
+    "a": 0,
+    "why": "Mengonfirmasi sumber data, memperbaiki kesalahan, dan berkomunikasi secara transparan mendukung akurasi serta akuntabilitas."
+  },
+  {
+    "id": "skb-01",
+    "cat": "SKB",
+    "q": "Dalam pengelolaan basis data, perintah SQL untuk mengambil data dari tabel adalah ...",
+    "options": [
+      "CREATE",
+      "SELECT",
+      "DROP",
+      "INSERT"
+    ],
+    "a": 1,
+    "why": "Perintah SELECT digunakan untuk membaca atau mengambil data dari satu atau lebih tabel."
+  },
+  {
+    "id": "skb-02",
+    "cat": "SKB",
+    "q": "Untuk mengurangi risiko kehilangan data, praktik yang paling tepat adalah ...",
+    "options": [
+      "Menaruh semua salinan di satu perangkat",
+      "Hanya melakukan pencadangan saat ada masalah",
+      "Melakukan backup berkala dan menguji proses pemulihannya",
+      "Menonaktifkan pencatatan perubahan"
+    ],
+    "a": 2,
+    "why": "Backup yang rutin perlu dilengkapi pengujian pemulihan agar data benar-benar dapat dipulihkan ketika terjadi insiden."
+  },
+  {
+    "id": "skb-03",
+    "cat": "SKB",
+    "q": "Apa tujuan utama API dalam sebuah sistem informasi?",
+    "options": [
+      "Memfasilitasi komunikasi antarkomponen/perangkat lunak",
+      "Menghapus kebutuhan pengamanan data",
+      "Menggantikan semua basis data",
+      "Menentukan seluruh desain visual aplikasi"
+    ],
+    "a": 0,
+    "why": "API menyediakan antarmuka agar aplikasi atau komponen sistem dapat saling berinteraksi secara terstruktur."
+  }
+]
