@@ -1,6 +1,7 @@
 @extends('layouts.admin')
 @section('title','Kelola kelas')
 @section('content')
+<div class="admin-v1-class-editor">
 <div class="admin-v1-heading"><div><p class="admin-v1-crumb"><a href="{{ route('admin.classes.index') }}">Kelas</a> / Detail</p><h1>{{ $learningClass->title }}</h1><p>Kelola status, materi privat, dan peserta yang diberi akses.</p></div></div>
 <div class="admin-v1-catalog-grid">
 <section class="admin-v1-panel"><h2>Pengaturan kelas</h2>
@@ -23,6 +24,7 @@
 <label class="admin-v1-field">Urutan<input type="number" name="sort_order" min="0" max="65535" value="{{ old('sort_order',0) }}"></label>
 <button type="submit" class="button button-primary">Simpan materi draft</button></form></section>
 </div>
+<section class="admin-v1-panel"><h2>Monitoring kelas (S7.4)</h2><p>Lihat progres materi, status akses peserta, dan hasil Latihan Kelas. Data hanya dibaca, tanpa mengubah nilai atau histori.</p><a class="button button-outline" href="{{ route('admin.classes.monitoring.index',$learningClass) }}">Buka monitoring kelas</a></section>
 <section class="admin-v1-panel"><h2>Latihan Kelas (S7.3)</h2><p>Susun latihan dari bank soal terbit, atur timer dan batas percobaan, lalu publikasikan untuk peserta dengan enrollment aktif.</p><a class="button button-outline" href="{{ route('admin.class-practices.index',$learningClass) }}">Kelola Latihan Kelas</a></section>
 <section class="admin-v1-panel admin-v1-catalog-topics"><h2>Materi kelas</h2>
 @if($materials->isEmpty())
@@ -85,4 +87,5 @@
 @endforelse
 </tbody></table></div>
 </section>
+</div>
 @endsection

@@ -153,3 +153,34 @@
   .admin-v1-selected-list > li { flex-wrap: wrap; }
   .admin-v1-selected-actions { width: 100%; }
 }
+
+/* CLS-MON visual remediation: page-scoped rhythm; no global panel changes. */
+.admin-monitoring > .admin-v1-panel + .admin-v1-panel { margin-top: 24px; }
+.admin-v1-class-editor > .admin-v1-panel { margin-top: 24px; }
+.admin-monitoring .admin-v1-panel-top { margin-bottom: 12px; }
+.admin-monitoring-summary { display: grid; grid-template-columns: repeat(auto-fit,minmax(145px,1fr)); gap: 18px 24px; margin: 22px 0 0; }
+.admin-monitoring-summary > div { border-top: 2px solid var(--navy); padding-top: 13px; min-width: 0; }
+.admin-monitoring-summary dt { color: var(--muted); font-size: 12px; line-height: 1.45; }
+.admin-monitoring-summary dd { margin: 7px 0 0; font-size: 24px; line-height: 1.2; font-weight: 800; letter-spacing: -.035em; color: var(--navy); }
+.admin-monitoring .admin-monitoring-filters { margin-top: 0; padding-top: 16px; }
+.admin-monitoring .admin-monitoring-filters .button { min-height: 42px; flex-shrink: 0; }
+.admin-monitoring .admin-v1-panel > p.admin-v1-muted { margin-top: 20px; line-height: 1.65; }
+.admin-monitoring .admin-v1-panel > p + p { margin-top: 8px; }
+.admin-monitoring .admin-v1-table td:nth-child(3) { min-width: 110px; }
+.admin-monitoring .admin-v1-table td:first-child { min-width: 190px; }
+.admin-monitoring .admin-v1-table td:first-child .admin-v1-muted { margin: 4px 0 0; overflow-wrap: anywhere; }
+.admin-monitoring .admin-v1-table th { white-space: nowrap; }
+.admin-monitoring .admin-v1-table { min-width: 810px; }
+.admin-monitoring .admin-monitoring-table-wrap:focus-visible { outline: 2px solid var(--navy); outline-offset: 3px; }
+.admin-monitoring-scroll-hint { display: none; }
+@media (max-width: 760px) {
+  .admin-monitoring > .admin-v1-panel + .admin-v1-panel, .admin-v1-class-editor > .admin-v1-panel { margin-top: 20px; }
+  .admin-monitoring-summary { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; }
+  .admin-monitoring-scroll-hint { display: block; margin: 10px 0; font-size: 12px; color: var(--muted); }
+  .admin-monitoring .admin-monitoring-filters { flex-direction: column; align-items: stretch; }
+  .admin-monitoring .admin-monitoring-filters .admin-v1-field { width: 100%; max-width: none; }
+}
+@media (max-width: 390px) {
+  .admin-monitoring-summary { gap: 16px 12px; }
+  .admin-monitoring-summary dd { font-size: 21px; }
+}

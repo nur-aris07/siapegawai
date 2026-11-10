@@ -19,6 +19,7 @@ use App\Http\Controllers\Member\MemberProfileController;
 use App\Http\Controllers\Member\MemberClassController;
 use App\Http\Controllers\Admin\ClassManagementController;
 use App\Http\Controllers\Admin\ClassPracticeManagementController;
+use App\Http\Controllers\Admin\ClassMonitoringController;
 use App\Http\Controllers\Member\MemberClassPracticeController;
 use App\Http\Middleware\AddSecurityHeaders;
 use App\Http\Middleware\EnsureActiveAccount;
@@ -91,6 +92,9 @@ Route::prefix('admin')->middleware(['auth', EnsureActiveAccount::class, EnsureRo
     Route::get('/kelas', [ClassManagementController::class,'index'])->name('admin.classes.index');
     Route::post('/kelas', [ClassManagementController::class,'store'])->middleware('throttle:20,1')->name('admin.classes.store');
     Route::get('/kelas/{class}/edit', [ClassManagementController::class,'edit'])->name('admin.classes.edit');
+    // S7.4: read-only class monitoring, independent from CAT and score writes.
+    Route::get('/kelas/{class}/monitoring', [ClassMonitoringController::class,'index'])->name('admin.classes.monitoring.index');
+    Route::get('/kelas/{class}/monitoring/peserta/{user}', [ClassMonitoringController::class,'show'])->name('admin.classes.monitoring.show');
     Route::put('/kelas/{class}', [ClassManagementController::class,'update'])->middleware('throttle:20,1')->name('admin.classes.update');
     Route::post('/kelas/{class}/materi', [ClassManagementController::class,'addMaterial'])->middleware('throttle:20,1')->name('admin.classes.material.store');
     Route::put('/kelas/{class}/materi/{material}', [ClassManagementController::class,'updateDraftMaterial'])->middleware('throttle:20,1')->name('admin.classes.material.update');

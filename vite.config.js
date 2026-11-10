@@ -13,6 +13,7 @@ export default defineConfig({
                 'resources/js/admin-questions.js',
                 'resources/js/admin-tryouts.js',
                 'resources/js/admin-participants.js',
+                'resources/js/admin-class-monitoring.js',
                 'resources/css/member-cat.css',
                 'resources/css/s7-member.css',
                 'resources/js/member-cat.js',
