@@ -8,6 +8,7 @@ use App\Models\LearningClass;
 use App\Models\LearningMaterial;
 use App\Models\User;
 use App\Services\ClassEnrollmentService;
+use App\Services\LearningMaterialRevisionService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -49,7 +50,7 @@ class ClassManagementController extends Controller
     {
         return view('admin.classes.edit', [
             'learningClass'=>$class,
-            'materials'=>$class->materials()->with(['chapter', 'mediaAssets'])->orderBy('sort_order')->orderBy('id')->get(),
+            'materials'=>$class->materials()->with(['chapter', 'mediaAssets', 'versions'=>fn ($query)=>$query->orderByDesc('version_number')])->orderBy('sort_order')->orderBy('id')->get(),
             'chapters'=>$class->chapters()->orderBy('sort_order')->orderBy('id')->get(),
             'enrollments'=>$class->enrollments()->with('user:id,name,email,status')->where('status','active')->orderByDesc('id')->limit(100)->get(),
         ]);
@@ -133,16 +134,17 @@ class ClassManagementController extends Controller
         return back()->with('success', 'Draft materi diperbarui. Terbitkan setelah ditinjau.');
     }
 
-    public function publishMaterial(Request $request, LearningClass $class, LearningMaterial $material): RedirectResponse
+    public function publishMaterial(Request $request, LearningClass $class, LearningMaterial $material, LearningMaterialRevisionService $service): RedirectResponse
     {
         abort_unless((int)$material->class_id===(int)$class->id,404);
-        DB::transaction(function () use ($request,$class,$material): void {
+        DB::transaction(function () use ($request,$class,$material,$service): void {
             $locked=LearningMaterial::query()->whereKey($material->id)->lockForUpdate()->firstOrFail();
             abort_unless((int)$locked->class_id===(int)$class->id,404);
             if ($locked->status!=='draft') {
                 throw ValidationException::withMessages(['material'=>'Materi ini sudah diterbitkan.']);
             }
             $locked->update(['status'=>'published','published_at'=>now()]);
+            $service->snapshotFirstPublish($locked, (int) $request->user()->id);
             $this->audit($request,'class.material_published','learning_material',$locked->id,['status'=>'draft'],['class_id'=>$class->id,'status'=>'published']);
         },3);
         return back()->with('success','Materi diterbitkan untuk peserta yang memiliki enrollment aktif.');

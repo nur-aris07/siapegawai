@@ -51,7 +51,7 @@
 <div class="admin-v1-topic-row">
   <div>
     <strong>{{ $material->title }}</strong>
-    <p class="admin-v1-muted">{{ $material->status==='published' ? 'Terbit (tidak dapat diedit)' : 'Draft (dapat diperbaiki)' }} · Urutan {{ $material->sort_order }}</p>
+    <p class="admin-v1-muted">{{ $material->status==='published' ? 'Terbit · Edisi v'.max(1,$material->published_version_number) : 'Draft (dapat diperbaiki)' }} · Urutan {{ $material->sort_order }}</p>
     @if($material->chapter)<p class="admin-v1-muted">Bab: {{ $material->chapter->title }}</p>@endif
     @foreach($material->mediaAssets as $media)
       <p class="admin-v1-muted">{{ $media->kind === 'pdf' ? 'PDF privat' : 'Video eksternal' }}: {{ $media->title }}
@@ -97,6 +97,45 @@
       @csrf
       <button class="button button-outline button-compact" type="submit">Terbitkan materi</button>
     </form>
+  </div>
+  @else
+  @php($revisionDraft = $material->versions->firstWhere('status', 'draft'))
+  <div class="admin-material-revision">
+    <p class="admin-v1-muted">Revisi versi teks tidak mengubah lampiran PDF/video. Penyelesaian peserta tidak di-reset.</p>
+    @if(!$revisionDraft)
+      <form method="POST" action="{{ route('admin.classes.material.revision.start',[$learningClass,$material]) }}">@csrf
+        <button class="button button-outline button-compact" type="submit">Buat draft revisi</button>
+      </form>
+    @else
+      <details class="admin-material-revision-editor">
+        <summary>Edit draft revisi v{{ $revisionDraft->version_number }}</summary>
+        <form method="POST" class="admin-v1-action-form" action="{{ route('admin.classes.material.revision.update',[$learningClass,$material]) }}">@csrf @method('PUT')
+          <label class="admin-v1-field">Judul edisi baru<input name="title" minlength="3" maxlength="160" required value="{{ $revisionDraft->title }}"></label>
+          <label class="admin-v1-field">Isi edisi baru<textarea name="content" rows="8" minlength="20" maxlength="20000" required>{{ $revisionDraft->content }}</textarea></label>
+          <label class="admin-v1-field">Urutan<input type="number" name="sort_order" min="0" max="65535" required value="{{ $revisionDraft->sort_order }}"></label>
+          <label class="admin-v1-field">Bab<select name="chapter_id"><option value="">Tanpa bab</option>@foreach($chapters as $chapter)<option value="{{ $chapter->id }}" @selected((string)$revisionDraft->chapter_id === (string)$chapter->id)>{{ $chapter->title }}</option>@endforeach</select></label>
+          <button class="button button-outline button-compact" type="submit">Simpan draft revisi</button>
+        </form>
+        <form class="admin-v1-action-form" method="POST" action="{{ route('admin.classes.material.revision.publish',[$learningClass,$material]) }}">@csrf
+          <label class="admin-v1-field">Alasan terbit revisi<textarea name="reason" rows="2" minlength="12" maxlength="500" required></textarea></label>
+          <label class="check-line"><input name="confirmed" type="checkbox" value="1" required> Saya sudah meninjau isi edisi baru. Progres lama tidak akan dihapus.</label>
+          <button class="button button-primary button-compact" type="submit">Terbitkan revisi v{{ $revisionDraft->version_number }}</button>
+        </form>
+      </details>
+    @endif
+    @if($material->versions->isNotEmpty())
+      <details class="admin-material-revision-history">
+        <summary>Riwayat edisi ({{ $material->versions->where('status','published')->count() }} terbit)</summary>
+        <ol class="admin-material-version-list">
+          @foreach($material->versions->where('status','published') as $version)
+          <li><strong>v{{ $version->version_number }} — {{ $version->title }}</strong>
+            <span class="admin-v1-muted"> · {{ $version->published_at?->format('d M Y H:i') ?? 'Terbit' }}</span>
+            <details><summary>Lihat teks historis</summary><p class="admin-material-version-content">{{ $version->content }}</p></details>
+          </li>
+          @endforeach
+        </ol>
+      </details>
+    @endif
   </div>
   @endif
 </div>

@@ -193,3 +193,16 @@
 .admin-media-details .admin-v1-action-form { margin-top: 14px; }
 .admin-media-delete { margin-top: 12px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
 .admin-v1-topic-row a { text-decoration: underline; text-underline-offset: 2px; }
+
+/* CLS-MEDIA-02: scoped revision editor, no nested decorative cards. */
+.admin-material-revision { margin-top: 12px; padding-top: 14px; border-top: 1px solid var(--line); max-width: 780px; }
+.admin-material-revision > * + * { margin-top: 14px; }
+.admin-material-revision-editor > summary, .admin-material-revision-history > summary { cursor: pointer; font-weight: 700; padding: 4px 0; }
+.admin-material-revision-editor .admin-v1-action-form { margin-top: 16px; }
+.admin-material-revision-editor .admin-v1-action-form + .admin-v1-action-form { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+.admin-material-version-list { padding-left: 20px; margin: 12px 0 0; }
+.admin-material-version-list li { padding: 10px 0; border-top: 1px solid var(--line); overflow-wrap: anywhere; }
+.admin-material-version-list li details { margin-top: 8px; }
+.admin-material-version-list li details summary { cursor: pointer; }
+.admin-material-version-content { margin-top: 9px; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
+@media (max-width: 760px) { .admin-material-revision-editor .admin-v1-action-form { gap: 14px; } }

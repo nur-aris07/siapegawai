@@ -18,6 +18,7 @@ use App\Http\Controllers\Member\MemberHistoryController;
 use App\Http\Controllers\Member\MemberProfileController;
 use App\Http\Controllers\Member\MemberClassController;
 use App\Http\Controllers\Admin\ClassManagementController;
+use App\Http\Controllers\Admin\LearningMaterialRevisionController;
 use App\Http\Controllers\Admin\ClassPracticeManagementController;
 use App\Http\Controllers\Admin\ClassMonitoringController;
 use App\Http\Controllers\Admin\ClassMediaManagementController;
@@ -110,6 +111,10 @@ Route::prefix('admin')->middleware(['auth', EnsureActiveAccount::class, EnsureRo
     Route::post('/kelas/{class}/materi', [ClassManagementController::class,'addMaterial'])->middleware('throttle:20,1')->name('admin.classes.material.store');
     Route::put('/kelas/{class}/materi/{material}', [ClassManagementController::class,'updateDraftMaterial'])->middleware('throttle:20,1')->name('admin.classes.material.update');
     Route::post('/kelas/{class}/materi/{material}/terbit', [ClassManagementController::class,'publishMaterial'])->middleware('throttle:15,1')->name('admin.classes.material.publish');
+    // CLS-MEDIA-02: create/edit draft revision, then explicitly publish a versioned snapshot.
+    Route::post('/kelas/{class}/materi/{material}/revisi', [LearningMaterialRevisionController::class,'start'])->middleware('throttle:15,1')->name('admin.classes.material.revision.start');
+    Route::put('/kelas/{class}/materi/{material}/revisi', [LearningMaterialRevisionController::class,'update'])->middleware('throttle:20,1')->name('admin.classes.material.revision.update');
+    Route::post('/kelas/{class}/materi/{material}/revisi/terbit', [LearningMaterialRevisionController::class,'publish'])->middleware('throttle:10,1')->name('admin.classes.material.revision.publish');
     Route::post('/kelas/{class}/peserta', [ClassManagementController::class,'enroll'])->middleware('throttle:10,1')->name('admin.classes.enroll');
     Route::post('/kelas/{class}/peserta/{user}/cabut', [ClassManagementController::class,'revoke'])->middleware('throttle:10,1')->name('admin.classes.revoke');
     Route::prefix('kelas/{class}/latihan')->group(function () {

@@ -34,7 +34,7 @@ class MemberClassController extends Controller
         $this->assertEnrolled($class, (int) $request->user()->id);
 
         $materials = $class->materials()->where('status', 'published')
-            ->with(['chapter', 'mediaAssets'])
+            ->with(['chapter', 'mediaAssets', 'completions' => fn ($query) => $query->where('user_id', $request->user()->id)])
             ->withCount(['completions as completed_by_me_count' => fn ($query) =>
                 $query->where('user_id', $request->user()->id)])
             ->orderBy('sort_order')->orderBy('id')->get();
@@ -55,7 +55,7 @@ class MemberClassController extends Controller
             abort_unless($enrollment?->status === 'active', 404);
 
             $published = LearningMaterial::query()->whereKey($material->id)
-                ->where('class_id', $class->id)->where('status', 'published')->exists();
+                ->where('class_id', $class->id)->where('status', 'published')->sharedLock()->first(['id', 'published_version_number']);
             abort_unless($published, 404);
 
             $now = now();
@@ -63,6 +63,7 @@ class MemberClassController extends Controller
             DB::table('learning_material_progress')->insertOrIgnore([
                 'user_id' => $userId,
                 'material_id' => $material->id,
+                'completed_version_number' => max(1, (int) $published->published_version_number),
                 'completed_at' => $now,
                 'created_at' => $now,
                 'updated_at' => $now,

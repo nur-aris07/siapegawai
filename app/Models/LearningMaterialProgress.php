@@ -13,7 +13,7 @@ class LearningMaterialProgress extends Model
 
     protected function casts(): array
     {
-        return ['completed_at' => 'datetime'];
+        return ['completed_at' => 'datetime', 'completed_version_number' => 'integer'];
     }
 
     public function material(): BelongsTo

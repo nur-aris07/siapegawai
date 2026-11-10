@@ -31,6 +31,7 @@
     <span class="workspace-label">MATERI {{ $loop->iteration }} · {{ $material->completed_by_me_count ? 'SELESAI' : 'BELUM SELESAI' }}</span>
     @if($material->chapter)<span class="workspace-label">BAB · {{ $material->chapter->title }}</span>@endif
     <h2>{{ $material->title }}</h2>
+    <p class="workspace-label">EDISI v{{ max(1, (int) $material->published_version_number) }}</p>
     <p class="s7-content">{{ $material->content }}</p>
     @if($material->mediaAssets->isNotEmpty())
       <div class="member-media-list">
@@ -51,6 +52,10 @@
     @endif
     @if($material->completed_by_me_count)
       <p><strong>✓ Sudah ditandai selesai</strong></p>
+      @php($completedVersion = $material->completions->first()?->completed_version_number)
+      @if($completedVersion && $completedVersion < max(1, (int) $material->published_version_number))
+      <p class="member-version-notice">Materi telah diperbarui sejak Anda menyelesaikan edisi v{{ $completedVersion }}. Progres selesai Anda tetap tersimpan.</p>
+      @endif
     @else
       <form method="POST" action="{{ route('member.classes.material.complete', [$learningClass, $material]) }}">
         @csrf
