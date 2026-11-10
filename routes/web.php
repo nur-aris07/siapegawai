@@ -18,6 +18,8 @@ use App\Http\Controllers\Member\MemberHistoryController;
 use App\Http\Controllers\Member\MemberProfileController;
 use App\Http\Controllers\Member\MemberClassController;
 use App\Http\Controllers\Admin\ClassManagementController;
+use App\Http\Controllers\Admin\ClassPracticeManagementController;
+use App\Http\Controllers\Member\MemberClassPracticeController;
 use App\Http\Middleware\AddSecurityHeaders;
 use App\Http\Middleware\EnsureActiveAccount;
 use App\Http\Middleware\EnsureAdminSessionVersion;
@@ -62,6 +64,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/kelas-saya', [MemberClassController::class,'index'])->name('member.classes.index');
         Route::get('/kelas-saya/{class}', [MemberClassController::class,'show'])->name('member.classes.show');
         Route::post('/kelas-saya/{class}/materi/{material}/selesai', [MemberClassController::class,'complete'])->middleware('throttle:30,1')->name('member.classes.material.complete');
+        // S7.3: Latihan Kelas, isolated from CAT attempts/history.
+        Route::prefix('kelas-saya/{class}/latihan')->group(function () {
+            Route::get('/', [MemberClassPracticeController::class,'index'])->name('member.class-practices.index');
+            Route::get('/sesi/{attempt}', [MemberClassPracticeController::class,'take'])->name('member.class-practices.take');
+            Route::patch('/sesi/{attempt}/jawaban', [MemberClassPracticeController::class,'save'])->middleware('throttle:120,1')->name('member.class-practices.save');
+            Route::post('/sesi/{attempt}/kumpulkan', [MemberClassPracticeController::class,'submit'])->middleware('throttle:15,1')->name('member.class-practices.submit');
+            Route::get('/sesi/{attempt}/hasil', [MemberClassPracticeController::class,'result'])->name('member.class-practices.result');
+            Route::get('/{practice}', [MemberClassPracticeController::class,'show'])->name('member.class-practices.show');
+            Route::post('/{practice}/mulai', [MemberClassPracticeController::class,'start'])->middleware('throttle:10,1')->name('member.class-practices.start');
+        });
         Route::prefix('peserta/tryout')->group(function () {
             Route::get('/', [MemberTryoutController::class, 'index'])->name('member.tryouts.index');
             Route::get('/riwayat', [MemberHistoryController::class, 'index'])->name('member.tryouts.history');
@@ -85,6 +97,16 @@ Route::prefix('admin')->middleware(['auth', EnsureActiveAccount::class, EnsureRo
     Route::post('/kelas/{class}/materi/{material}/terbit', [ClassManagementController::class,'publishMaterial'])->middleware('throttle:15,1')->name('admin.classes.material.publish');
     Route::post('/kelas/{class}/peserta', [ClassManagementController::class,'enroll'])->middleware('throttle:10,1')->name('admin.classes.enroll');
     Route::post('/kelas/{class}/peserta/{user}/cabut', [ClassManagementController::class,'revoke'])->middleware('throttle:10,1')->name('admin.classes.revoke');
+    Route::prefix('kelas/{class}/latihan')->group(function () {
+        Route::get('/', [ClassPracticeManagementController::class,'index'])->name('admin.class-practices.index');
+        Route::get('/cari-soal', [ClassPracticeManagementController::class,'searchQuestions'])->middleware('throttle:90,1')->name('admin.class-practices.search');
+        Route::get('/buat', [ClassPracticeManagementController::class,'create'])->name('admin.class-practices.create');
+        Route::post('/', [ClassPracticeManagementController::class,'store'])->middleware('throttle:20,1')->name('admin.class-practices.store');
+        Route::get('/{practice}/edit', [ClassPracticeManagementController::class,'edit'])->name('admin.class-practices.edit');
+        Route::put('/{practice}', [ClassPracticeManagementController::class,'update'])->middleware('throttle:20,1')->name('admin.class-practices.update');
+        Route::post('/{practice}/terbit', [ClassPracticeManagementController::class,'publish'])->middleware('throttle:15,1')->name('admin.class-practices.publish');
+        Route::post('/{practice}/arsip', [ClassPracticeManagementController::class,'archive'])->middleware('throttle:15,1')->name('admin.class-practices.archive');
+    });
     Route::get('/keamanan', [AdminSecurityController::class, 'edit'])->name('admin.security.edit');
     Route::post('/keamanan/password', [AdminSecurityController::class, 'changePassword'])->middleware('throttle:5,1')->name('admin.security.password');
     // S6.1: Participant account directory. Read access for admins; status operations require Superadmin.

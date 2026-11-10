@@ -23,6 +23,7 @@
 <label class="admin-v1-field">Urutan<input type="number" name="sort_order" min="0" max="65535" value="{{ old('sort_order',0) }}"></label>
 <button type="submit" class="button button-primary">Simpan materi draft</button></form></section>
 </div>
+<section class="admin-v1-panel"><h2>Latihan Kelas (S7.3)</h2><p>Susun latihan dari bank soal terbit, atur timer dan batas percobaan, lalu publikasikan untuk peserta dengan enrollment aktif.</p><a class="button button-outline" href="{{ route('admin.class-practices.index',$learningClass) }}">Kelola Latihan Kelas</a></section>
 <section class="admin-v1-panel admin-v1-catalog-topics"><h2>Materi kelas</h2>
 @if($materials->isEmpty())
 <p class="admin-v1-muted">Belum ada materi.</p>

@@ -19,6 +19,7 @@
   <strong>Progres belajar: {{ $progress['completed'] }} dari {{ $progress['total'] }} materi selesai</strong>
   <p>{{ $progress['total'] > 0 ? $progress['percent'].'% selesai' : 'Materi belum tersedia' }}. Progres tercatat pada akun ini dan tidak hilang jika akses kelas dicabut sementara.</p>
 </section>
+<section class="workspace-note"><h2>Latihan Kelas</h2><p>Uji pemahaman setelah belajar. Hasil Latihan Kelas disimpan terpisah dari tryout CAT dan progres materi.</p><a class="button button-outline" href="{{ route('member.class-practices.index',$learningClass) }}">Buka Latihan Kelas</a></section>
 <h2>Materi belajar</h2>
 @if($materials->isEmpty())
 <section class="workspace-note"><p>Belum ada materi yang diterbitkan untuk kelas ini.</p></section>
