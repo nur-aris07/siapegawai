@@ -184,3 +184,12 @@
   .admin-monitoring-summary { gap: 16px 12px; }
   .admin-monitoring-summary dd { font-size: 21px; }
 }
+
+/* CLS-MEDIA: compact, task-first, no decorative card nesting. */
+.admin-media-chapters .admin-media-chapter-list { margin: 18px 0 0; padding-left: 18px; }
+.admin-media-chapter-list li + li { margin-top: 8px; }
+.admin-v1-class-editor .admin-media-details { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 12px; }
+.admin-media-details > summary { cursor: pointer; font-weight: 700; }
+.admin-media-details .admin-v1-action-form { margin-top: 14px; }
+.admin-media-delete { margin-top: 12px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.admin-v1-topic-row a { text-decoration: underline; text-underline-offset: 2px; }

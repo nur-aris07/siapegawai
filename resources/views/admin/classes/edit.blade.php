@@ -22,8 +22,25 @@
 <label class="admin-v1-field">Judul materi<input name="title" minlength="3" maxlength="160" required value="{{ old('title') }}"></label>
 <label class="admin-v1-field">Isi materi<textarea name="content" rows="9" minlength="20" maxlength="20000" required>{{ old('content') }}</textarea></label>
 <label class="admin-v1-field">Urutan<input type="number" name="sort_order" min="0" max="65535" value="{{ old('sort_order',0) }}"></label>
+<label class="admin-v1-field">Bab (opsional)<select name="chapter_id"><option value="">Tanpa bab</option>@foreach($chapters as $chapter)<option value="{{ $chapter->id }}" @selected((string)old('chapter_id')===(string)$chapter->id)>{{ $chapter->title }}</option>@endforeach</select></label>
 <button type="submit" class="button button-primary">Simpan materi draft</button></form></section>
 </div>
+<section class="admin-v1-panel admin-media-chapters">
+  <h2>Bab pembelajaran (S7.5)</h2>
+  <p class="admin-v1-muted">Kelompokkan materi ke bab. Materi terbit lama tetap utuh dan progres tidak dihitung ulang berdasarkan bab.</p>
+  <form method="POST" action="{{ route('admin.classes.chapters.store', $learningClass) }}" class="admin-v1-action-form">@csrf
+    <label class="admin-v1-field">Nama bab<input name="title" minlength="3" maxlength="160" required value="{{ old('title') }}"></label>
+    <label class="admin-v1-field">Urutan bab<input type="number" name="sort_order" min="0" max="65535" value="0"></label>
+    <button type="submit" class="button button-outline">Tambahkan bab</button>
+  </form>
+  @if($chapters->isNotEmpty())
+  <ul class="admin-media-chapter-list">
+    @foreach($chapters as $chapter)
+    <li>{{ $chapter->title }} <span class="admin-v1-muted">· Urutan {{ $chapter->sort_order }}</span></li>
+    @endforeach
+  </ul>
+  @endif
+</section>
 <section class="admin-v1-panel"><h2>Monitoring kelas (S7.4)</h2><p>Lihat progres materi, status akses peserta, dan hasil Latihan Kelas. Data hanya dibaca, tanpa mengubah nilai atau histori.</p><a class="button button-outline" href="{{ route('admin.classes.monitoring.index',$learningClass) }}">Buka monitoring kelas</a></section>
 <section class="admin-v1-panel"><h2>Latihan Kelas (S7.3)</h2><p>Susun latihan dari bank soal terbit, atur timer dan batas percobaan, lalu publikasikan untuk peserta dengan enrollment aktif.</p><a class="button button-outline" href="{{ route('admin.class-practices.index',$learningClass) }}">Kelola Latihan Kelas</a></section>
 <section class="admin-v1-panel admin-v1-catalog-topics"><h2>Materi kelas</h2>
@@ -35,6 +52,12 @@
   <div>
     <strong>{{ $material->title }}</strong>
     <p class="admin-v1-muted">{{ $material->status==='published' ? 'Terbit (tidak dapat diedit)' : 'Draft (dapat diperbaiki)' }} · Urutan {{ $material->sort_order }}</p>
+    @if($material->chapter)<p class="admin-v1-muted">Bab: {{ $material->chapter->title }}</p>@endif
+    @foreach($material->mediaAssets as $media)
+      <p class="admin-v1-muted">{{ $media->kind === 'pdf' ? 'PDF privat' : 'Video eksternal' }}: {{ $media->title }}
+      @if($media->kind === 'pdf')<a href="{{ route('admin.classes.media.download', [$learningClass, $material, $media]) }}">Unduh PDF</a>@endif
+      </p>
+    @endforeach
   </div>
   @if($material->status === 'draft')
   <div>
@@ -46,8 +69,29 @@
         <label class="admin-v1-field">Judul<input name="title" maxlength="160" minlength="3" required value="{{ $material->title }}"></label>
         <label class="admin-v1-field">Isi materi<textarea name="content" rows="8" maxlength="20000" minlength="20" required>{{ $material->content }}</textarea></label>
         <label class="admin-v1-field">Urutan<input name="sort_order" type="number" min="0" max="65535" required value="{{ $material->sort_order }}"></label>
+        <label class="admin-v1-field">Bab (opsional)<select name="chapter_id"><option value="">Tanpa bab</option>@foreach($chapters as $chapter)<option value="{{ $chapter->id }}" @selected((string)$material->chapter_id===(string)$chapter->id)>{{ $chapter->title }}</option>@endforeach</select></label>
         <button class="button button-outline button-compact" type="submit">Simpan revisi draft</button>
       </form>
+    </details>
+    <details class="admin-media-details">
+      <summary>Kelola lampiran draft</summary>
+      <p class="admin-v1-muted">PDF maksimal 20 MB disimpan di disk privat. Tautan YouTube/Vimeo mengarah ke pihak ketiga dan tidak dapat dibatasi setelah dibuka.</p>
+      <form method="POST" enctype="multipart/form-data" class="admin-v1-action-form" action="{{ route('admin.classes.media.pdf',[$learningClass,$material]) }}">@csrf
+        <label class="admin-v1-field">Judul PDF<input name="title" minlength="3" maxlength="160" required></label>
+        <label class="admin-v1-field">File PDF<input type="file" name="pdf" accept=".pdf,application/pdf" required></label>
+        <button type="submit" class="button button-outline button-compact">Unggah PDF privat</button>
+      </form>
+      <form method="POST" class="admin-v1-action-form" action="{{ route('admin.classes.media.video',[$learningClass,$material]) }}">@csrf
+        <label class="admin-v1-field">Judul video<input name="title" minlength="3" maxlength="160" required></label>
+        <label class="admin-v1-field">Tautan HTTPS YouTube atau Vimeo<input type="url" name="external_url" maxlength="500" required></label>
+        <button type="submit" class="button button-outline button-compact">Tambahkan tautan video</button>
+      </form>
+      @foreach($material->mediaAssets as $media)
+      <form method="POST" class="admin-media-delete" action="{{ route('admin.classes.media.remove',[$learningClass,$material,$media]) }}">@csrf
+        <label class="check-line"><input name="confirmed" type="checkbox" value="1" required> Hapus lampiran draft: {{ $media->title }}</label>
+        <button type="submit" class="button button-outline button-compact">Hapus lampiran</button>
+      </form>
+      @endforeach
     </details>
     <form method="POST" action="{{ route('admin.classes.material.publish',[$learningClass,$material]) }}">
       @csrf

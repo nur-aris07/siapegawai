@@ -29,8 +29,26 @@
 <article class="workspace-line">
   <div>
     <span class="workspace-label">MATERI {{ $loop->iteration }} · {{ $material->completed_by_me_count ? 'SELESAI' : 'BELUM SELESAI' }}</span>
+    @if($material->chapter)<span class="workspace-label">BAB · {{ $material->chapter->title }}</span>@endif
     <h2>{{ $material->title }}</h2>
     <p class="s7-content">{{ $material->content }}</p>
+    @if($material->mediaAssets->isNotEmpty())
+      <div class="member-media-list">
+        <strong>Lampiran pembelajaran</strong>
+        <ul>
+        @foreach($material->mediaAssets as $media)
+          <li>
+            @if($media->kind === 'pdf')
+              <a href="{{ route('member.classes.material.media.pdf',[$learningClass,$material,$media]) }}">Unduh PDF privat — {{ $media->title }}</a>
+            @elseif($media->kind === 'video_link')
+              <a href="{{ $media->external_url }}" rel="noopener noreferrer nofollow" target="_blank">Buka video eksternal — {{ $media->title }}</a>
+            @endif
+          </li>
+        @endforeach
+        </ul>
+        <p class="member-disclaimer">Tautan video membuka penyedia lain; akses konten di platform tersebut tidak dikendalikan Siapegawai.</p>
+      </div>
+    @endif
     @if($material->completed_by_me_count)
       <p><strong>✓ Sudah ditandai selesai</strong></p>
     @else

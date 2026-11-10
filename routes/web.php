@@ -20,6 +20,8 @@ use App\Http\Controllers\Member\MemberClassController;
 use App\Http\Controllers\Admin\ClassManagementController;
 use App\Http\Controllers\Admin\ClassPracticeManagementController;
 use App\Http\Controllers\Admin\ClassMonitoringController;
+use App\Http\Controllers\Admin\ClassMediaManagementController;
+use App\Http\Controllers\Member\MemberClassMediaController;
 use App\Http\Controllers\Member\MemberClassPracticeController;
 use App\Http\Middleware\AddSecurityHeaders;
 use App\Http\Middleware\EnsureActiveAccount;
@@ -64,6 +66,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/profil/password', [MemberProfileController::class,'changePassword'])->middleware('throttle:5,1')->name('member.profile.password');
         Route::get('/kelas-saya', [MemberClassController::class,'index'])->name('member.classes.index');
         Route::get('/kelas-saya/{class}', [MemberClassController::class,'show'])->name('member.classes.show');
+        // S7.5 private PDF: auth + live enrollment, no public storage URLs.
+        Route::get('/kelas-saya/{class}/materi/{material}/media/{media}/pdf', [MemberClassMediaController::class,'pdf'])
+            ->middleware('throttle:60,1')->name('member.classes.material.media.pdf');
         Route::post('/kelas-saya/{class}/materi/{material}/selesai', [MemberClassController::class,'complete'])->middleware('throttle:30,1')->name('member.classes.material.complete');
         // S7.3: Latihan Kelas, isolated from CAT attempts/history.
         Route::prefix('kelas-saya/{class}/latihan')->group(function () {
@@ -96,6 +101,12 @@ Route::prefix('admin')->middleware(['auth', EnsureActiveAccount::class, EnsureRo
     Route::get('/kelas/{class}/monitoring', [ClassMonitoringController::class,'index'])->name('admin.classes.monitoring.index');
     Route::get('/kelas/{class}/monitoring/peserta/{user}', [ClassMonitoringController::class,'show'])->name('admin.classes.monitoring.show');
     Route::put('/kelas/{class}', [ClassManagementController::class,'update'])->middleware('throttle:20,1')->name('admin.classes.update');
+    // S7.5 class chapters and private media; mutation only while material remains draft.
+    Route::post('/kelas/{class}/bab', [ClassMediaManagementController::class,'chapter'])->middleware('throttle:20,1')->name('admin.classes.chapters.store');
+    Route::post('/kelas/{class}/materi/{material}/media/pdf', [ClassMediaManagementController::class,'uploadPdf'])->middleware('throttle:10,1')->name('admin.classes.media.pdf');
+    Route::post('/kelas/{class}/materi/{material}/media/video', [ClassMediaManagementController::class,'video'])->middleware('throttle:20,1')->name('admin.classes.media.video');
+    Route::post('/kelas/{class}/materi/{material}/media/{media}/hapus', [ClassMediaManagementController::class,'remove'])->middleware('throttle:20,1')->name('admin.classes.media.remove');
+    Route::get('/kelas/{class}/materi/{material}/media/{media}/unduh', [ClassMediaManagementController::class,'download'])->middleware('throttle:60,1')->name('admin.classes.media.download');
     Route::post('/kelas/{class}/materi', [ClassManagementController::class,'addMaterial'])->middleware('throttle:20,1')->name('admin.classes.material.store');
     Route::put('/kelas/{class}/materi/{material}', [ClassManagementController::class,'updateDraftMaterial'])->middleware('throttle:20,1')->name('admin.classes.material.update');
     Route::post('/kelas/{class}/materi/{material}/terbit', [ClassManagementController::class,'publishMaterial'])->middleware('throttle:15,1')->name('admin.classes.material.publish');

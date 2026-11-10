@@ -49,7 +49,8 @@ class ClassManagementController extends Controller
     {
         return view('admin.classes.edit', [
             'learningClass'=>$class,
-            'materials'=>$class->materials()->orderBy('sort_order')->orderBy('id')->get(),
+            'materials'=>$class->materials()->with(['chapter', 'mediaAssets'])->orderBy('sort_order')->orderBy('id')->get(),
+            'chapters'=>$class->chapters()->orderBy('sort_order')->orderBy('id')->get(),
             'enrollments'=>$class->enrollments()->with('user:id,name,email,status')->where('status','active')->orderByDesc('id')->limit(100)->get(),
         ]);
     }
@@ -89,6 +90,7 @@ class ClassManagementController extends Controller
             'title'=>['required','string','min:3','max:160'],
             'content'=>['required','string','min:20','max:20000'],
             'sort_order'=>['nullable','integer','min:0','max:65535'],
+            'chapter_id'=>['nullable','integer',Rule::exists('class_chapters','id')->where('class_id',$class->id)],
         ]);
         DB::transaction(function () use ($request,$class,$data): void {
             $material=$class->materials()->create([
@@ -106,6 +108,7 @@ class ClassManagementController extends Controller
             'title' => ['required', 'string', 'min:3', 'max:160'],
             'content' => ['required', 'string', 'min:20', 'max:20000'],
             'sort_order' => ['required', 'integer', 'min:0', 'max:65535'],
+            'chapter_id' => ['nullable', 'integer', Rule::exists('class_chapters','id')->where('class_id', $class->id)],
         ]);
 
         DB::transaction(function () use ($request, $class, $material, $data): void {

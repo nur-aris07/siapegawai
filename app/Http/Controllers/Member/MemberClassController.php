@@ -34,6 +34,7 @@ class MemberClassController extends Controller
         $this->assertEnrolled($class, (int) $request->user()->id);
 
         $materials = $class->materials()->where('status', 'published')
+            ->with(['chapter', 'mediaAssets'])
             ->withCount(['completions as completed_by_me_count' => fn ($query) =>
                 $query->where('user_id', $request->user()->id)])
             ->orderBy('sort_order')->orderBy('id')->get();

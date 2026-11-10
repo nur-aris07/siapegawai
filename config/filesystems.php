@@ -38,6 +38,15 @@ return [
             'report' => false,
         ],
 
+        // CLS-MEDIA: never link this disk to public/storage or enable temporary serving.
+        'class_media_private' => [
+            'driver' => 'local',
+            'root' => storage_path('app/siapegawai-class-media'),
+            'visibility' => 'private',
+            'serve' => false,
+            'throw' => true,
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
