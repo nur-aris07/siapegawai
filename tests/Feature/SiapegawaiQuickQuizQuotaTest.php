@@ -274,13 +274,13 @@ class SiapegawaiQuickQuizQuotaTest extends TestCase
         $this->assertDatabaseCount('qq_quota_usages', 1);
     }
 
-    public function test_participant_detail_displays_package_and_today_without_opening_qq_attempt_route(): void
+    public function test_participant_detail_displays_package_and_today_before_any_quota_charge(): void
     {
         $user = $this->person(); $this->policy('PEJUANG', 4);
         $this->actingAs($this->person('superadmin'))
             ->get(route('admin.participants.show', $user))->assertOk()
             ->assertSee('Paket peserta')->assertSee('Pejuang')->assertSee('4 tersisa');
-        $this->assertFalse(\Illuminate\Support\Facades\Route::has('member.quick-quizzes.start'));
+        $this->assertTrue(\Illuminate\Support\Facades\Route::has('member.quick-quizzes.start')); // QQ-CORE-02, quota is verified on actual start
     }
     public function test_inactive_account_and_admin_never_receive_quota_even_with_paid_membership(): void
     {

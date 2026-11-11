@@ -175,14 +175,14 @@ class SiapegawaiQuickQuizEditorialTest extends TestCase
         $this->assertDatabaseHas('audit_logs',['action'=>'qq.archive','subject_id'=>$quiz->id]);
     }
 
-    public function test_admin_html_escapes_untrusted_title_and_exposes_no_participant_attempt_route(): void
+    public function test_admin_html_escapes_untrusted_title_and_participant_route_is_independent(): void
     {
         $this->actingAs($this->person());
         $quiz=$this->createQuiz([]);
         $this->put(route('admin.quick-quizzes.update',$quiz),
             ['title'=>'Judul <script>alert(1)</script>','seconds_per_question'=>20,'version_ids'=>[]])->assertRedirect();
         $this->get(route('admin.quick-quizzes.edit',$quiz))->assertOk()->assertDontSee('<script>alert(1)</script>',false);
-        $this->assertFalse(\Illuminate\Support\Facades\Route::has('member.quick-quizzes.start'));
+        $this->assertTrue(\Illuminate\Support\Facades\Route::has('member.quick-quizzes.start')); // QQ-CORE-02: now protected by participant middleware and real quota
     }
 
     public function test_uppercase_code_is_normalized_and_duplicate_prevented_before_insert(): void

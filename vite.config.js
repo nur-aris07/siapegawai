@@ -18,6 +18,7 @@ export default defineConfig({
                 'resources/css/member-cat.css',
                 'resources/css/s7-member.css',
                 'resources/js/member-cat.js',
+                'resources/js/member-quick-quizzes.js',
             ],
             refresh: true,
         }),

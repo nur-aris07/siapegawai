@@ -26,6 +26,7 @@ use App\Http\Controllers\Admin\QuickQuizManagementController;
 use App\Http\Controllers\Admin\QuickQuizQuotaController;
 use App\Http\Controllers\Member\MemberClassMediaController;
 use App\Http\Controllers\Member\MemberClassPracticeController;
+use App\Http\Controllers\Member\MemberQuickQuizController;
 use App\Http\Middleware\AddSecurityHeaders;
 use App\Http\Middleware\EnsureActiveAccount;
 use App\Http\Middleware\EnsureAdminSessionVersion;
@@ -82,6 +83,17 @@ Route::middleware('auth')->group(function () {
             Route::get('/sesi/{attempt}/hasil', [MemberClassPracticeController::class,'result'])->name('member.class-practices.result');
             Route::get('/{practice}', [MemberClassPracticeController::class,'show'])->name('member.class-practices.show');
             Route::post('/{practice}/mulai', [MemberClassPracticeController::class,'start'])->middleware('throttle:10,1')->name('member.class-practices.start');
+        });
+        // QQ-CORE-02: private participant Quiz Kilat. Independent from CAT and Class Practice.
+        Route::prefix('quiz-kilat')->group(function () {
+            Route::get('/', [MemberQuickQuizController::class,'index'])->name('member.quick-quizzes.index');
+            Route::get('/riwayat', [MemberQuickQuizController::class,'history'])->name('member.quick-quizzes.history');
+            Route::get('/sesi/{attempt}', [MemberQuickQuizController::class,'take'])->name('member.quick-quizzes.take');
+            Route::post('/sesi/{attempt}/jawab', [MemberQuickQuizController::class,'answer'])->middleware('throttle:120,1')->name('member.quick-quizzes.answer');
+            Route::post('/sesi/{attempt}/lanjut', [MemberQuickQuizController::class,'next'])->middleware('throttle:120,1')->name('member.quick-quizzes.next');
+            Route::get('/sesi/{attempt}/hasil', [MemberQuickQuizController::class,'result'])->name('member.quick-quizzes.result');
+            Route::get('/{quiz}', [MemberQuickQuizController::class,'show'])->name('member.quick-quizzes.show');
+            Route::post('/{quiz}/mulai', [MemberQuickQuizController::class,'start'])->middleware('throttle:10,1')->name('member.quick-quizzes.start');
         });
         Route::prefix('peserta/tryout')->group(function () {
             Route::get('/', [MemberTryoutController::class, 'index'])->name('member.tryouts.index');
