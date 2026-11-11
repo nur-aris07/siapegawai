@@ -206,3 +206,35 @@
 .admin-material-version-list li details summary { cursor: pointer; }
 .admin-material-version-content { margin-top: 9px; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
 @media (max-width: 760px) { .admin-material-revision-editor .admin-v1-action-form { gap: 14px; } }
+
+.admin-quick-quizzes > .admin-v1-metrics + .admin-v1-panel { margin-top: 24px; }
+/* QQ-CORE-01: task-first editorial rhythm. Keep existing admin tokens/layout intact. */
+.admin-quick-quizzes > .admin-v1-panel + .admin-v1-panel,
+.admin-quick-quizzes > .admin-v1-heading + .admin-v1-panel,
+.admin-quick-quizzes > .admin-qq-editor + .admin-v1-panel,
+.admin-quick-quizzes > .admin-v1-panel + .admin-qq-editor { margin-top: 24px; }
+.admin-quick-quizzes .admin-qq-editor > .admin-v1-panel + .admin-v1-panel { margin-top: 24px; }
+.admin-quick-quizzes .admin-qq-actions { margin: 22px 0; }
+.admin-quick-quizzes .admin-qq-action { margin-top: 16px; }
+.admin-quick-quizzes .admin-v1-panel > p { margin: 10px 0 16px; line-height: 1.65; }
+.admin-quick-quizzes .admin-qq-checkbox { display: flex; gap: 10px; margin: 14px 0 18px; align-items: start; font-size: 14px; }
+.admin-quick-quizzes .admin-qq-checkbox input { margin-top: 4px; }
+.admin-qq-version-history p { padding: 10px 0; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+.admin-quick-quizzes .table-scroll:focus-visible { outline: 2px solid var(--navy); outline-offset: 3px; }
+@media(max-width:760px) {
+  .admin-quick-quizzes > .admin-v1-metrics + .admin-v1-panel,
+  .admin-quick-quizzes > .admin-v1-panel + .admin-v1-panel,
+  .admin-quick-quizzes > .admin-v1-heading + .admin-v1-panel,
+  .admin-quick-quizzes > .admin-qq-editor + .admin-v1-panel,
+  .admin-quick-quizzes > .admin-v1-panel + .admin-qq-editor,
+  .admin-quick-quizzes .admin-qq-editor > .admin-v1-panel + .admin-v1-panel { margin-top: 20px; }
+}
+
+/* QQ-CORE-01: explicit toolbar spacing and responsive question picker. */
+.admin-quick-quizzes > .admin-v1-metrics + .admin-v1-panel { margin-top: 24px; }
+.admin-quick-quizzes .admin-v1-tryout-search { margin-top: 18px; }
+.admin-quick-quizzes .admin-v1-tryout-results { margin-top: 12px; }
+.admin-quick-quizzes .admin-v1-selected-list { margin-top: 12px; }
+.admin-quick-quizzes .admin-v1-selected-list li { overflow-wrap: anywhere; }
+.admin-quick-quizzes :is(a,button,input,select,textarea):focus-visible { outline: 2px solid var(--navy); outline-offset: 3px; }
+@media (max-width: 760px) { .admin-quick-quizzes > .admin-v1-metrics + .admin-v1-panel { margin-top: 20px; } }

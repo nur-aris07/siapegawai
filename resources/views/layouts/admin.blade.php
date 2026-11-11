@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0B1B40">
 <title>@yield('title','Administrasi') — Siapegawai</title>
-@vite(['resources/css/app.css', 'resources/css/admin-v1.css', 'resources/js/app.js', 'resources/js/admin-questions.js', 'resources/js/admin-tryouts.js', 'resources/js/admin-participants.js'])
+@vite(['resources/css/app.css', 'resources/css/admin-v1.css', 'resources/js/app.js', 'resources/js/admin-questions.js', 'resources/js/admin-tryouts.js', 'resources/js/admin-participants.js', 'resources/js/admin-quick-quizzes.js'])
 </head>
 <body class="shell-workspace shell-admin admin-v1">
 <a class="skip-link" href="#main">Langsung ke konten</a>
@@ -28,6 +28,7 @@
       <a href="{{ route('questions.admin.index') }}" @class(['current'=>request()->routeIs('questions.admin.*')]) @if(request()->routeIs('questions.admin.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-book"></use></svg><span>Bank soal</span></a>
       <a href="{{ route('subjects.admin.index') }}" @class(['current'=>request()->routeIs('subjects.admin.*')]) @if(request()->routeIs('subjects.admin.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-book"></use></svg><span>Kategori & topik</span></a>
       <a href="{{ route('tryouts.admin.index') }}" @class(['current'=>request()->routeIs('tryouts.admin.*')]) @if(request()->routeIs('tryouts.admin.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-clipboard"></use></svg><span>Template tryout</span></a>
+      <a href="{{ route('admin.quick-quizzes.index') }}" @class(['current'=>request()->routeIs('admin.quick-quizzes.*')]) @if(request()->routeIs('admin.quick-quizzes.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-clipboard"></use></svg><span>Quiz Kilat</span></a>
       <a href="{{ route('admin.classes.index') }}" @class(['current'=>request()->routeIs('admin.classes.*')]) @if(request()->routeIs('admin.classes.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-book"></use></svg><span>Kelas &amp; materi</span></a>
       <span class="admin-v1-nav-section">AKUN</span>
       <a href="{{ route('admin.security.edit') }}" @class(['current'=>request()->routeIs('admin.security.*')]) @if(request()->routeIs('admin.security.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-users"></use></svg><span>Keamanan akun</span></a>

@@ -1,3 +1,5 @@
+> **CATATAN HISTORIS (11 November 2026):** v1.0 ini digantikan untuk keputusan produk dan engineering oleh [`QQ-SPEC-ADR-v1.1.md`](./QQ-SPEC-ADR-v1.1.md) berdasarkan feedback final pemilik produk. Konten lama dipertahankan untuk penelusuran keputusan; butir yang bertentangan pada v1.0 tidak berlaku lagi.
+
 # QQ-SPEC — Architecture Decision Record: Quiz Kilat
 
 **Document ID:** `QQ-SPEC-ADR-01`  

@@ -14,6 +14,7 @@ export default defineConfig({
                 'resources/js/admin-tryouts.js',
                 'resources/js/admin-participants.js',
                 'resources/js/admin-class-monitoring.js',
+                'resources/js/admin-quick-quizzes.js',
                 'resources/css/member-cat.css',
                 'resources/css/s7-member.css',
                 'resources/js/member-cat.js',

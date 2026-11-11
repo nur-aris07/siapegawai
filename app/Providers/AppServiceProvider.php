@@ -6,6 +6,8 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use App\Models\ClassPractice;
 use App\Policies\ClassPracticePolicy;
+use App\Models\QuickQuiz;
+use App\Policies\QuickQuizPolicy;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,5 +25,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::policy(ClassPractice::class, ClassPracticePolicy::class);
+        Gate::policy(QuickQuiz::class, QuickQuizPolicy::class);
     }
 }

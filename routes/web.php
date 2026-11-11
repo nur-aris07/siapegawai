@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\LearningMaterialRevisionController;
 use App\Http\Controllers\Admin\ClassPracticeManagementController;
 use App\Http\Controllers\Admin\ClassMonitoringController;
 use App\Http\Controllers\Admin\ClassMediaManagementController;
+use App\Http\Controllers\Admin\QuickQuizManagementController;
 use App\Http\Controllers\Member\MemberClassMediaController;
 use App\Http\Controllers\Member\MemberClassPracticeController;
 use App\Http\Middleware\AddSecurityHeaders;
@@ -127,6 +128,16 @@ Route::prefix('admin')->middleware(['auth', EnsureActiveAccount::class, EnsureRo
         Route::post('/{practice}/terbit', [ClassPracticeManagementController::class,'publish'])->middleware('throttle:15,1')->name('admin.class-practices.publish');
         Route::post('/{practice}/arsip', [ClassPracticeManagementController::class,'archive'])->middleware('throttle:15,1')->name('admin.class-practices.archive');
     });
+    // QQ-CORE-01: editorial only. No participant route or quota consumption until PKG-OPS-ENT passes QA.
+    Route::get('/quiz-kilat', [QuickQuizManagementController::class,'index'])->middleware('throttle:120,1')->name('admin.quick-quizzes.index');
+    Route::get('/quiz-kilat/cari-soal', [QuickQuizManagementController::class,'searchQuestions'])->middleware('throttle:90,1')->name('admin.quick-quizzes.search');
+    Route::get('/quiz-kilat/buat', [QuickQuizManagementController::class,'create'])->name('admin.quick-quizzes.create');
+    Route::post('/quiz-kilat', [QuickQuizManagementController::class,'store'])->middleware('throttle:20,1')->name('admin.quick-quizzes.store');
+    Route::get('/quiz-kilat/{quiz}/edit', [QuickQuizManagementController::class,'edit'])->name('admin.quick-quizzes.edit');
+    Route::put('/quiz-kilat/{quiz}', [QuickQuizManagementController::class,'update'])->middleware('throttle:20,1')->name('admin.quick-quizzes.update');
+    Route::post('/quiz-kilat/{quiz}/revisi', [QuickQuizManagementController::class,'startRevision'])->middleware('throttle:10,1')->name('admin.quick-quizzes.revision.start');
+    Route::post('/quiz-kilat/{quiz}/terbit', [QuickQuizManagementController::class,'publish'])->middleware('throttle:10,1')->name('admin.quick-quizzes.publish');
+    Route::post('/quiz-kilat/{quiz}/arsip', [QuickQuizManagementController::class,'archive'])->middleware('throttle:10,1')->name('admin.quick-quizzes.archive');
     Route::get('/keamanan', [AdminSecurityController::class, 'edit'])->name('admin.security.edit');
     Route::post('/keamanan/password', [AdminSecurityController::class, 'changePassword'])->middleware('throttle:5,1')->name('admin.security.password');
     // S6.1: Participant account directory. Read access for admins; status operations require Superadmin.

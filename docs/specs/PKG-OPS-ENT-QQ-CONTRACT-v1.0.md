@@ -1,3 +1,5 @@
+> **CATATAN HISTORIS (11 November 2026):** v1.0 ini digantikan untuk keputusan produk dan engineering oleh [`PKG-OPS-ENT-QQ-CONTRACT-v1.1.md`](./PKG-OPS-ENT-QQ-CONTRACT-v1.1.md) berdasarkan feedback final pemilik produk. Konten lama dipertahankan untuk penelusuran keputusan; butir yang bertentangan pada v1.0 tidak berlaku lagi.
+
 # PKG-OPS-ENT / QQ — Entitlement and Shared Daily Quota Contract
 
 **Document ID:** `PKG-OPS-ENT-QQ-01`  
