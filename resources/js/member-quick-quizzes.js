@@ -19,13 +19,21 @@ if (root) {
     if (phase === 'question' && form) {
         const status = document.getElementById('qq-save-status');
         const button = document.getElementById('qq-answer-submit');
+        const choices = [...form.querySelectorAll('[name="answer"]')];
         const submit = async (choice) => {
             if (pending || Date.now() < retryAt) return;
             pending = true;
             button.disabled = true;
+            // Freeze visible selection while the server locks the first submitted answer.
+            // Otherwise a slow request could display B while the server persisted A.
+            choices.forEach(input => { input.disabled = true; });
             status.textContent = 'Mengunci jawaban di server…';
             try { await post(root.dataset.answerUrl, {item_id:form.querySelector('[name=item_id]').value,answer:choice}); }
-            catch (error) { pending = false; retryAt = Date.now()+3000; button.disabled = false; status.textContent = error.message+' Coba kembali atau muat ulang untuk pemulihan.'; }
+            catch (error) {
+                pending = false; retryAt = Date.now()+3000; button.disabled = false;
+                choices.forEach(input => { input.disabled = false; });
+                status.textContent = error.message+' Coba kembali atau muat ulang untuk pemulihan.';
+            }
         };
         form.addEventListener('submit', (event) => {event.preventDefault();const selected=form.querySelector('[name="answer"]:checked');if (selected) submit(selected.value);});
         // Product contract: choosing an option immediately locks it (no second confirmation).
