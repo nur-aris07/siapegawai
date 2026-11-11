@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\ClassPracticeManagementController;
 use App\Http\Controllers\Admin\ClassMonitoringController;
 use App\Http\Controllers\Admin\ClassMediaManagementController;
 use App\Http\Controllers\Admin\QuickQuizManagementController;
+use App\Http\Controllers\Admin\QuickQuizQuotaController;
 use App\Http\Controllers\Member\MemberClassMediaController;
 use App\Http\Controllers\Member\MemberClassPracticeController;
 use App\Http\Middleware\AddSecurityHeaders;
@@ -138,11 +139,18 @@ Route::prefix('admin')->middleware(['auth', EnsureActiveAccount::class, EnsureRo
     Route::post('/quiz-kilat/{quiz}/revisi', [QuickQuizManagementController::class,'startRevision'])->middleware('throttle:10,1')->name('admin.quick-quizzes.revision.start');
     Route::post('/quiz-kilat/{quiz}/terbit', [QuickQuizManagementController::class,'publish'])->middleware('throttle:10,1')->name('admin.quick-quizzes.publish');
     Route::post('/quiz-kilat/{quiz}/arsip', [QuickQuizManagementController::class,'archive'])->middleware('throttle:10,1')->name('admin.quick-quizzes.archive');
+    // QQ quota is a benefit of THREE business member plans, never a per-quiz grant.
+    // Participant attempt routes remain unavailable until QQ-CORE-02.
+    Route::get('/quiz-kilat-kuota', [QuickQuizQuotaController::class,'index'])->name('admin.qq-quota.index');
+    Route::put('/quiz-kilat-kuota/paket/{plan}', [QuickQuizQuotaController::class,'update'])
+        ->middleware('throttle:10,1')->name('admin.qq-quota.update');
     Route::get('/keamanan', [AdminSecurityController::class, 'edit'])->name('admin.security.edit');
     Route::post('/keamanan/password', [AdminSecurityController::class, 'changePassword'])->middleware('throttle:5,1')->name('admin.security.password');
     // S6.1: Participant account directory. Read access for admins; status operations require Superadmin.
     Route::get('/peserta', [ParticipantManagementController::class, 'index'])->middleware('throttle:120,1')->name('admin.participants.index');
     Route::get('/peserta/{user}', [ParticipantManagementController::class, 'show'])->name('admin.participants.show');
+    Route::post('/peserta/{user}/paket', [ParticipantManagementController::class, 'changePlan'])
+        ->middleware('throttle:10,1')->name('admin.participants.plan');
     Route::post('/peserta/{user}/status', [ParticipantManagementController::class, 'changeStatus'])->middleware('throttle:10,1')->name('admin.participants.status');
     Route::get('/registrasi', [RegistrationController::class, 'index'])->name('registration.index');
     Route::get('/registrasi/{user}', [RegistrationController::class, 'show'])->name('registration.show');

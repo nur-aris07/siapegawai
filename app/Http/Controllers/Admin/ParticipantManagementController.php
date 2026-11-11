@@ -4,6 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AccessGrant;
+use App\Models\MemberPlan;
+use App\Services\MemberPlanService;
+use App\Services\QuickQuizQuotaService;
+use Carbon\CarbonImmutable;
+use Illuminate\Validation\Rule;
 use App\Models\AuditLog;
 use App\Models\RegistrationRequest;
 use App\Models\TryoutAttempt;
@@ -53,6 +58,9 @@ class ParticipantManagementController extends Controller
 
         return view('admin.participants.show', [
             'participant' => $user,
+            'memberPlans' => MemberPlan::query()->orderBy('tier')->get(),
+            'currentMemberPlan' => app(MemberPlanService::class)->current($user),
+            'qqQuotaToday' => app(QuickQuizQuotaService::class)->remaining($user),
             'registration' => RegistrationRequest::query()->where('user_id', $user->id)->first(),
             'attemptCount' => TryoutAttempt::query()->where('user_id', $user->id)->count(),
             'memberGrant' => AccessGrant::query()->where('user_id', $user->id)->where('grant_type', 'member')
@@ -79,5 +87,23 @@ class ParticipantManagementController extends Controller
             ->with('success', $data['action'] === 'suspend'
                 ? 'Akses peserta ditangguhkan dan tercatat di audit.'
                 : 'Akses peserta diaktifkan kembali dan tercatat di audit.');
+    }
+    /** Package ownership is managed with the participant account, not with Quiz Kilat grants. */
+    public function changePlan(Request $request, User $user, MemberPlanService $service): RedirectResponse
+    {
+        abort_unless($request->user()?->role === 'superadmin' && $request->user()?->status === 'active', 403);
+        abort_unless($user->role === 'participant', 404);
+        $data = $request->validate([
+            'member_plan_id' => ['required', 'integer', Rule::exists('member_plans', 'id')],
+            'reason' => ['required', 'string', 'min:12', 'max:500'],
+            'ends_at' => ['nullable', 'date'],
+            'confirmed' => ['required', 'accepted'],
+        ]);
+        $plan = MemberPlan::query()->findOrFail($data['member_plan_id']);
+        $endsAt = !empty($data['ends_at'])
+            ? CarbonImmutable::parse($data['ends_at'], 'Asia/Jakarta')->utc()->toDateTimeString() : null;
+        $service->setPlan($request->user(), $user, $plan, $data['reason'], $endsAt);
+        return redirect()->route('admin.participants.show', $user)
+            ->with('success', 'Paket peserta diperbarui. Kuota hari ini tidak di-reset.');
     }
 }

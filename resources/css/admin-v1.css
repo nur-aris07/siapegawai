@@ -238,3 +238,46 @@
 .admin-quick-quizzes .admin-v1-selected-list li { overflow-wrap: anywhere; }
 .admin-quick-quizzes :is(a,button,input,select,textarea):focus-visible { outline: 2px solid var(--navy); outline-offset: 3px; }
 @media (max-width: 760px) { .admin-quick-quizzes > .admin-v1-metrics + .admin-v1-panel { margin-top: 20px; } }
+
+/* PKG-OPS-ENT-MIN: scoped admin rhythm, no change to the four approved shells. */
+.qq-quota-page { display: flex; flex-direction: column; gap: 24px; }
+/* Use the compact AdminPageHeader, not the public v4 .page-intro hero. */
+.qq-quota-page > .qq-quota-heading { margin: 0; }
+.qq-quota-heading > div { max-width: 760px; min-width: 0; }
+.qq-quota-heading .admin-v1-crumb { margin: 0 0 10px; }
+.qq-quota-heading p:last-child { margin: 0; }
+
+.qq-quota-panel { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+.qq-quota-panel h2, .qq-quota-panel h3, .qq-quota-panel p { margin: 0; }
+.qq-quota-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; max-width: 860px; }
+.qq-quota-form label { display: flex; flex-direction: column; gap: 7px; font-weight: 600; font-size: 13px; }
+.qq-quota-form input:not([type=checkbox]), .qq-quota-form textarea, .qq-quota-form select { min-width: 0; width: 100%; padding: 10px; border: 1px solid #d8dde5; border-radius: 6px; background: #fff; color: #17243a; font: inherit; }
+.qq-quota-form .qq-quota-check { flex-direction: row; align-items: center; font-weight: 500; }
+.qq-quota-form button { justify-self: start; }
+.qq-quota-details { position: relative; }
+.qq-quota-details summary { cursor: pointer; font-weight: 600; color: #0b1b40; padding: 8px 0; }
+.qq-quota-details[open] { padding-bottom: 12px; }
+.qq-quota-edit { min-width: 350px; grid-template-columns: 1fr; padding: 12px 0; }
+.qq-quota-scroll { max-width: 100%; overflow-x: auto; }
+.qq-quota-table { min-width: 660px; width: 100%; }
+.qq-quota-table td { vertical-align: top; }
+.qq-quota-sub { display: block; margin-top: 4px; font-size: 12px; color: #596575; }
+.qq-quota-page :is(input,select,textarea,summary,button):focus-visible { outline: 3px solid #b88928; outline-offset: 2px; }
+@media (max-width: 700px) { .qq-quota-page { gap: 20px; } .qq-quota-panel { padding: 18px; } .qq-quota-form { grid-template-columns: 1fr; } .qq-quota-edit { min-width: 260px; } }
+
+.qq-quota-filters { display: flex; align-items: end; flex-wrap: wrap; gap: 12px; }
+.qq-quota-filters label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; }
+.qq-quota-filters input, .qq-quota-filters select { padding: 10px; border: 1px solid #d8dde5; border-radius: 6px; background: #fff; min-width: 170px; }
+.qq-quota-filters :is(input,select,button,a):focus-visible { outline: 3px solid #b88928; outline-offset: 2px; }
+
+/* PKG-OPS-ENT-MIN product correction: three package-based quota cards. Scoped only. */
+.qq-plan-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 18px; }
+.qq-plan-card { min-width: 0; border: 1px solid #dce1e8; border-radius: 9px; padding: 20px; display: flex; flex-direction: column; gap: 14px; background: #fff; }
+.qq-plan-card h3, .qq-plan-card p { margin: 0; }
+.qq-plan-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+.qq-plan-status { border: 1px solid #d5dbe4; border-radius: 6px; padding: 4px 8px; font-size: 12px; white-space: nowrap; }
+.qq-plan-form { grid-template-columns: 1fr; max-width: unset; gap: 13px; padding-top: 16px; }
+.qq-plan-form .qq-plan-confirm { margin-top: 5px; }
+.qq-plan-card .qq-quota-details[open] { border-top: 1px solid #e5e8ee; padding-top: 9px; }
+@media (max-width: 1200px) { .qq-plan-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media (max-width: 800px) { .qq-plan-grid { grid-template-columns: 1fr; gap: 16px; } .qq-plan-card { padding: 16px; } }

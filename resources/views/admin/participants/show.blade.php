@@ -38,6 +38,40 @@
   @endif
  </section>
 </div>
+<section class="admin-v1-panel admin-v1-catalog-topics" aria-labelledby="member-plan-title">
+ <h2 id="member-plan-title">Paket peserta</h2>
+ <p><strong>{{ $currentMemberPlan['plan']->name }}</strong> — {{ $currentMemberPlan['plan']->is_paid ? 'Paket berbayar' : 'Gratis (Pejuang)' }}</p>
+ <p class="admin-v1-muted">Paket melekat pada akun peserta, bukan akses per Quiz Kilat. Paket berbayar harus didukung konfirmasi administrasi yang nyata.</p>
+ <p class="admin-v1-muted">Kuota hari ini ({{ $qqQuotaToday['bucket_date_wib'] }} WIB):
+  @if(!$qqQuotaToday['allowed'])
+   Belum dikonfigurasi untuk paket ini.
+  @elseif($qqQuotaToday['unlimited'])
+   Unlimited · {{ $qqQuotaToday['consumed'] }} digunakan.
+  @else
+   {{ $qqQuotaToday['remaining'] }} tersisa dari {{ $qqQuotaToday['daily_limit'] }} · {{ $qqQuotaToday['consumed'] }} digunakan.
+  @endif
+ </p>
+ @if(auth()->user()->role === 'superadmin' && $participant->status === 'active')
+ <form method="POST" action="{{ route('admin.participants.plan',$participant) }}" class="admin-v1-action-form">
+  @csrf
+  <label class="admin-v1-field" for="member-plan-select">Paket peserta
+   <select id="member-plan-select" name="member_plan_id" required>
+    @foreach($memberPlans as $plan)
+     <option value="{{ $plan->id }}" @selected($plan->id === $currentMemberPlan['plan']->id)>{{ $plan->name }}{{ $plan->is_paid ? ' — berbayar' : ' — gratis' }}</option>
+    @endforeach
+   </select>
+  </label>
+  <label class="admin-v1-field" for="member-plan-ends">Masa akhir paket berbayar (WIB, opsional)
+   <input id="member-plan-ends" type="datetime-local" name="ends_at" value="{{ $currentMemberPlan['active_membership']?->ends_at?->timezone('Asia/Jakarta')->format('Y-m-d\TH:i') }}">
+  </label>
+  <label class="admin-v1-field" for="member-plan-reason">Referensi/alasan penetapan paket (wajib)
+   <textarea id="member-plan-reason" name="reason" required minlength="12" maxlength="500" rows="3" placeholder="Catatan keputusan administrasi atau konfirmasi pembayaran yang benar-benar diterima"></textarea>
+  </label>
+  <label class="check-line"><input type="checkbox" name="confirmed" value="1" required><span>Saya telah memverifikasi dasar penetapan paket, bukan pemberian grant Quiz Kilat.</span></label>
+  <button class="button button-primary" type="submit">Perbarui paket peserta</button>
+ </form>
+ @endif
+</section>
 <section class="admin-v1-panel admin-v1-catalog-topics">
  <h2>Audit pengamanan akun</h2>
  @forelse($accountAudits as $entry)

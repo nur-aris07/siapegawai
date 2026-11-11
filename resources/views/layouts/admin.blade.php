@@ -30,6 +30,9 @@
       <a href="{{ route('tryouts.admin.index') }}" @class(['current'=>request()->routeIs('tryouts.admin.*')]) @if(request()->routeIs('tryouts.admin.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-clipboard"></use></svg><span>Template tryout</span></a>
       <a href="{{ route('admin.quick-quizzes.index') }}" @class(['current'=>request()->routeIs('admin.quick-quizzes.*')]) @if(request()->routeIs('admin.quick-quizzes.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-clipboard"></use></svg><span>Quiz Kilat</span></a>
       <a href="{{ route('admin.classes.index') }}" @class(['current'=>request()->routeIs('admin.classes.*')]) @if(request()->routeIs('admin.classes.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-book"></use></svg><span>Kelas &amp; materi</span></a>
+      @if(auth()->user()->role === 'superadmin')
+      <a href="{{ route('admin.qq-quota.index') }}" @class(['current'=>request()->routeIs('admin.qq-quota.*')]) @if(request()->routeIs('admin.qq-quota.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-clipboard"></use></svg><span>Manfaat Quiz Kilat</span></a>
+      @endif
       <span class="admin-v1-nav-section">AKUN</span>
       <a href="{{ route('admin.security.edit') }}" @class(['current'=>request()->routeIs('admin.security.*')]) @if(request()->routeIs('admin.security.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-users"></use></svg><span>Keamanan akun</span></a>
       <span class="admin-v1-nav-section">TAHAP BERIKUTNYA</span>
