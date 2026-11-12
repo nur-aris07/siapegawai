@@ -55,3 +55,37 @@
 .shell-participant .qq-exam-progress{flex-direction:column;gap:4px}
 }
 @media(max-width:440px){.shell-participant .qq-result-summary{grid-template-columns:1fr 1fr}.shell-participant .qq-quota-summary strong{font-size:16px}}
+
+/* QQ-CORE-02 UX: strong selected, correct and incorrect states on one stable question card.
+   Use v4 feedback tokens; text labels communicate status independently from color. */
+.shell-participant .qq-answer-choice{transition:background-color .12s ease,border-color .12s ease;line-height:1.5}
+.shell-participant .qq-answer-choice:has(input:checked){border-color:#355e9e;background:#eaf2ff;box-shadow:inset 4px 0 #355e9e;color:#0b1b40}
+.shell-participant .qq-answer-choice:has(input:checked) .qq-letter{color:#17315c}
+.shell-participant .qq-answer-choice:has(input:disabled){cursor:wait}
+.shell-participant .qq-answer-choice--correct,
+.shell-participant .qq-answer-choice--correct:has(input:checked){background:#e8efe8;border-color:#2f765a;box-shadow:inset 4px 0 #2f765a;color:#173d2b}
+.shell-participant .qq-answer-choice--incorrect,
+.shell-participant .qq-answer-choice--incorrect:has(input:checked){background:#fff0ee;border-color:#b44b42;box-shadow:inset 4px 0 #b44b42;color:#722e28}
+.shell-participant .qq-answer-choice--correct .qq-letter{color:#215c41}
+.shell-participant .qq-answer-choice--incorrect .qq-letter{color:#963b33}
+.shell-participant .qq-answers--feedback{margin:8px 0 0}
+.shell-participant .qq-answers--feedback .qq-answer-choice{cursor:default;min-height:56px}
+.shell-participant .qq-choice-marker{font-size:17px;font-weight:800;width:18px;flex:none;text-align:center}
+.shell-participant .qq-option-text{min-width:0;flex:1;overflow-wrap:anywhere}
+.shell-participant .qq-choice-tag{font-size:12px;font-weight:700;max-width:170px;text-align:right}
+.shell-participant .qq-feedback{padding-top:16px;gap:16px}
+.shell-participant .qq-feedback-heading{font-size:19px;margin:0;line-height:1.5}
+.shell-participant .qq-feedback-heading--correct{color:#215c41}
+.shell-participant .qq-feedback-heading--incorrect{color:#963b33}
+.shell-participant .qq-feedback-heading--timeout{color:#754f16}
+.shell-participant .qq-feedback-summary{margin:0;color:#42516a}
+.shell-participant .qq-feedback .qq-explanation{border-left:3px solid #b88928;background:#f8f7f4;padding:16px 18px;line-height:1.65}
+.shell-participant .qq-feedback .qq-explanation h3{margin:0 0 5px;font-size:17px}
+.shell-participant .qq-feedback .qq-explanation p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.shell-participant #qq-answer-submit[hidden]{display:none}
+@media(max-width:600px){
+.shell-participant .qq-answers--feedback .qq-answer-choice{flex-wrap:wrap;gap:8px}
+.shell-participant .qq-choice-tag{flex-basis:100%;max-width:none;text-align:left;padding-left:48px}
+.shell-participant .qq-feedback .qq-explanation{padding:14px}
+}
+@media(prefers-reduced-motion:reduce){.shell-participant .qq-answer-choice{transition:none}}

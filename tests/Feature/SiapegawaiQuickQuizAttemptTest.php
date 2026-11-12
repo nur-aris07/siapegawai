@@ -132,10 +132,60 @@ class SiapegawaiQuickQuizAttemptTest extends TestCase
         $this->assertDatabaseCount('quick_quiz_attempt_answers',1);
         $this->assertDatabaseHas('quick_quiz_attempt_answers',['quick_quiz_attempt_id'=>$attempt->id,'answer_label'=>'B']);
         $this->post(route('member.quick-quizzes.next',$attempt))->assertSessionHasErrors('feedback');
-        $this->travel(4)->seconds();
+        $this->travel(6)->seconds();
         $this->post(route('member.quick-quizzes.next',$attempt))->assertRedirect();
         $this->assertSame(1,$attempt->fresh()->current_index);
         $this->assertSame('question',$attempt->fresh()->phase);
+    }
+
+
+    public function test_ajax_answer_and_next_update_only_exam_fragment_and_preserve_no_js_fallback(): void
+    {
+        $this->quota(2); $quiz=$this->published(); $user=$this->member(); $attempt=$this->start($user,$quiz);
+        $item=$attempt->version->items()->firstOrFail();
+        $question=$this->getJson(route('member.quick-quizzes.take',$attempt))->assertOk()
+            ->assertJsonPath('phase','question')->assertJsonPath('index',1);
+        $this->assertStringContainsString('qq-answer-form', $question->json('html'));
+        $this->assertStringNotContainsString('Kunci benar', $question->json('html'));
+
+        $feedback=$this->postJson(route('member.quick-quizzes.answer',$attempt),
+            ['item_id'=>$item->id,'answer'=>'B'])->assertOk()->assertJsonPath('phase','feedback');
+        $html=$feedback->json('html');
+        $this->assertStringContainsString('Isi soal 1',$html);
+        $this->assertStringContainsString('qq-answer-choice--incorrect',$html);
+        $this->assertStringContainsString('qq-answer-choice--correct',$html);
+        $this->assertStringContainsString('Pembahasan asli 1',$html);
+        $this->assertStringContainsString('Jawaban Anda · salah',$html);
+        $this->assertSame('feedback',$attempt->fresh()->phase);
+        $this->assertDatabaseCount('qq_quota_usages',1);
+
+        // Five seconds is a SERVER guarantee, not only a JavaScript delay.
+        $this->travel(4)->seconds();
+        $this->postJson(route('member.quick-quizzes.next',$attempt),[])
+            ->assertUnprocessable()->assertJsonValidationErrors('feedback');
+        $this->travel(2)->seconds();
+        $next=$this->postJson(route('member.quick-quizzes.next',$attempt),[])
+            ->assertOk()->assertJsonPath('phase','question')->assertJsonPath('index',2);
+        $this->assertStringContainsString('Isi soal 2',$next->json('html'));
+        $this->assertStringNotContainsString('Pembahasan asli 2',$next->json('html'));
+        $this->assertDatabaseCount('quick_quiz_attempt_answers',1);
+        $this->assertDatabaseCount('qq_quota_usages',1);
+        $this->get(route('member.quick-quizzes.take',$attempt))->assertOk()->assertSee('Isi soal 2');
+    }
+
+    public function test_ajax_feedback_stays_on_same_card_for_correct_answer_and_escapes_content(): void
+    {
+        $this->quota(1); $quiz=$this->published(); $user=$this->member(); $attempt=$this->start($user,$quiz);
+        $item=$attempt->version->items()->firstOrFail();
+        $item->version->update(['explanation'=>'<img src=x onerror=alert(1)>']);
+        $html=$this->actingAs($user)->postJson(route('member.quick-quizzes.answer',$attempt),
+            ['item_id'=>$item->id,'answer'=>'A'])->assertOk()->assertJsonPath('phase','feedback')->json('html');
+        $this->assertStringContainsString('Jawaban benar',$html);
+        $this->assertStringContainsString('Jawaban Anda · benar',$html);
+        $this->assertStringContainsString('qq-answer-choice--correct',$html);
+        $this->assertStringContainsString('&lt;img src=x onerror=alert(1)&gt;',$html);
+        $this->assertStringNotContainsString('<img src=x onerror=alert(1)>',$html);
+        $this->assertDatabaseCount('quick_quiz_attempt_answers',1);
     }
 
     public function test_timeout_does_not_consume_unissued_next_question_during_disconnection(): void
@@ -201,7 +251,7 @@ class SiapegawaiQuickQuizAttemptTest extends TestCase
             $item=$attempt->version->items()->where('sort_order',$i+1)->firstOrFail();
             $this->actingAs($user)->post(route('member.quick-quizzes.answer',$attempt),
                 ['item_id'=>$item->id,'answer'=>$i<15?'A':'B'])->assertRedirect();
-            $this->travel(4)->seconds();
+            $this->travel(6)->seconds();
             $this->post(route('member.quick-quizzes.next',$attempt))->assertRedirect();
         }
         $this->assertSame('completed',$attempt->fresh()->status);

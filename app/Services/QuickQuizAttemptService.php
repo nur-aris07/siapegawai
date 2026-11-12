@@ -16,6 +16,7 @@ use Illuminate\Validation\ValidationException;
 class QuickQuizAttemptService
 {
     private const RECOVERY_MINUTES = 30;
+    public const FEEDBACK_SECONDS = 5;
 
     public function __construct(private readonly QuickQuizQuotaService $quota) {}
 
@@ -152,7 +153,7 @@ class QuickQuizAttemptService
             ['answer_label'=>$timeout?null:$label,'status'=>$timeout?'timeout':'answered',
                 'is_correct'=>!$timeout && $label===$correct->label,'response_ms'=>min($allowed,$elapsed),
                 'locked_at'=>$now]);
-        $attempt->update(['phase'=>'feedback','feedback_until'=>$now->addSeconds(3),'last_seen_at'=>$now]);
+        $attempt->update(['phase'=>'feedback','feedback_until'=>$now->addSeconds(self::FEEDBACK_SECONDS),'last_seen_at'=>$now]);
     }
 
     private function finish(QuickQuizAttempt $attempt, CarbonImmutable $now, string $status = 'completed'): void

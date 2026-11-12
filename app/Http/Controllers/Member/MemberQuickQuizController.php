@@ -8,6 +8,7 @@ use App\Models\QuickQuizAttempt;
 use App\Services\QuickQuizAttemptService;
 use App\Services\QuickQuizQuotaService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -50,32 +51,56 @@ class MemberQuickQuizController extends Controller
         abort_unless((int)$attempt->user_id===(int)$request->user()->id,403);
     }
 
-    public function take(Request $request, QuickQuizAttempt $attempt, QuickQuizAttemptService $service): View|RedirectResponse
+    /** Present one server-authoritative state as HTML or an escaped Blade fragment for AJAX. */
+    private function stateData(QuickQuizAttempt $attempt, QuickQuizAttemptService $service): array
     {
-        $this->owned($request,$attempt);
-        $attempt=$service->read($attempt);
-        if ($attempt->status!=='active') return redirect()->route('member.quick-quizzes.result',$attempt);
         $attempt->load('version.quiz');
-        $item=$service->currentItem($attempt);
-        abort_unless($item,500);
-        $answer=$attempt->answers()->where('quick_quiz_version_item_id',$item->id)->first();
-        $correct=$attempt->phase==='feedback' ? $item->version->options->firstWhere('is_correct',true) : null;
-        return view('member.quick-quizzes.take',compact('attempt','item','answer','correct'));
+        $item = $service->currentItem($attempt);
+        abort_unless($item, 500);
+        $answer = $attempt->answers()->where('quick_quiz_version_item_id', $item->id)->first();
+        $correct = $attempt->phase === 'feedback' ? $item->version->options->firstWhere('is_correct', true) : null;
+        return compact('attempt', 'item', 'answer', 'correct');
     }
 
-    public function answer(Request $request, QuickQuizAttempt $attempt, QuickQuizAttemptService $service): RedirectResponse
+    private function stateJson(QuickQuizAttempt $attempt, QuickQuizAttemptService $service): JsonResponse
     {
-        $this->owned($request,$attempt);
+        if ($attempt->status !== 'active') {
+            return response()->json(['phase'=>'finished', 'redirect'=>route('member.quick-quizzes.result', $attempt)])
+                ->header('Cache-Control', 'no-store');
+        }
+        return response()->json([
+            'phase'=>$attempt->phase,
+            'index'=>$attempt->current_index + 1,
+            'total'=>$attempt->total_questions,
+            'seconds_per_question'=>$attempt->version->seconds_per_question,
+            'html'=>view('member.quick-quizzes.partials.exam', $this->stateData($attempt, $service))->render(),
+        ])->header('Cache-Control', 'no-store');
+    }
+
+    public function take(Request $request, QuickQuizAttempt $attempt, QuickQuizAttemptService $service): View|RedirectResponse|JsonResponse
+    {
+        $this->owned($request, $attempt);
+        $attempt=$service->read($attempt);
+        if ($request->expectsJson()) return $this->stateJson($attempt, $service);
+        if ($attempt->status !== 'active') return redirect()->route('member.quick-quizzes.result', $attempt);
+        return view('member.quick-quizzes.take', $this->stateData($attempt, $service));
+    }
+
+    public function answer(Request $request, QuickQuizAttempt $attempt, QuickQuizAttemptService $service): RedirectResponse|JsonResponse
+    {
+        $this->owned($request, $attempt);
         $data=$request->validate(['item_id'=>['required','integer'],'answer'=>['present','nullable','string','in:A,B,C,D,E']]);
-        $service->answer($attempt,(int)$data['item_id'],$data['answer']??null);
-        return redirect()->route('member.quick-quizzes.take',$attempt);
+        $attempt=$service->answer($attempt, (int)$data['item_id'], $data['answer'] ?? null);
+        if ($request->expectsJson()) return $this->stateJson($attempt, $service);
+        return redirect()->route('member.quick-quizzes.take', $attempt);
     }
 
-    public function next(Request $request, QuickQuizAttempt $attempt, QuickQuizAttemptService $service): RedirectResponse
+    public function next(Request $request, QuickQuizAttempt $attempt, QuickQuizAttemptService $service): RedirectResponse|JsonResponse
     {
-        $this->owned($request,$attempt);
+        $this->owned($request, $attempt);
         $attempt=$service->next($attempt);
-        return redirect()->route($attempt->status==='active'?'member.quick-quizzes.take':'member.quick-quizzes.result',$attempt);
+        if ($request->expectsJson()) return $this->stateJson($attempt, $service);
+        return redirect()->route($attempt->status === 'active' ? 'member.quick-quizzes.take' : 'member.quick-quizzes.result', $attempt);
     }
 
     public function result(Request $request, QuickQuizAttempt $attempt, QuickQuizAttemptService $service): View|RedirectResponse
