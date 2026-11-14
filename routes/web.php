@@ -27,6 +27,7 @@ use App\Http\Controllers\Admin\QuickQuizQuotaController;
 use App\Http\Controllers\Member\MemberClassMediaController;
 use App\Http\Controllers\Member\MemberClassPracticeController;
 use App\Http\Controllers\Member\MemberQuickQuizController;
+use App\Http\Controllers\Member\MemberQuickQuizAnalyticsController;
 use App\Http\Middleware\AddSecurityHeaders;
 use App\Http\Middleware\EnsureActiveAccount;
 use App\Http\Middleware\EnsureAdminSessionVersion;
@@ -88,6 +89,8 @@ Route::middleware('auth')->group(function () {
         Route::prefix('quiz-kilat')->group(function () {
             Route::get('/', [MemberQuickQuizController::class,'index'])->name('member.quick-quizzes.index');
             Route::get('/riwayat', [MemberQuickQuizController::class,'history'])->name('member.quick-quizzes.history');
+            // QQ-ANALYTICS-01: completed-only historical snapshots; before the /{quiz} catch-all.
+            Route::get('/analisis', [MemberQuickQuizAnalyticsController::class,'index'])->name('member.quick-quizzes.analytics');
             Route::get('/sesi/{attempt}', [MemberQuickQuizController::class,'take'])->name('member.quick-quizzes.take');
             Route::post('/sesi/{attempt}/jawab', [MemberQuickQuizController::class,'answer'])->middleware('throttle:120,1')->name('member.quick-quizzes.answer');
             Route::post('/sesi/{attempt}/lanjut', [MemberQuickQuizController::class,'next'])->middleware('throttle:120,1')->name('member.quick-quizzes.next');

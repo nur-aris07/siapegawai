@@ -4,7 +4,10 @@
 <div class="workspace-heading"><div><span class="workspace-label">LATIHAN CEPAT</span><h1>Quiz Kilat</h1><p>Quiz terbit dengan waktu per soal. Jawaban dikunci saat dipilih atau ketika waktunya habis.</p></div></div>
 @include('components.form-errors')
 @include('member.quick-quizzes.partials.quota')
-<p class="member-history-entry"><a class="text-link" href="{{ route('member.quick-quizzes.history') }}">Lihat riwayat Quiz Kilat →</a></p>
+<nav class="qq-analytics-page-links qq-analytics-entry-links" aria-label="Navigasi hasil Quiz Kilat">
+    <a class="qq-analytics-action" href="{{ route('member.quick-quizzes.analytics') }}">Analisis Quiz Kilat →</a>
+    <a class="qq-analytics-action qq-analytics-action--secondary" href="{{ route('member.quick-quizzes.history') }}">Lihat riwayat Quiz Kilat →</a>
+</nav>
 @if($active)
 <section class="workspace-note qq-notice"><strong>Ada sesi yang dapat dilanjutkan</strong><p>{{ $active->version?->title }} · v{{ $active->version?->version_number }}. Membuka sesi yang sama tidak memotong kuota lagi.</p><a class="button button-primary" href="{{ route('member.quick-quizzes.take',$active) }}">Lanjutkan sesi →</a></section>
 @endif

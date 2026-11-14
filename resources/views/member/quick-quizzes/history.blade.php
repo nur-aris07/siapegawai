@@ -2,6 +2,10 @@
 @section('title','Riwayat Quiz Kilat')
 @section('content')
 <div class="workspace-heading"><div><a class="task-back" href="{{ route('member.quick-quizzes.index') }}">← Quiz Kilat</a><h1>Riwayat Quiz Kilat</h1><p>Hasil tersimpan berdasarkan versi soal dan versi quiz saat pengerjaan.</p></div></div>
+<nav class="qq-analytics-page-links qq-analytics-entry-links" aria-label="Navigasi riwayat Quiz Kilat">
+    <a class="qq-analytics-action" href="{{ route('member.quick-quizzes.analytics') }}">Analisis Quiz Kilat →</a>
+    <a class="qq-analytics-action qq-analytics-action--secondary" href="{{ route('member.quick-quizzes.index') }}">Kembali ke katalog</a>
+</nav>
 @if($attempts->isEmpty())<section class="workspace-note"><strong>Belum ada hasil Quiz Kilat</strong><p>Mulai quiz yang sudah terbit ketika kuota harian Anda tersedia.</p></section>
 @else
 <div class="workspace-lines qq-list">@foreach($attempts as $attempt)

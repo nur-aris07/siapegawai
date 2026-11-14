@@ -19,6 +19,7 @@ export default defineConfig({
                 'resources/css/s7-member.css',
                 'resources/js/member-cat.js',
                 'resources/js/member-quick-quizzes.js',
+                'resources/js/member-qq-analytics.js',
             ],
             refresh: true,
         }),
