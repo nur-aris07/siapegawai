@@ -177,3 +177,54 @@
 @media(max-width:380px){.shell-participant .qq-analytics-kpis{gap:8px}.shell-participant .qq-analytics-kpi{padding:11px}.shell-participant .qq-analytics-legend{gap:8px}}
 
 .shell-participant .qq-analytics-entry-links{margin:10px 0 26px;justify-content:flex-start}
+
+
+/* ANL-DOMAIN-01: quiet, three-domain learner analytics hub; CSP-safe SVG/progress. */
+.shell-participant .domain-hub{max-width:100%;min-width:0}
+.shell-participant .domain-hub-intro{padding:8px 0 25px;border-bottom:1px solid #e2e4e7}
+.shell-participant .domain-hub-intro .task-back{display:inline-block;margin-bottom:14px}
+.shell-participant .domain-hub-intro h1{margin:8px 0 10px;font-size:clamp(27px,3vw,35px);line-height:1.17;color:#0b1b40}
+.shell-participant .domain-hub-intro p{max-width:780px;color:#596575;line-height:1.65;margin:0;font-size:14px}
+.shell-participant .domain-hub-section{padding:29px 0 32px;border-bottom:1px solid #e2e4e7}
+.shell-participant .domain-hub-head{display:flex;justify-content:space-between;align-items:center;gap:14px 24px;flex-wrap:wrap;margin-bottom:20px}
+.shell-participant .domain-hub-head>div{min-width:0;flex:1 1 330px}
+.shell-participant .domain-hub-head h2{font-size:clamp(20px,2.5vw,26px);line-height:1.25;color:#0b1b40;margin:5px 0 7px}
+.shell-participant .domain-hub-head p{font-size:13px;line-height:1.65;color:#596575;max-width:690px;margin:0}
+.shell-participant .domain-hub-link{display:inline-flex;align-items:center;max-width:100%;min-height:40px;padding:8px 12px;border:1px solid #bcc8d5;border-radius:6px;color:#17315c;font-size:13px;font-weight:700;text-decoration:none;line-height:1.35}
+.shell-participant .domain-hub-link:hover{background:#f5f7fa}
+.shell-participant .domain-hub-link:focus-visible,.shell-participant .domain-hub a:focus-visible{outline:2px solid #b88928;outline-offset:3px}
+.shell-participant .domain-hub-grid{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:24px;align-items:start}
+.shell-participant .domain-hub-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px 22px;margin:0;min-width:0}
+.shell-participant .domain-hub-metrics>div{min-width:0;border-top:2px solid #0b1b40;padding:11px 0 5px}
+.shell-participant .domain-hub-metrics dt{font-size:12px;color:#596575}
+.shell-participant .domain-hub-metrics dd{margin:6px 0 0;font-size:clamp(22px,2.5vw,31px);font-weight:750;letter-spacing:-.04em;line-height:1.24;color:#0b1b40;overflow-wrap:anywhere}
+.shell-participant .domain-hub-metrics dd small{display:block;font-size:11px;font-weight:400;letter-spacing:normal;line-height:1.6;color:#596575;margin-top:4px}
+.shell-participant .domain-hub-figure{margin:0;min-width:0;border:1px solid #e2e4e7;border-radius:8px;padding:16px}
+.shell-participant .domain-hub-figure h3,.shell-participant .domain-hub-figure figcaption strong{display:block;font-size:15px;font-weight:750;line-height:1.4;color:#0b1b40;margin:0 0 3px}
+.shell-participant .domain-hub-figure figcaption span,.shell-participant .domain-hub-caption{display:block;font-size:11px;color:#596575;line-height:1.65;margin:0 0 12px}
+.shell-participant .domain-hub-figure svg{display:block;width:100%;height:auto;margin:8px 0}
+.shell-participant .domain-hub-gridline{stroke:#e2e4e7;stroke-width:1}
+.shell-participant .domain-hub-axis{fill:#596575;font-size:12px}
+.shell-participant .domain-hub-scoreline{fill:none;stroke:#17315c;stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.shell-participant .domain-hub-scorepoint{fill:#b88928;stroke:#fff;stroke-width:2}
+.shell-participant .domain-hub-chart-foot{font-size:11px;line-height:1.6;color:#596575;overflow-wrap:anywhere;margin:9px 0 0}
+.shell-participant .domain-hub-class-row{padding:11px 0;border-top:1px solid #e2e4e7}
+.shell-participant .domain-hub-class-meta{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px 12px;font-size:12px;margin-bottom:8px}
+.shell-participant .domain-hub-class-meta a{color:#17315c;font-weight:700;overflow-wrap:anywhere}
+.shell-participant .domain-hub-class-meta span{color:#596575;white-space:nowrap}
+.shell-participant .domain-hub-class-row progress{width:100%;display:block;height:11px;accent-color:#2f765a}
+.shell-participant .domain-hub-mix-bg{fill:#e2e4e7}.shell-participant .domain-hub-mix-correct{fill:#2f765a}.shell-participant .domain-hub-mix-wrong{fill:#b44b42}.shell-participant .domain-hub-mix-timeout{fill:#8b93a0}
+.shell-participant .domain-hub-legend{display:flex;align-items:center;gap:10px 18px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:#596575}
+.shell-participant .domain-hub-legend strong{color:#0b1b40}.shell-participant .domain-hub-swatch{display:inline-block;width:10px;height:10px;margin-right:5px;border-radius:2px}
+.shell-participant .domain-hub-swatch--correct{background:#2f765a}.shell-participant .domain-hub-swatch--wrong{background:#b44b42}.shell-participant .domain-hub-swatch--timeout{background:#8b93a0}
+.shell-participant .domain-hub-empty{padding:16px 18px;border:1px solid #e2e4e7;border-radius:6px;color:#17243a}
+.shell-participant .domain-hub-empty strong{font-size:14px}.shell-participant .domain-hub-empty p{color:#596575;font-size:13px;margin:7px 0 10px}
+.shell-participant .domain-hub-empty a{color:#17315c;font-size:13px;font-weight:700}
+.shell-participant .domain-hub-method{padding:21px 0 30px;color:#596575;font-size:13px}
+.shell-participant .domain-hub-method summary{cursor:pointer;font-weight:700;color:#0b1b40}
+.shell-participant .domain-hub-method summary:focus-visible{outline:2px solid #b88928;outline-offset:4px}
+.shell-participant .domain-hub-method p{margin:10px 0 0;line-height:1.7}
+.shell-participant .domain-hub-return{margin:9px 0 20px}
+@media(max-width:850px){.shell-participant .domain-hub-grid{grid-template-columns:1fr;gap:18px}}
+@media(max-width:520px){.shell-participant .domain-hub-section{padding:25px 0}.shell-participant .domain-hub-head{align-items:flex-start}.shell-participant .domain-hub-link{width:100%;justify-content:center}.shell-participant .domain-hub-figure{padding:13px}.shell-participant .domain-hub-metrics{gap:14px}}
+@media(max-width:350px){.shell-participant .domain-hub-metrics{grid-template-columns:1fr 1fr;gap:10px}.shell-participant .domain-hub-metrics dd{font-size:21px}}

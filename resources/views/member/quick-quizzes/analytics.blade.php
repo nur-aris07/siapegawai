@@ -10,7 +10,7 @@
     </div>
     <nav class="qq-analytics-page-links" aria-label="Navigasi analisis Quiz Kilat">
         <a class="qq-analytics-action" href="{{ route('member.quick-quizzes.history') }}">Lihat riwayat &amp; review →</a>
-        <a class="qq-analytics-action qq-analytics-action--secondary" href="{{ route('member.quick-quizzes.index') }}">Kembali ke katalog</a>
+        <a class="qq-analytics-action qq-analytics-action--secondary" href="{{ route('member.analytics.index') }}">Analisis Kemampuan</a>
     </nav>
 </div>
 @if($summary['sessions'] === 0)

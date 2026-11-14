@@ -28,6 +28,7 @@ use App\Http\Controllers\Member\MemberClassMediaController;
 use App\Http\Controllers\Member\MemberClassPracticeController;
 use App\Http\Controllers\Member\MemberQuickQuizController;
 use App\Http\Controllers\Member\MemberQuickQuizAnalyticsController;
+use App\Http\Controllers\Member\MemberDomainAnalyticsController;
 use App\Http\Middleware\AddSecurityHeaders;
 use App\Http\Middleware\EnsureActiveAccount;
 use App\Http\Middleware\EnsureAdminSessionVersion;
@@ -65,6 +66,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/aktivasi', [RegistrationController::class, 'status'])->name('registration.status');
     Route::middleware([EnsureActiveAccount::class, EnsureRole::class.':participant'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'participant'])->name('dashboard');
+        // ANL-DOMAIN-01: read-only hub; routes for individual domain histories remain intact.
+        Route::get('/analisis-kemampuan', [MemberDomainAnalyticsController::class, 'index'])->name('member.analytics.index');
         // S7: private participant profile and manually enrolled classes.
         Route::get('/profil', [MemberProfileController::class,'edit'])->name('member.profile.edit');
         Route::patch('/profil', [MemberProfileController::class,'update'])->middleware('throttle:12,1')->name('member.profile.update');
