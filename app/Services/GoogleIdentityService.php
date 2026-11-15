@@ -96,6 +96,7 @@ class GoogleIdentityService
                 'after_summary' => ['status' => 'active', 'source' => 'google_registration'],
                 'created_at' => now(),
             ]);
+            app(AccountEmailService::class)->record($user, 'google_registered');
             return $user;
         }, 3);
     }

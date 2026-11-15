@@ -33,6 +33,9 @@
       @if(auth()->user()->role === 'superadmin')
       <a href="{{ route('admin.qq-quota.index') }}" @class(['current'=>request()->routeIs('admin.qq-quota.*')]) @if(request()->routeIs('admin.qq-quota.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-clipboard"></use></svg><span>Manfaat Quiz Kilat</span></a>
       @endif
+      @if(auth()->user()->role === 'superadmin')
+      <a href="{{ route('admin.account-emails.index') }}" @class(['current'=>request()->routeIs('admin.account-emails.*')])><svg class="icon" aria-hidden="true"><use href="#ic-info"></use></svg><span>Email &amp; SMTP</span></a>
+      @endif
       <span class="admin-v1-nav-section">AKUN</span>
       <a href="{{ route('admin.security.edit') }}" @class(['current'=>request()->routeIs('admin.security.*')]) @if(request()->routeIs('admin.security.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-users"></use></svg><span>Keamanan akun</span></a>
       <span class="admin-v1-nav-section">TAHAP BERIKUTNYA</span>

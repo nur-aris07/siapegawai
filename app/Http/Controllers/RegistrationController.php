@@ -72,12 +72,13 @@ class RegistrationController extends Controller
                 'after_summary' => ['status' => 'active', 'registration' => 'free_self_service'],
                 'created_at' => now(),
             ]);
+            app(\App\Services\AccountEmailService::class)->record($user, 'free_registered');
             return $user;
         }, 3);
         // Log in only after the full transaction commits successfully.
         Auth::login($user);
         $request->session()->regenerate();
-        return redirect()->route('dashboard')->setStatusCode(303);
+        return redirect()->route('dashboard')->with('success', 'Akun GRATIS Pejuang aktif. Email konfirmasi, jika layanan notifikasi diaktifkan, diproses terpisah. Jika tidak terlihat, periksa Inbox, Spam, dan Promosi sebelum meminta bantuan.')->setStatusCode(303);
     }
 
     public function whatsapp(Request $request, WhatsAppLinkService $wa): View|RedirectResponse

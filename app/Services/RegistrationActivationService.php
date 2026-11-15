@@ -38,6 +38,7 @@ class RegistrationActivationService
                 'external_reference' => $externalReference, 'decision' => $decision,
                 'note' => $note, 'confirmed_by' => $admin->id, 'confirmed_at' => now(),
             ]);
+            app(AccountEmailService::class)->record($subject, $decision === 'approve' ? 'legacy_approved' : 'legacy_rejected');
             AuditLog::query()->create([
                 'actor_id' => $admin->id, 'action' => 'registration.'.$decision,
                 'subject_type' => 'user', 'subject_id' => $subject->id,

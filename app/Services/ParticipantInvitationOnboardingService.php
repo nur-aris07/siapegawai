@@ -74,6 +74,7 @@ class ParticipantInvitationOnboardingService
                     'policy_version' => config('siapegawai.privacy_version')],
                 'created_at' => now(),
             ]);
+            app(AccountEmailService::class)->record($user, 'invitation_activated');
             return true;
         }, 3);
     }

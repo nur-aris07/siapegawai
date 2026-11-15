@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\TryoutManagementController;
 use App\Http\Controllers\Admin\ParticipantManagementController;
 use App\Http\Controllers\Admin\ParticipantInvitationController;
 use App\Http\Controllers\Admin\AdminSecurityController;
+use App\Http\Controllers\Admin\AccountEmailController;
 use App\Http\Controllers\Member\MemberTryoutController;
 use App\Http\Controllers\Member\MemberHistoryController;
 use App\Http\Controllers\Member\MemberProfileController;
@@ -175,6 +176,11 @@ Route::prefix('admin')->middleware(['auth', EnsureActiveAccount::class, EnsureRo
     Route::put('/quiz-kilat-kuota/paket/{plan}', [QuickQuizQuotaController::class,'update'])
         ->middleware('throttle:10,1')->name('admin.qq-quota.update');
     Route::get('/keamanan', [AdminSecurityController::class, 'edit'])->name('admin.security.edit');
+    Route::get('/email', [AccountEmailController::class, 'index'])->name('admin.account-emails.index');
+    Route::get('/email/pratinjau/{kind}', [AccountEmailController::class, 'preview'])->name('admin.account-emails.preview');
+    Route::post('/email/uji', [AccountEmailController::class, 'test'])->middleware('throttle:3,1')->name('admin.account-emails.test');
+    Route::post('/email/{outbox}/antrekan', [AccountEmailController::class, 'retry'])->middleware('throttle:5,1')->name('admin.account-emails.retry');
+    Route::post('/email/{outbox}/kirim-ulang', [AccountEmailController::class, 'resend'])->middleware('throttle:3,1')->name('admin.account-emails.resend');
     Route::post('/keamanan/password', [AdminSecurityController::class, 'changePassword'])->middleware('throttle:5,1')->name('admin.security.password');
     // S6.1: Participant account directory. Read access for admins; status operations require Superadmin.
     Route::get('/peserta', [ParticipantManagementController::class, 'index'])->middleware('throttle:120,1')->name('admin.participants.index');
