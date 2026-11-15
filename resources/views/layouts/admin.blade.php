@@ -5,6 +5,7 @@
 <meta name="theme-color" content="#0B1B40">
 <title>@yield('title','Administrasi') — Siapegawai</title>
 @vite(['resources/css/app.css', 'resources/css/admin-v1.css', 'resources/js/app.js', 'resources/js/admin-questions.js', 'resources/js/admin-tryouts.js', 'resources/js/admin-participants.js', 'resources/js/admin-quick-quizzes.js'])
+@if(request()->routeIs('admin.site-settings.*'))@vite(['resources/js/admin-site-settings.js'])@endif
 </head>
 <body class="shell-workspace shell-admin admin-v1">
 <a class="skip-link" href="#main">Langsung ke konten</a>
@@ -35,6 +36,9 @@
       @endif
       @if(auth()->user()->role === 'superadmin')
       <a href="{{ route('admin.account-emails.index') }}" @class(['current'=>request()->routeIs('admin.account-emails.*')])><svg class="icon" aria-hidden="true"><use href="#ic-info"></use></svg><span>Email &amp; SMTP</span></a>
+      @endif
+      @if(auth()->user()->role === 'superadmin')
+      <a href="{{ route('admin.site-settings.index') }}" @class(['current'=>request()->routeIs('admin.site-settings.*')]) @if(request()->routeIs('admin.site-settings.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-settings"></use></svg><span>Pengaturan Website</span></a>
       @endif
       <span class="admin-v1-nav-section">AKUN</span>
       <a href="{{ route('admin.security.edit') }}" @class(['current'=>request()->routeIs('admin.security.*')]) @if(request()->routeIs('admin.security.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-users"></use></svg><span>Keamanan akun</span></a>

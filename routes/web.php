@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\ParticipantManagementController;
 use App\Http\Controllers\Admin\ParticipantInvitationController;
 use App\Http\Controllers\Admin\AdminSecurityController;
 use App\Http\Controllers\Admin\AccountEmailController;
+use App\Http\Controllers\Admin\SiteSettingsController;
 use App\Http\Controllers\Member\MemberTryoutController;
 use App\Http\Controllers\Member\MemberHistoryController;
 use App\Http\Controllers\Member\MemberProfileController;
@@ -176,6 +177,10 @@ Route::prefix('admin')->middleware(['auth', EnsureActiveAccount::class, EnsureRo
     Route::put('/quiz-kilat-kuota/paket/{plan}', [QuickQuizQuotaController::class,'update'])
         ->middleware('throttle:10,1')->name('admin.qq-quota.update');
     Route::get('/keamanan', [AdminSecurityController::class, 'edit'])->name('admin.security.edit');
+    // SITE-SETTINGS-01: non-secret public presentation only; superadmin guarded in controller.
+    Route::get('/website', [SiteSettingsController::class, 'index'])->name('admin.site-settings.index');
+    Route::post('/website/pratinjau', [SiteSettingsController::class, 'preview'])->middleware('throttle:20,1')->name('admin.site-settings.preview');
+    Route::put('/website', [SiteSettingsController::class, 'update'])->middleware('throttle:10,1')->name('admin.site-settings.update');
     Route::get('/email', [AccountEmailController::class, 'index'])->name('admin.account-emails.index');
     Route::get('/email/pratinjau/{kind}', [AccountEmailController::class, 'preview'])->name('admin.account-emails.preview');
     Route::post('/email/uji', [AccountEmailController::class, 'test'])->middleware('throttle:3,1')->name('admin.account-emails.test');
