@@ -45,6 +45,21 @@ class PasswordController extends Controller
                     ];
                     if ($isAdmin) $changes['admin_security_version'] = $before + 1;
                     $account->forceFill($changes)->save();
+                    // Password ownership is proved by Laravel's single-use broker token.
+                    // Do NOT equate a pending legacy web-registration with an admin invitation.
+                    $invitation = app(\App\Services\ParticipantInvitationOnboardingService::class);
+                    if ($account->role === 'participant' && $account->status === 'pending'
+                        && $invitation->isAdminInvitation($account)
+                        && ! $invitation->hasOwnerPassword($account)) {
+                        AuditLog::query()->create([
+                            'actor_id' => $account->id,
+                            'action' => 'participant.invitation_password_set',
+                            'subject_type' => 'user', 'subject_id' => $account->id,
+                            'before_summary' => null,
+                            'after_summary' => ['proof' => 'password_broker_reset'],
+                            'created_at' => now(),
+                        ]);
+                    }
                     if ($isAdmin) {
                         AuditLog::query()->create([
                             'actor_id' => null,

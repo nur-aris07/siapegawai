@@ -23,8 +23,21 @@ class SiapegawaiVisualLayoutTest extends TestCase
     public function test_login_and_registration_use_account_shell(): void
     {
         $this->get('/login')->assertOk()->assertSee('shell-account')->assertDontSee('site-nav');
+        // Neither the development .env nor another feature test decides this visual gate.
+        // Test both supported states without changing the actual registration policy.
+        config()->set('siapegawai.registration_enabled', false);
+        config()->set('siapegawai.privacy_approved', false);
+        config()->set('siapegawai.terms_approved', false);
+        config()->set('siapegawai.privacy_version', 'DRAFT');
         $this->get('/daftar')->assertOk()->assertSee('shell-account')
-            ->assertSee('Registrasi belum dibuka');
+            ->assertSee('Registrasi belum dibuka')->assertDontSee('site-nav');
+
+        config()->set('siapegawai.registration_enabled', true);
+        config()->set('siapegawai.privacy_approved', true);
+        config()->set('siapegawai.terms_approved', true);
+        config()->set('siapegawai.privacy_version', '2026-11-approved');
+        $this->get('/daftar')->assertOk()->assertSee('shell-account')
+            ->assertSee('Daftar GRATIS')->assertDontSee('site-nav');
     }
 
     public function test_flash_text_is_escaped_in_toast_source(): void

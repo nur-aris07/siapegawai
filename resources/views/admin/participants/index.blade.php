@@ -1,7 +1,8 @@
 @extends('layouts.admin')
 @section('title','Direktori Peserta')
 @section('content')
-<div class="admin-v1-heading"><div><p class="admin-v1-crumb">Operasional / Peserta</p><h1>Direktori peserta</h1><p>Lihat status akun dan riwayat aktivitas dasar. Verifikasi pendaftaran tetap melalui menu Registrasi.</p></div></div>
+<div class="admin-v1-heading"><div><p class="admin-v1-crumb">Operasional / Peserta</p><h1>Direktori peserta</h1><p>Lihat status akun dan riwayat aktivitas dasar. Verifikasi pendaftaran historis melalui menu Registrasi.</p></div>
+@if(auth()->user()->role === 'superadmin')<a class="button button-primary" href="{{ route('admin.participants.create') }}">Tambah peserta</a>@endif</div>
 <div class="admin-v1-metrics"><div><strong>{{ $totalParticipants }}</strong><span>Total peserta</span></div><div><strong>{{ $activeParticipants }}</strong><span>Akun aktif</span></div><div><strong>{{ $suspendedParticipants }}</strong><span>Akun ditangguhkan</span></div></div>
 <section class="admin-v1-panel">
  <div class="admin-v1-panel-top"><div><h2>Daftar akun</h2><p>Hanya akun peserta. Akun administrator tidak ditampilkan dalam tabel ini.</p></div></div>

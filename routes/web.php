@@ -12,6 +12,7 @@ use App\Http\Controllers\Questions\QuestionManagementController;
 use App\Http\Controllers\Admin\SubjectCatalogController;
 use App\Http\Controllers\Admin\TryoutManagementController;
 use App\Http\Controllers\Admin\ParticipantManagementController;
+use App\Http\Controllers\Admin\ParticipantInvitationController;
 use App\Http\Controllers\Admin\AdminSecurityController;
 use App\Http\Controllers\Member\MemberTryoutController;
 use App\Http\Controllers\Member\MemberHistoryController;
@@ -64,6 +65,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [SessionController::class, 'destroy'])->name('logout');
     Route::get('/pendaftaran/lanjut-whatsapp', [RegistrationController::class, 'whatsapp'])->name('registration.whatsapp');
     Route::get('/aktivasi', [RegistrationController::class, 'status'])->name('registration.status');
+    // ADM-USERS-01: owner-only consent after invitation password reset. Never a public registration shortcut.
+    Route::post('/aktivasi/undangan', [ParticipantInvitationController::class, 'accept'])
+        ->middleware('throttle:5,1')->name('participant.invitation.accept');
     Route::middleware([EnsureActiveAccount::class, EnsureRole::class.':participant'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'participant'])->name('dashboard');
         // ANL-DOMAIN-01: read-only hub; routes for individual domain histories remain intact.
@@ -166,6 +170,10 @@ Route::prefix('admin')->middleware(['auth', EnsureActiveAccount::class, EnsureRo
     Route::post('/keamanan/password', [AdminSecurityController::class, 'changePassword'])->middleware('throttle:5,1')->name('admin.security.password');
     // S6.1: Participant account directory. Read access for admins; status operations require Superadmin.
     Route::get('/peserta', [ParticipantManagementController::class, 'index'])->middleware('throttle:120,1')->name('admin.participants.index');
+    Route::get('/peserta/tambah', [ParticipantInvitationController::class, 'create'])->name('admin.participants.create');
+    Route::post('/peserta', [ParticipantInvitationController::class, 'store'])->middleware('throttle:10,1')->name('admin.participants.store');
+    Route::post('/peserta/{user}/undangan/kirim-ulang', [ParticipantInvitationController::class, 'resend'])
+        ->middleware('throttle:3,1')->name('admin.participants.invitation.resend');
     Route::get('/peserta/{user}', [ParticipantManagementController::class, 'show'])->name('admin.participants.show');
     Route::post('/peserta/{user}/paket', [ParticipantManagementController::class, 'changePlan'])
         ->middleware('throttle:10,1')->name('admin.participants.plan');

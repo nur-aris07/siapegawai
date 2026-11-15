@@ -10,12 +10,26 @@
    <dt>Email</dt><dd>{{ $participant->email }}</dd>
    <dt>Status akun</dt><dd>{{ ['active'=>'Aktif','pending'=>'Menunggu aktivasi','rejected'=>'Ditolak','suspended'=>'Ditangguhkan'][$participant->status] ?? $participant->status }}</dd>
    <dt>Terdaftar</dt><dd>{{ $participant->created_at?->timezone('Asia/Jakarta')->format('d M Y H:i') }} WIB</dd>
-   <dt>Referensi registrasi</dt><dd>{{ $registration?->reference_code ?? 'Akun development / tidak ada pendaftaran web' }}</dd>
+   <dt>Asal akun</dt><dd>{{ $adminInvitation ? 'Ditambahkan superadmin (undangan)' : ($registration ? 'Registrasi website' : 'Akun tanpa riwayat registrasi web') }}</dd>
+    <dt>Referensi registrasi</dt><dd>{{ $registration?->reference_code ?? 'Tidak ada pendaftaran web' }}</dd>
    <dt>Status registrasi</dt><dd>{{ $registration?->status ?? 'Tidak tercatat' }}</dd>
    <dt>Grant member</dt><dd>{{ $memberGrant?->status ?? 'Belum ada' }}</dd>
    <dt>Percobaan CAT</dt><dd>{{ $attemptCount }}</dd>
   </dl>
-  @if($registration?->status === 'pending')
+  @if($adminInvitation && $participant->status === 'pending')
+    <section aria-labelledby="admin-invite-status-title">
+      <h3 id="admin-invite-status-title">Onboarding undangan</h3>
+      <p>{{ $invitationPasswordSet ? 'Password telah diatur peserta. Menunggu persetujuan kebijakan oleh pemilik akun.' : 'Menunggu peserta membuka tautan undangan dan mengatur password.' }}</p>
+      @if(! $invitationPasswordSet && auth()->user()->role === 'superadmin')
+      <form method="POST" action="{{ route('admin.participants.invitation.resend', $participant) }}">
+       @csrf
+       <button class="button button-outline button-compact" type="submit">Kirim ulang tautan pengaturan password</button>
+      </form>
+      @endif
+      <p class="admin-v1-muted">Email hanya dikirim melalui password broker; tautan dan token tidak ditampilkan kepada admin.</p>
+    </section>
+   @endif
+   @if($registration?->status === 'pending')
    <p class="admin-v1-muted">Aktivasi akun pending hanya melalui proses verifikasi pendaftaran.</p>
    <a class="admin-v1-inline-link" href="{{ route('registration.show', $participant) }}">Tinjau registrasi →</a>
   @endif
@@ -34,7 +48,7 @@
     <button class="button {{ $participant->status === 'active' ? 'button-outline' : 'button-primary' }}" type="submit">{{ $participant->status === 'active' ? 'Tangguhkan peserta' : 'Aktifkan kembali' }}</button>
    </form>
   @else
-   <p>Akun belum aktif atau ditolak. Gunakan alur verifikasi Registrasi; perubahan status langsung tidak tersedia di sini.</p>
+   <p>Akun belum aktif atau ditolak. {{ $adminInvitation ? 'Peserta perlu menyelesaikan password dan persetujuan kebijakan melalui undangan.' : 'Gunakan alur verifikasi Registrasi apabila tersedia.' }} Perubahan status langsung tidak tersedia di sini.</p>
   @endif
  </section>
 </div>

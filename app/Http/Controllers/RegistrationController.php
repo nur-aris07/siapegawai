@@ -87,6 +87,10 @@ class RegistrationController extends Controller
         if ($request->user()->status === 'active') return redirect()->route('dashboard');
         if ($request->user()->status !== 'pending') return redirect()->route('registration.status');
         $registration = $request->user()->registrationRequest;
+        if (! $registration && app(\App\Services\ParticipantInvitationOnboardingService::class)
+            ->isAdminInvitation($request->user())) {
+            return redirect()->route('registration.status');
+        }
         abort_unless($registration, 404);
         return view('registrations.whatsapp', [
             'registration' => $registration,
@@ -99,6 +103,14 @@ class RegistrationController extends Controller
     {
         abort_unless($request->user()?->role === 'participant', 403);
         $registration = $request->user()->registrationRequest;
+        if (! $registration && app(\App\Services\ParticipantInvitationOnboardingService::class)
+            ->isAdminInvitation($request->user())) {
+            $onboarding = app(\App\Services\ParticipantInvitationOnboardingService::class);
+            return view('registrations.invitation-status', [
+                'passwordSet' => $onboarding->hasOwnerPassword($request->user()),
+                'legalReady' => $onboarding->legalReady(),
+            ]);
+        }
         abort_unless($registration, 404);
         return view('registrations.status', [
             'registration' => $registration,
