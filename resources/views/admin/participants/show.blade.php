@@ -10,7 +10,7 @@
    <dt>Email</dt><dd>{{ $participant->email }}</dd>
    <dt>Status akun</dt><dd>{{ ['active'=>'Aktif','pending'=>'Menunggu aktivasi','rejected'=>'Ditolak','suspended'=>'Ditangguhkan'][$participant->status] ?? $participant->status }}</dd>
    <dt>Terdaftar</dt><dd>{{ $participant->created_at?->timezone('Asia/Jakarta')->format('d M Y H:i') }} WIB</dd>
-   <dt>Asal akun</dt><dd>{{ $adminInvitation ? 'Ditambahkan superadmin (undangan)' : ($registration ? 'Registrasi website' : 'Akun tanpa riwayat registrasi web') }}</dd>
+   <dt>Asal akun</dt><dd>{{ $adminInvitation ? 'Ditambahkan superadmin (undangan)' : ($registration ? 'Registrasi website' : ($googleIdentity ? 'Pendaftaran Google' : 'Akun tanpa riwayat registrasi web')) }}</dd>
     <dt>Referensi registrasi</dt><dd>{{ $registration?->reference_code ?? 'Tidak ada pendaftaran web' }}</dd>
    <dt>Status registrasi</dt><dd>{{ $registration?->status ?? 'Tidak tercatat' }}</dd>
    <dt>Grant member</dt><dd>{{ $memberGrant?->status ?? 'Belum ada' }}</dd>

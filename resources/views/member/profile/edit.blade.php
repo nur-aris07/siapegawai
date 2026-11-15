@@ -19,5 +19,18 @@
 <label>Konfirmasi kata sandi baru<input name="password_confirmation" type="password" autocomplete="new-password" minlength="12" required maxlength="200"></label>
 <button class="button button-outline" type="submit">Ubah kata sandi dan login ulang</button>
 </form></div></section>
+<section class="workspace-line"><div><h2>Hubungkan Google</h2>
+@if(session('google_link_feedback'))<div class="account-google-link-feedback" role="status">{{ session('google_link_feedback') }}</div>@endif
+@if(\Illuminate\Support\Facades\Schema::hasTable('user_identities') && \App\Models\UserIdentity::query()->where('user_id', $member->id)->where('provider','google')->exists())
+<p>Google sudah dihubungkan. Penautan ulang atau pemutusan tautan tidak tersedia pada tahap ini.</p>
+@elseif(app(\App\Services\GoogleIdentityService::class)->enabled())
+<p>Pastikan email Google sama dengan email akun ini. Untuk keamanan, masukkan kata sandi akun sebelum membuka Google.</p>
+<form action="{{ route('google.link') }}" method="POST" class="s7-form">@csrf
+<label>Kata sandi saat ini<input type="password" name="password" required autocomplete="current-password"></label>
+<button class="button button-outline" type="submit">Hubungkan akun Google</button></form>
+@else
+<p>Penautan Google belum dikonfigurasi oleh pengelola.</p>
+@endif
+</div></section>
 </div>
 @endsection

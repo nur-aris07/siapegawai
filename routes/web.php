@@ -8,6 +8,7 @@ use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\SessionController;
+use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\Questions\QuestionManagementController;
 use App\Http\Controllers\Admin\SubjectCatalogController;
 use App\Http\Controllers\Admin\TryoutManagementController;
@@ -51,7 +52,13 @@ Route::get('/syarat-layanan', [PageController::class, 'terms'])->name('page.syar
 Route::get('/kelas', [PageController::class, 'classes'])->name('page.kelas');
 Route::get('/paket', [PageController::class, 'packages'])->name('page.paket');
 
+// Authenticated provider callback must remain outside guest/auth middleware to support both login and manual linking.
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])
+    ->middleware('throttle:15,1')->name('google.callback');
 Route::middleware('guest')->group(function () {
+    Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->middleware('throttle:10,1')->name('google.redirect');
+    Route::get('/auth/google/lengkapi', [GoogleAuthController::class, 'onboarding'])->name('google.onboarding');
+    Route::post('/auth/google/lengkapi', [GoogleAuthController::class, 'store'])->middleware('throttle:5,1')->name('google.onboarding.store');
     Route::get('/daftar', [RegistrationController::class, 'create'])->name('register');
     Route::post('/daftar', [RegistrationController::class, 'store'])->middleware('throttle:5,1')->name('register.store');
     Route::get('/login', [SessionController::class, 'create'])->name('login');
@@ -74,6 +81,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/analisis-kemampuan', [MemberDomainAnalyticsController::class, 'index'])->name('member.analytics.index');
         // S7: private participant profile and manually enrolled classes.
         Route::get('/profil', [MemberProfileController::class,'edit'])->name('member.profile.edit');
+        Route::post('/profil/hubungkan-google', [GoogleAuthController::class, 'link'])->middleware('throttle:3,1')->name('google.link');
         Route::patch('/profil', [MemberProfileController::class,'update'])->middleware('throttle:12,1')->name('member.profile.update');
         Route::post('/profil/password', [MemberProfileController::class,'changePassword'])->middleware('throttle:5,1')->name('member.profile.password');
         Route::get('/kelas-saya', [MemberClassController::class,'index'])->name('member.classes.index');

@@ -34,6 +34,15 @@
 .check-line input { margin-top: 4px; accent-color: var(--navy); }
 .check-line a { text-decoration: underline; text-underline-offset: 2px; }
 .account-submit { width: 100%; margin-top: 7px; }
+/* Auth buttons share one action width across desktop and small screens; Google mark is an inline SVG, no external fetch. */
+.shell-account .account-google-actions { width: 100%; margin-top: 20px; }
+.shell-account .account-auth-divider { display: flex; align-items: center; gap: 14px; margin-bottom: 19px; color: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: .08em; }
+.shell-account .account-auth-divider::before, .shell-account .account-auth-divider::after { content: ''; height: 1px; background: var(--line); flex: 1 1 0; }
+.shell-account .account-google-button { width: 100%; min-height: 48px; display: flex; align-items: center; justify-content: center; gap: 12px; background: #fff; border-color: #c5cbd0; color: var(--navy); white-space: normal; text-align: center; }
+.shell-account .account-google-button:hover { background: #f3f5f6; border-color: var(--navy); text-decoration: none; }
+.shell-account .account-google-button:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+.shell-account .account-google-icon { width: 20px; height: 20px; flex: 0 0 20px; }
+.shell-account .account-google-note { margin: 12px 0 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
 .account-links { display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; font-size: 13px; font-weight: 600; margin-top: 24px; color: var(--navy); }
 .account-links a:hover { text-decoration: underline; }
 .account-footer { border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
@@ -167,3 +176,13 @@
   .notification-region { top: 12px; right: 12px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; } }
+
+/* C-03: visible, actionable Google result messages; JS notifications remain supplemental. */
+.shell-account .account-google-feedback { border: 1px solid #e5d7ba; border-left: 3px solid #9a671a; background: #fffaf2; padding: 17px 18px; margin: 0 0 24px; border-radius: 5px; color: var(--navy); }
+.shell-account .account-google-feedback-label { display: block; font-size: 10px; letter-spacing: .1em; font-weight: 800; color: #81580f; margin-bottom: 7px; }
+.shell-account .account-google-feedback h2 { font-size: 18px; line-height: 1.35; margin: 0 0 8px; }
+.shell-account .account-google-feedback p { color: var(--ink); font-size: 13px; line-height: 1.65; margin: 0 0 12px; }
+.shell-account .account-google-feedback-actions { display: flex; flex-wrap: wrap; gap: 10px 16px; font-size: 13px; font-weight: 700; }
+.shell-account .account-google-feedback-actions a { color: var(--navy); text-decoration: underline; text-underline-offset: 3px; }
+.shell-account .account-google-feedback-actions a:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+.shell-workspace .account-google-link-feedback { background: #fffaf2; border-left: 3px solid #9a671a; padding: 12px 15px; margin: 12px 0; font-size: 13px; }

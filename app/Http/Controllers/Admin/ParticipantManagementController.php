@@ -62,6 +62,8 @@ class ParticipantManagementController extends Controller
             'currentMemberPlan' => app(MemberPlanService::class)->current($user),
             'qqQuotaToday' => app(QuickQuizQuotaService::class)->remaining($user),
             'registration' => RegistrationRequest::query()->where('user_id', $user->id)->first(),
+            'googleIdentity' => \Illuminate\Support\Facades\Schema::hasTable('user_identities')
+                && \App\Models\UserIdentity::query()->where('user_id', $user->id)->where('provider', 'google')->exists(),
             'adminInvitation' => app(\App\Services\ParticipantInvitationOnboardingService::class)->isAdminInvitation($user),
             'invitationPasswordSet' => app(\App\Services\ParticipantInvitationOnboardingService::class)->hasOwnerPassword($user),
             'attemptCount' => TryoutAttempt::query()->where('user_id', $user->id)->count(),
