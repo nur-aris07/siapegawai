@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Registration\StoreRegistrationRequest;
+use App\Models\AccessGrant;
+use App\Models\AuditLog;
 use App\Models\ConsentRecord;
 use App\Models\RegistrationRequest;
 use App\Models\User;
@@ -17,21 +19,24 @@ use Yajra\DataTables\Facades\DataTables;
 
 class RegistrationController extends Controller
 {
-    private function isRegistrationOpen(WhatsAppLinkService $wa): bool
+    private function isRegistrationOpen(): bool
     {
-        return config('siapegawai.registration_enabled') && config('siapegawai.privacy_approved')
-            && config('siapegawai.terms_approved') && config('siapegawai.privacy_version') !== 'DRAFT'
-            && $wa->officialNumber() !== null;
+        // Legal approval is a release gate. Official WhatsApp is NOT a prerequisite for free registration.
+        $version = config('siapegawai.privacy_version');
+        return config('siapegawai.registration_enabled') === true
+            && config('siapegawai.privacy_approved') === true
+            && config('siapegawai.terms_approved') === true
+            && is_string($version) && trim($version) !== ''
+            && strcasecmp(trim($version), 'DRAFT') !== 0;
+    }
+    public function create(): View
+    {
+        return view('registrations.create', ['registrationOpen' => $this->isRegistrationOpen()]);
     }
 
-    public function create(WhatsAppLinkService $wa): View
+    public function store(StoreRegistrationRequest $request): RedirectResponse
     {
-        return view('registrations.create', ['registrationOpen' => $this->isRegistrationOpen($wa)]);
-    }
-
-    public function store(StoreRegistrationRequest $request, WhatsAppLinkService $wa): RedirectResponse
-    {
-        abort_unless($this->isRegistrationOpen($wa), 503, 'Registrasi belum diaktifkan pengelola.');
+        abort_unless($this->isRegistrationOpen(), 503, 'Registrasi belum diaktifkan pengelola.');
         $input = $request->validated();
         $user = DB::transaction(function () use ($input) {
             $user = new User();
@@ -41,28 +46,46 @@ class RegistrationController extends Controller
             $user->whatsapp_number = str_starts_with($number, '0') ? '62'.substr($number, 1) : $number;
             $user->password = $input['password']; // hashed through User cast
             $user->role = 'participant';
-            $user->status = 'pending';
+            $user->status = 'active';
+            $user->activated_at = now();
+            $user->activated_by = null; // Automatic free account; never impersonate an admin reviewer.
             $user->save();
             RegistrationRequest::query()->create([
                 'user_id' => $user->id,
                 'reference_code' => 'SGP-'.strtoupper(bin2hex(random_bytes(6))),
-                'status' => 'pending', 'submitted_at' => now(),
+                'status' => 'active', 'submitted_at' => now(),
+                'reviewed_by' => null, 'reviewed_at' => null,
             ]);
             ConsentRecord::query()->create([
                 'user_id' => $user->id, 'policy_version' => config('siapegawai.privacy_version'),
                 'agreed_at' => now(), 'source' => 'web_registration',
             ]);
+            // Legacy-compatible BASIC member grant only, never a paid member_plan / QQ grant.
+            AccessGrant::query()->create([
+                'user_id' => $user->id, 'grant_type' => 'member',
+                'starts_at' => now(), 'status' => 'active', 'granted_by' => null,
+            ]);
+            AuditLog::query()->create([
+                'actor_id' => null, 'action' => 'registration.auto_activated',
+                'subject_type' => 'user', 'subject_id' => $user->id,
+                'before_summary' => null,
+                'after_summary' => ['status' => 'active', 'registration' => 'free_self_service'],
+                'created_at' => now(),
+            ]);
             return $user;
         }, 3);
+        // Log in only after the full transaction commits successfully.
         Auth::login($user);
         $request->session()->regenerate();
-        $response = redirect()->route('registration.whatsapp');
-        return $response->setStatusCode(303);
+        return redirect()->route('dashboard')->setStatusCode(303);
     }
 
-    public function whatsapp(Request $request, WhatsAppLinkService $wa): View
+    public function whatsapp(Request $request, WhatsAppLinkService $wa): View|RedirectResponse
     {
         abort_unless($request->user()?->role === 'participant', 403);
+        // Old URL is retained for historical pending registrations, never for new free accounts.
+        if ($request->user()->status === 'active') return redirect()->route('dashboard');
+        if ($request->user()->status !== 'pending') return redirect()->route('registration.status');
         $registration = $request->user()->registrationRequest;
         abort_unless($registration, 404);
         return view('registrations.whatsapp', [
@@ -79,7 +102,8 @@ class RegistrationController extends Controller
         abort_unless($registration, 404);
         return view('registrations.status', [
             'registration' => $registration,
-            'whatsappUrl' => $wa->registrationUrl($registration->reference_code),
+            'whatsappUrl' => $request->user()->status === 'pending'
+                ? $wa->registrationUrl($registration->reference_code) : null,
         ]);
     }
 
