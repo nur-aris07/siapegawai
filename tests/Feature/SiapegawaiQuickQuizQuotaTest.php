@@ -50,7 +50,7 @@ class SiapegawaiQuickQuizQuotaTest extends TestCase
         ]);
     }
 
-    public function test_only_three_product_plans_exist_without_automatic_quota_or_paid_membership(): void
+    public function test_three_initial_plans_exist_without_automatic_quota_or_paid_membership(): void
     {
         $this->assertSame(['PEJUANG','ABDI_NEGARA','VIP'], MemberPlan::query()->orderBy('tier')->pluck('code')->all());
         $this->assertFalse($this->plan('PEJUANG')->is_paid);
@@ -202,7 +202,7 @@ class SiapegawaiQuickQuizQuotaTest extends TestCase
         $this->assertSame(2, QuickQuizDailyQuotaCounter::query()->firstOrFail()->consumed_count);
     }
 
-    public function test_superadmin_can_configure_only_canonical_package_quotas(): void
+    public function test_superadmin_can_configure_canonical_package_quotas(): void
     {
         $url = route('admin.qq-quota.index');
         $this->get($url)->assertRedirect(route('login'));

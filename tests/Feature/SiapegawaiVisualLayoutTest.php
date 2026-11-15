@@ -17,7 +17,7 @@ class SiapegawaiVisualLayoutTest extends TestCase
         $this->get('/bank-soal')->assertOk()->assertSee('bank-controls')->assertSee('bank-item');
         $this->get('/latihan-gratis/kerjakan')->assertOk()->assertSee('exam-heading')->assertSee('exam-shell');
         $this->get('/kelas')->assertOk()->assertSee('class-rows compact');
-        $this->get('/paket')->assertOk()->assertSee('available-package');
+        $this->get('/paket')->assertOk()->assertSee('pkg-offer')->assertSee('Pejuang')->assertSee('VIP Mentoring');
     }
 
     public function test_login_and_registration_use_account_shell(): void

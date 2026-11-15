@@ -7,6 +7,7 @@
     <meta name="description" content="{{ $site['tagline'] }}. Layanan belajar independen.">
     <title>@yield('title', 'Siapegawai') — {{ $site['site_name'] }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+@if(request()->routeIs('page.paket'))@vite(['resources/css/pkg-catalog.css'])@endif
 </head>
 <body class="shell-public">
 <a class="skip-link" href="#main">Langsung ke konten</a>
@@ -39,7 +40,7 @@
 <footer class="site-footer"><div class="container footer-main">
     <div class="footer-about"><img src="{{ asset('assets/brand/logo-white.svg') }}" alt="Siapegawai" width="178" height="42"><p>{{ $site['tagline'] }}</p></div>
     <div class="footer-links"><span class="footer-label">Jelajahi</span><a href="{{ route('practice.intro') }}">Latihan SKD</a><a href="{{ route('questions.index') }}">Bank soal</a><a href="{{ route('page.kelas') }}">Rencana kelas</a></div>
-    <div class="footer-links"><span class="footer-label">Informasi</span><a href="{{ route('page.paket') }}">Rancangan paket</a><a href="{{ route('page.privasi') }}">Privasi & penggunaan</a><a href="{{ route('page.syarat-layanan') }}">Syarat layanan</a>
+    <div class="footer-links"><span class="footer-label">Informasi</span><a href="{{ route('page.paket') }}">Pilihan paket</a><a href="{{ route('page.privasi') }}">Privasi & penggunaan</a><a href="{{ route('page.syarat-layanan') }}">Syarat layanan</a>
     @if($site['support_email'])<a href="mailto:{{ $site['support_email'] }}">Email bantuan</a>@endif
     @if($site['support_url'])<a href="{{ $site['support_url'] }}" target="_blank" rel="noopener noreferrer">Kanal bantuan</a>@endif
     @if($site['social_instagram'])<a href="{{ $site['social_instagram'] }}" target="_blank" rel="noopener noreferrer">Instagram</a>@endif

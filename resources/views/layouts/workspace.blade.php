@@ -7,6 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title','Area Peserta') — Siapegawai</title>
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/css/member-cat.css', 'resources/js/member-cat.js', 'resources/css/s7-member.css', 'resources/js/member-workspace-nav.js'])
+    @if(request()->routeIs('member.packages.*'))@vite(['resources/css/pkg-catalog.css'])@endif
 </head>
 <body class="shell-workspace shell-participant">
 <a class="skip-link" href="#main">Langsung ke konten</a>

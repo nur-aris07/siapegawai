@@ -22,6 +22,8 @@ export default defineConfig({
                 'resources/js/member-quick-quizzes.js',
                 'resources/js/member-qq-analytics.js',
                 'resources/js/member-workspace-nav.js',
+                'resources/css/pkg-catalog.css',
+                'resources/js/admin-package-catalog.js',
             ],
             refresh: true,
         }),

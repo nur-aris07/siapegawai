@@ -23,28 +23,10 @@ class MemberPlanService
             ->where(fn($q) => $q->whereNull('ends_at')->orWhere('ends_at', '>', $now));
         if ($lock) $query->lockForUpdate();
         $memberships = $query->orderByDesc('id')->get();
-        $plans = MemberPlan::query()->whereIn('id', $memberships->pluck('resource_id')->all())
-            ->where('is_paid', true)->with('quizQuotaPolicy')->get()->keyBy('id');
-        $eligible = $memberships->filter(fn($membership) => $plans->has((int) $membership->resource_id));
-        // In an accidental/legacy overlap, take the highest currently approved quota,
-        // never sum. Normal package attribution keeps exactly one paid membership.
-        $rank = function ($membership) use ($plans, $now): array {
-            $plan = $plans[(int) $membership->resource_id];
-            $policy = $plan->quizQuotaPolicy;
-            $valid = $policy && $policy->scope === 'plan' && $policy->status === 'active'
-                && (!$policy->starts_at || !$policy->starts_at->greaterThan($now))
-                && (!$policy->ends_at || $policy->ends_at->greaterThan($now))
-                && ($policy->unlimited || $policy->daily_limit !== null);
-            return [$valid ? 1 : 0, $valid && $policy->unlimited ? 1 : 0,
-                $valid ? (int) ($policy->daily_limit ?? 0) : -1, $plan->tier];
-        };
-        $matched = $eligible->sort(function ($a, $b) use ($rank): int {
-            $aRank = $rank($a); $bRank = $rank($b);
-            for ($i = 0; $i < count($aRank); $i++) {
-                if ($aRank[$i] !== $bRank[$i]) return $bRank[$i] <=> $aRank[$i];
-            }
-            return $b->id <=> $a->id;
-        })->first();
+        $plans = MemberPlan::query()->whereIn('id', $memberships->pluck('resource_id')->all())->get()->keyBy('id');
+        // Most recently assigned ACTIVE membership wins on accidental legacy overlaps.
+        // QQ quota size and tier never decide ownership, and explicit free plans are valid.
+        $matched = $memberships->first(fn ($membership) => $plans->has((int) $membership->resource_id));
         if ($matched) return ['plan' => $plans[(int) $matched->resource_id], 'active_membership' => $matched];
         return ['plan' => MemberPlan::query()->where('code', 'PEJUANG')->firstOrFail(), 'active_membership' => null];
     }
@@ -72,12 +54,15 @@ class MemberPlanService
             $oldExpiry = $before['active_membership']?->ends_at?->timestamp;
             $newExpiry = $endsAt ? CarbonImmutable::parse($endsAt, 'UTC')->timestamp : null;
             if ($before['plan']->id === $newPlan->id && $existing->count() <= 1
-                && (!$newPlan->is_paid || $oldExpiry === $newExpiry)) return;
+                && ($newPlan->code === 'PEJUANG' || $oldExpiry === $newExpiry)) return;
             // Revoke all active package memberships (including any overlaps). Preserve history.
             foreach ($existing as $membership) {
                 $membership->update(['status' => 'revoked', 'revoke_reason' => $reason]);
             }
-            if ($newPlan->is_paid) {
+            if ($newPlan->is_archived || !$newPlan->published_version_id) {
+                throw ValidationException::withMessages(['member_plan_id' => 'Paket belum diterbitkan atau sudah diarsipkan.']);
+            }
+            if ($newPlan->code !== 'PEJUANG') {
                 $ends = $endsAt ? CarbonImmutable::parse($endsAt, 'UTC') : null;
                 if ($ends && $ends->lessThanOrEqualTo($now)) {
                     throw ValidationException::withMessages(['ends_at' => 'Waktu kedaluwarsa harus di masa depan.']);

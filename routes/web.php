@@ -17,6 +17,8 @@ use App\Http\Controllers\Admin\ParticipantInvitationController;
 use App\Http\Controllers\Admin\AdminSecurityController;
 use App\Http\Controllers\Admin\AccountEmailController;
 use App\Http\Controllers\Admin\SiteSettingsController;
+use App\Http\Controllers\Admin\PackageCatalogController;
+use App\Http\Controllers\Member\PackageUpgradeController;
 use App\Http\Controllers\Member\MemberTryoutController;
 use App\Http\Controllers\Member\MemberHistoryController;
 use App\Http\Controllers\Member\MemberProfileController;
@@ -79,6 +81,8 @@ Route::middleware('auth')->group(function () {
         ->middleware('throttle:5,1')->name('participant.invitation.accept');
     Route::middleware([EnsureActiveAccount::class, EnsureRole::class.':participant'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'participant'])->name('dashboard');
+        Route::post('/paket/{plan}/ajukan', [PackageUpgradeController::class, 'store'])->middleware('throttle:5,1')->name('member.packages.request.store');
+        Route::get('/paket/pengajuan/{upgrade}', [PackageUpgradeController::class, 'show'])->name('member.packages.request');
         // ANL-DOMAIN-01: read-only hub; routes for individual domain histories remain intact.
         Route::get('/analisis-kemampuan', [MemberDomainAnalyticsController::class, 'index'])->name('member.analytics.index');
         // S7: private participant profile and manually enrolled classes.
@@ -171,13 +175,29 @@ Route::prefix('admin')->middleware(['auth', EnsureActiveAccount::class, EnsureRo
     Route::post('/quiz-kilat/{quiz}/revisi', [QuickQuizManagementController::class,'startRevision'])->middleware('throttle:10,1')->name('admin.quick-quizzes.revision.start');
     Route::post('/quiz-kilat/{quiz}/terbit', [QuickQuizManagementController::class,'publish'])->middleware('throttle:10,1')->name('admin.quick-quizzes.publish');
     Route::post('/quiz-kilat/{quiz}/arsip', [QuickQuizManagementController::class,'archive'])->middleware('throttle:10,1')->name('admin.quick-quizzes.archive');
-    // QQ quota is a benefit of THREE business member plans, never a per-quiz grant.
+    // QQ quota policy belongs to each dynamic member plan, never a per-quiz grant.
     // Participant attempt routes remain unavailable until QQ-CORE-02.
     Route::get('/quiz-kilat-kuota', [QuickQuizQuotaController::class,'index'])->name('admin.qq-quota.index');
     Route::put('/quiz-kilat-kuota/paket/{plan}', [QuickQuizQuotaController::class,'update'])
         ->middleware('throttle:10,1')->name('admin.qq-quota.update');
     Route::get('/keamanan', [AdminSecurityController::class, 'edit'])->name('admin.security.edit');
     // SITE-SETTINGS-01: non-secret public presentation only; superadmin guarded in controller.
+    // PKG-CATALOG-01: dynamic identities, versioned public content, manual requests.
+    Route::get('/paket', [PackageCatalogController::class, 'index'])->name('admin.packages.index');
+    Route::post('/paket', [PackageCatalogController::class, 'store'])->middleware('throttle:10,1')->name('admin.packages.store');
+    // Dedicated catalog ordering; never accept paginated DataTables rows as a complete order.
+    Route::get('/paket/urutan', [PackageCatalogController::class, 'ordering'])->name('admin.packages.ordering');
+    Route::post('/paket/urutan', [PackageCatalogController::class, 'saveOrdering'])
+        ->middleware('throttle:10,1')->name('admin.packages.ordering.save');
+    Route::get('/paket/pengajuan', [PackageCatalogController::class, 'requests'])->name('admin.packages.requests');
+    Route::post('/paket/pengajuan/{upgrade}/keputusan', [PackageCatalogController::class, 'decide'])->middleware('throttle:10,1')->name('admin.packages.requests.decide');
+    Route::get('/paket/{plan}', [PackageCatalogController::class, 'show'])->name('admin.packages.show');
+    Route::post('/paket/{plan}/pratinjau', [PackageCatalogController::class, 'preview'])->middleware('throttle:30,1')->name('admin.packages.preview');
+    Route::put('/paket/{plan}/draft', [PackageCatalogController::class, 'updateDraft'])->middleware('throttle:20,1')->name('admin.packages.draft.update');
+    Route::post('/paket/{plan}/revisi', [PackageCatalogController::class, 'revision'])->middleware('throttle:10,1')->name('admin.packages.revision');
+    Route::post('/paket/{plan}/terbit', [PackageCatalogController::class, 'publish'])->middleware('throttle:10,1')->name('admin.packages.publish');
+    Route::post('/paket/{plan}/batalkan-draft', [PackageCatalogController::class, 'discard'])->middleware('throttle:10,1')->name('admin.packages.discard');
+    Route::post('/paket/{plan}/ketersediaan', [PackageCatalogController::class, 'availability'])->middleware('throttle:10,1')->name('admin.packages.availability');
     Route::get('/website', [SiteSettingsController::class, 'index'])->name('admin.site-settings.index');
     Route::post('/website/pratinjau', [SiteSettingsController::class, 'preview'])->middleware('throttle:20,1')->name('admin.site-settings.preview');
     Route::put('/website', [SiteSettingsController::class, 'update'])->middleware('throttle:10,1')->name('admin.site-settings.update');

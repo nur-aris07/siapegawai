@@ -6,6 +6,7 @@
 <title>@yield('title','Administrasi') — Siapegawai</title>
 @vite(['resources/css/app.css', 'resources/css/admin-v1.css', 'resources/js/app.js', 'resources/js/admin-questions.js', 'resources/js/admin-tryouts.js', 'resources/js/admin-participants.js', 'resources/js/admin-quick-quizzes.js'])
 @if(request()->routeIs('admin.site-settings.*'))@vite(['resources/js/admin-site-settings.js'])@endif
+@if(request()->routeIs('admin.packages.*'))@vite(['resources/css/pkg-catalog.css', 'resources/js/admin-package-catalog.js'])@endif
 </head>
 <body class="shell-workspace shell-admin admin-v1">
 <a class="skip-link" href="#main">Langsung ke konten</a>
@@ -40,11 +41,14 @@
       @if(auth()->user()->role === 'superadmin')
       <a href="{{ route('admin.site-settings.index') }}" @class(['current'=>request()->routeIs('admin.site-settings.*')]) @if(request()->routeIs('admin.site-settings.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-settings"></use></svg><span>Pengaturan Website</span></a>
       @endif
+      @if(auth()->user()->role === 'superadmin')
+      <a href="{{ route('admin.packages.index') }}" @class(['current'=>request()->routeIs('admin.packages.*')]) @if(request()->routeIs('admin.packages.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-book"></use></svg><span>Katalog paket</span></a>
+      @endif
       <span class="admin-v1-nav-section">AKUN</span>
       <a href="{{ route('admin.security.edit') }}" @class(['current'=>request()->routeIs('admin.security.*')]) @if(request()->routeIs('admin.security.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-users"></use></svg><span>Keamanan akun</span></a>
       <span class="admin-v1-nav-section">TAHAP BERIKUTNYA</span>
       <span class="admin-v1-nav-unavailable"><svg class="icon" aria-hidden="true"><use href="#ic-clipboard"></use></svg><span>CAT peserta</span><small>Aktif untuk peserta</small></span>
-      <span class="admin-v1-nav-unavailable"><svg class="icon" aria-hidden="true"><use href="#ic-book"></use></svg><span>Paket berbayar</span><small>Belum aktif</small></span>
+
     </nav>
     <a class="admin-v1-public-link" href="{{ route('home') }}"><svg class="icon" aria-hidden="true"><use href="#ic-arrow-up-right"></use></svg> Lihat website publik</a>
   </aside>
