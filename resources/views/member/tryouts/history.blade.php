@@ -3,7 +3,7 @@
 @section('content')
 <div class="workspace-heading member-history-heading">
     <div>
-        <a class="task-back" href="{{ route('member.analytics.index') }}">← Analisis Kemampuan</a>
+        <a class="task-back" href="{{ route('member.analytics.index') }}">Analisis Kemampuan →</a>
         <span class="workspace-label">PERKEMBANGAN BELAJAR</span>
         <h1>Riwayat &amp; progres tryout</h1>
         <p>Hasil latihan anggota yang tersimpan di akunmu. Nilai dihitung dari versi soal yang digunakan pada percobaan tersebut.</p>

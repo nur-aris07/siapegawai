@@ -3,7 +3,7 @@
 @section('content')
 <div class="workspace-heading qq-analytics-heading">
     <div>
-        <a class="task-back" href="{{ route('member.quick-quizzes.index') }}">← Quiz Kilat</a>
+        <a class="task-back" href="{{ route('member.quick-quizzes.index') }}">Katalog Quiz Kilat →</a>
         <span class="workspace-label">PROGRES LATIHAN CEPAT</span>
         <h1>Analisis Quiz Kilat</h1>
         <p>Performa dari sesi Quiz Kilat yang <strong>sudah selesai</strong>. Angka dihitung dari jawaban yang terkunci server.</p>

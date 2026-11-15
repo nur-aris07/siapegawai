@@ -2,7 +2,7 @@
 @section('title','Kelas saya')
 @section('content')
 <div class="workspace-heading"><div><span class="workspace-label">BELAJAR ANGGOTA</span><h1>Kelas saya</h1><p>Hanya kelas yang aksesnya sudah diberikan oleh pengelola yang muncul di sini.</p></div></div>
-<p class="domain-hub-return"><a class="text-link" href="{{ route('member.analytics.index') }}">← Kembali ke Analisis Kemampuan</a></p>
+<p class="domain-hub-return"><a class="text-link" href="{{ route('member.analytics.index') }}">Lihat Analisis Kemampuan →</a></p>
 @include('components.form-errors')
 @if($enrollments->isEmpty())
 <section class="workspace-note"><strong>Belum mengikuti kelas</strong><p>Akun aktif tidak otomatis mendapatkan akses kelas. Pengelola perlu memberikan enrollment terlebih dahulu.</p><a class="text-link" href="{{ route('page.kelas') }}">Lihat informasi kelas publik →</a></section>

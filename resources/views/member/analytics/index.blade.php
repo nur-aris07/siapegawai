@@ -3,7 +3,6 @@
 @section('content')
 <div class="domain-hub" id="domain-hub">
     <div class="domain-hub-intro">
-        <a class="task-back" href="{{ route('dashboard') }}">← Ringkasan peserta</a>
         <span class="workspace-label">ANALISIS BELAJAR</span>
         <h1>Analisis Kemampuan</h1>
         <p>Hasil latihan dari CAT, Kelas, dan Quiz Kilat ditampilkan <strong>terpisah</strong>. Ini data latihan akun Anda, bukan nilai CAT resmi atau prediksi kelulusan.</p>

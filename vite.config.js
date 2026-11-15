@@ -20,6 +20,7 @@ export default defineConfig({
                 'resources/js/member-cat.js',
                 'resources/js/member-quick-quizzes.js',
                 'resources/js/member-qq-analytics.js',
+                'resources/js/member-workspace-nav.js',
             ],
             refresh: true,
         }),
