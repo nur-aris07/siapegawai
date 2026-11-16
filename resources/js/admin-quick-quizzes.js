@@ -68,7 +68,7 @@ if (listing) {
 }
 
 const editor = document.querySelector('[data-qq-editor]');
-if (editor) {
+if (editor && document.getElementById('qq-question-search')) {
     const list = document.getElementById('qq-selected-list');
     const count = document.getElementById('qq-selected-count');
     const search = document.getElementById('qq-question-search');

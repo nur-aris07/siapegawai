@@ -76,7 +76,7 @@ if (listing) {
 }
 
 const editor = document.querySelector('[data-tryout-editor]');
-if (editor) {
+if (editor && document.getElementById('tryout-question-search')) {
     const list = document.getElementById('tryout-selected-list');
     const count = document.getElementById('tryout-selected-count');
     const results = document.getElementById('tryout-search-results');
