@@ -51,6 +51,12 @@ class TryoutEditorialService
         return $ids;
     }
 
+    /** Shared validation for preview and confirm; does not persist any item. */
+    public function validateBulkSelection(\App\Models\TryoutPackage $draft, array $versionIds): array
+    {
+        return $this->selectedVersions($draft, $versionIds);
+    }
+
     public function create(array $data, User $actor): TryoutPackage
     {
         return DB::transaction(function () use ($data,$actor) {

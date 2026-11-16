@@ -8,6 +8,7 @@
 @if(request()->routeIs('admin.site-settings.*'))@vite(['resources/js/admin-site-settings.js'])@endif
 @if(request()->routeIs('admin.packages.*'))@vite(['resources/css/pkg-catalog.css', 'resources/js/admin-package-catalog.js'])@endif
 @if(request()->routeIs('questions.import.*'))@vite(['resources/css/admin-question-import.css','resources/js/admin-question-import.js'])@endif
+@if(request()->routeIs('tryouts.admin.create','tryouts.admin.edit','admin.quick-quizzes.create','admin.quick-quizzes.edit','admin.class-practices.create','admin.class-practices.edit'))@vite(['resources/css/admin-bulk-assignment.css','resources/js/admin-bulk-assignment.js'])@endif
 </head>
 <body class="shell-workspace shell-admin admin-v1">
 <a class="skip-link" href="#main">Langsung ke konten</a>

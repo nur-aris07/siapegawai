@@ -21,7 +21,7 @@
   @elseif($quiz && !$draft)
     <section class="admin-v1-panel"><h2>Tidak ada draft aktif</h2><p>Buat revisi untuk menyusun versi berikutnya.</p></section>
   @else
-  <form method="POST" class="admin-qq-editor" action="{{ $quiz ? route('admin.quick-quizzes.update',$quiz) : route('admin.quick-quizzes.store') }}" data-qq-editor data-search-url="{{ route('admin.quick-quizzes.search') }}">
+  <form method="POST" class="admin-qq-editor sg-editor-layout" action="{{ $quiz ? route('admin.quick-quizzes.update',$quiz) : route('admin.quick-quizzes.store') }}" data-qq-editor data-search-url="{{ route('admin.quick-quizzes.search') }}">
     @csrf @if($quiz) @method('PUT') @endif
     <section class="admin-v1-panel admin-v1-form-panel">
       <h2>Identitas dan aturan pengerjaan</h2>
@@ -30,32 +30,16 @@
       <label class="admin-v1-field">Deskripsi<textarea name="description" rows="3" maxlength="2500">{{ old('description',$draft?->description??'') }}</textarea></label>
       <label class="admin-v1-field">Waktu tiap soal (5–180 detik)<input type="number" min="5" max="180" name="seconds_per_question" required value="{{ old('seconds_per_question',$draft?->seconds_per_question??'') }}"></label>
       <p class="admin-v1-muted">Jawaban akan dikunci saat dipilih/timeout. Feedback tetap 3 detik menggunakan pembahasan dari versi soal yang sama. Pengaturan timer harus tersimpan oleh server.</p>
-    </section>
-    <section class="admin-v1-panel admin-v1-form-panel">
-      <h2>Pilih dan urutkan soal terbit</h2>
-      <p>Soal dengan penilaian berbobot tidak memenuhi syarat Quiz Kilat versi awal. Pembahasan soal dipakai utuh; tidak ada field pembahasan tambahan.</p>
-      <div class="admin-v1-tryout-search">
-        <label class="admin-v1-field">Cari soal<input type="search" id="qq-question-search" placeholder="Kode atau pertanyaan" autocomplete="off"></label>
-        <label class="admin-v1-field">Kategori<select id="qq-question-subject"><option value="">Semua</option>@foreach($subjects as $subject)<option value="{{ $subject->code }}">{{ $subject->code }}</option>@endforeach</select></label>
-        <button type="button" class="button button-outline button-compact" id="qq-search-button">Cari soal</button>
-      </div>
-      <p id="qq-search-message" class="admin-v1-muted" role="status" aria-live="polite">Mencari soal terbit…</p>
-      <div id="qq-search-results" class="admin-v1-tryout-results"></div>
-      <h3 class="admin-v1-tryout-subheading">Soal terpilih (<span id="qq-selected-count">{{ $selected->count() }}</span>/40)</h3>
-      <p class="admin-v1-muted">Gunakan Naik/Turun untuk mengurutkan. Draft boleh belum lengkap, tetapi hanya 30–40 soal bisa diterbitkan.</p>
-      <ol id="qq-selected-list" class="admin-v1-selected-list">
-        @foreach($selected as $row)
-          <li data-version-id="{{ $row['version_id'] }}" data-code="{{ $row['code'] }}">
-            <span>{{ $row['code'] }} · {{ $row['subject'] }} · v{{ $row['version'] }} — {{ $row['summary'] }}</span>
-            <span class="admin-v1-selected-actions"><button type="button" data-move="up" class="button button-outline button-compact">Naik</button><button type="button" data-move="down" class="button button-outline button-compact">Turun</button><button type="button" data-remove class="button button-outline button-compact">Hapus</button></span>
-            <input type="hidden" name="version_ids[]" value="{{ $row['version_id'] }}">
-          </li>
-        @endforeach
-      </ol>
-    </section>
+    <div class="sg-editor-desktop-actions"><div class="admin-qq-actions"><button type="submit" class="button button-primary">Simpan draft</button></div></div>
+</section>
+    @include('admin.bulk-assignment.composer',[
+      'composerCreate'=>!$quiz, 'composerMax'=>40, 'composerDomain'=>'qq',
+      'composerSearchUrl'=>route('admin.quick-quizzes.search')
+    ])
     <div class="admin-qq-actions"><button type="submit" class="button button-primary">Simpan draft</button></div>
   </form>
   @if($quiz && $draft)
+    @include('admin.bulk-assignment.picker',['bulkDomain'=>'qq','bulkTarget'=>$quiz->id])
     <section class="admin-v1-panel"><h2>Terbitkan versi v{{ $draft->version_number }}</h2>
       <p>Pastikan susunan sudah disimpan dan ditinjau. Publikasi mengunci versi ini; pengerjaan peserta tetap ditutup sampai kuota diimplementasikan.</p>
       <form method="POST" action="{{ route('admin.quick-quizzes.publish',$quiz) }}">@csrf

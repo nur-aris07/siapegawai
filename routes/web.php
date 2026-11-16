@@ -31,6 +31,7 @@ use App\Http\Controllers\Admin\ClassMonitoringController;
 use App\Http\Controllers\Admin\ClassMediaManagementController;
 use App\Http\Controllers\Admin\QuickQuizManagementController;
 use App\Http\Controllers\Admin\QuickQuizQuotaController;
+use App\Http\Controllers\Admin\BulkQuestionAssignmentController;
 use App\Http\Controllers\Member\MemberClassMediaController;
 use App\Http\Controllers\Member\MemberClassPracticeController;
 use App\Http\Controllers\Member\MemberQuickQuizController;
@@ -221,6 +222,13 @@ Route::prefix('admin')->middleware(['auth', EnsureActiveAccount::class, EnsureRo
     Route::get('/registrasi', [RegistrationController::class, 'index'])->name('registration.index');
     Route::get('/registrasi/{user}', [RegistrationController::class, 'show'])->name('registration.show');
     Route::post('/registrasi/{user}/keputusan', [RegistrationController::class, 'decide'])->middleware('throttle:30,1')->name('registration.decide');
+    // Q-BULK-ASSIGN-01: guarded draft-only append; editor services remain authoritative.
+    Route::get('/penugasan-massal/{domain}/{target}/cari', [BulkQuestionAssignmentController::class,'search'])
+        ->where('domain','cat|qq|kelas')->middleware('throttle:90,1')->name('admin.bulk-assignment.search');
+    Route::post('/penugasan-massal/{domain}/{target}/pratinjau', [BulkQuestionAssignmentController::class,'preview'])
+        ->where('domain','cat|qq|kelas')->middleware('throttle:30,1')->name('admin.bulk-assignment.preview');
+    Route::post('/penugasan-massal/{domain}/{target}/konfirmasi', [BulkQuestionAssignmentController::class,'confirm'])
+        ->where('domain','cat|qq|kelas')->middleware('throttle:10,1')->name('admin.bulk-assignment.confirm');
     // Q-BULK-IMPORT-01: specific routes must precede /soal/{question}.
     Route::get('/soal/impor', [QuestionImportController::class, 'index'])->name('questions.import.index');
     Route::post('/soal/impor', [QuestionImportController::class, 'upload'])->middleware('throttle:10,1')->name('questions.import.upload');

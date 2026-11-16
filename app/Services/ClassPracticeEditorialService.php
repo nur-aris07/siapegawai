@@ -68,6 +68,12 @@ class ClassPracticeEditorialService
         }
     }
 
+    /** Shared validation for preview and confirm; does not persist any item. */
+    public function validateBulkSelection(\App\Models\ClassPractice $draft, array $versionIds): array
+    {
+        return $this->selectedVersions($draft, $versionIds);
+    }
+
     public function create(LearningClass $class, array $data, User $actor): ClassPractice
     {
         return DB::transaction(function() use($class,$data,$actor): ClassPractice {

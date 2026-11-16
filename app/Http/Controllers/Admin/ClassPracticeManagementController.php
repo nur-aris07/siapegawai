@@ -55,7 +55,7 @@ class ClassPracticeManagementController extends Controller
     public function searchQuestions(Request $request, LearningClass $class): JsonResponse
     {
         Gate::authorize('viewAny',ClassPractice::class);
-        $data=$request->validate(['q'=>['nullable','string','max:100'],'subject'=>['nullable','string','max:12']]);
+        $data=$request->validate(['q'=>['nullable','string','max:100'],'subject'=>['nullable','string','max:12'],'page'=>['nullable','integer','min:1','max:10000']]);
         $query=Question::query()->with(['topic.subject','currentVersion:id,question_id,version_number,body'])
             ->where('status','published')->whereNotNull('current_version_id')
             ->whereHas('currentVersion',fn($v)=>$v->where('review_status','published'))
@@ -66,10 +66,11 @@ class ClassPracticeManagementController extends Controller
             $query->where(fn($q)=>$q->where('code','like',$term)
                 ->orWhereHas('currentVersion',fn($v)=>$v->where('body','like',$term)));
         }
-        return response()->json(['data'=>$query->orderBy('code')->limit(25)->get()->map(fn(Question $q)=>[
+        $page=$query->orderBy('code')->paginate(25,['*'],'page',$data['page']??1);
+        return response()->json(['data'=>$page->getCollection()->map(fn(Question $q)=>[
             'version_id'=>$q->current_version_id,'code'=>$q->code,'subject'=>$q->topic?->subject?->code,
             'version'=>$q->currentVersion?->version_number,'summary'=>Str::limit($q->currentVersion?->body??'',100),
-        ])->values()]);
+        ])->values(),'has_more'=>$page->hasMorePages(), 'current_page'=>$page->currentPage(), 'last_page'=>$page->lastPage(), 'total_results'=>$page->total()]);
     }
 
     public function index(LearningClass $class): View

@@ -65,12 +65,15 @@ class QuickQuizManagementController extends Controller
     public function searchQuestions(Request $request): JsonResponse
     {
         Gate::authorize('viewAny',QuickQuiz::class);
-        $data=$request->validate(['q'=>['nullable','string','max:100'],'subject'=>['nullable','string','max:12']]);
+        $data=$request->validate(['q'=>['nullable','string','max:100'],'subject'=>['nullable','string','max:12'],'page'=>['nullable','integer','min:1','max:10000']]);
         $query=Question::query()->with(['topic.subject','currentVersion.options'])
             ->where('status','published')->whereNotNull('current_version_id')
             ->whereHas('currentVersion',fn($v)=>$v->where('review_status','published')->whereNotNull('published_at')
-                ->whereNotNull('explanation')
-                ->whereHas('options',fn($o)=>$o->where('is_correct',true)))
+                ->whereNotNull('explanation')->whereRaw("TRIM(explanation) <> ''")
+                ->whereHas('options',null,'>=',4)
+                ->whereHas('options',null,'<=',5)
+                ->whereHas('options',fn($o)=>$o->where('is_correct',true),'=',1)
+                ->whereDoesntHave('options',fn($o)=>$o->whereNotNull('score_weight')))
             ->whereHas('topic',fn($q)=>$q->where('status','active')->whereHas('subject',fn($s)=>$s->where('status','active')));
         if (!empty($data['subject'])) $query->whereHas('topic.subject',fn($s)=>$s->where('code',$data['subject']));
         if (!empty($data['q'])) {
@@ -78,7 +81,8 @@ class QuickQuizManagementController extends Controller
             $query->where(fn($q)=>$q->where('code','like',$term)
                 ->orWhereHas('currentVersion',fn($v)=>$v->where('body','like',$term)));
         }
-        return response()->json(['data'=>$query->orderBy('code')->limit(30)->get()
+        $page=$query->orderBy('code')->paginate(30,['*'],'page',$data['page']??1);
+        return response()->json(['data'=>$page->getCollection()
             ->filter(fn(Question $q)=>$q->currentVersion && $q->currentVersion->options->count()>=4 &&
                 $q->currentVersion->options->count()<=5 &&
                 $q->currentVersion->options->where('is_correct',true)->count()===1 &&
@@ -89,7 +93,7 @@ class QuickQuizManagementController extends Controller
                 'subject'=>$q->topic?->subject?->code,
                 'version'=>$q->currentVersion?->version_number,
                 'summary'=>Str::limit($q->currentVersion?->body??'',95),
-            ])->values()]);
+            ])->values(),'has_more'=>$page->hasMorePages(), 'current_page'=>$page->currentPage(), 'last_page'=>$page->lastPage(), 'total_results'=>$page->total()]);
     }
 
     private function editorData(?QuickQuiz $quiz=null): array

@@ -4,6 +4,7 @@
 <div class="admin-v1-heading"><div><p class="admin-v1-crumb"><a href="{{ route('tryouts.admin.index') }}">Tryout</a> / {{ $package->code }}</p><h1>{{ $package->name }}</h1><p><strong>{{ strtoupper($package->status) }}</strong> · {{ $package->items->count() }} soal · {{ $package->duration_minutes }} menit · Maks. {{ $package->max_attempts }} percobaan.</p></div></div>
 @if($package->status==='draft')
   @include('admin.tryouts.form',['action'=>route('tryouts.admin.update',$package),'method'=>'PUT'])
+  @include('admin.bulk-assignment.picker',['bulkDomain'=>'cat','bulkTarget'=>$package->id])
   <section class="admin-v1-panel admin-v1-form-panel admin-v1-tryout-decision"><h2>Review dan terbitkan</h2><p>Terbitkan hanya setelah memeriksa urutan, versi soal, durasi, dan batas percobaan. Susunan paket tidak dapat diubah langsung setelah publikasi.</p>
   <form method="POST" action="{{ route('tryouts.admin.publish',$package) }}" class="admin-v1-action-form">@csrf
     <label class="check-line"><input type="checkbox" name="confirmed_review" value="1" required> Saya telah memeriksa susunan dan pengaturan template tryout.</label>

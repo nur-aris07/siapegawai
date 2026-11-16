@@ -72,6 +72,12 @@ class QuickQuizEditorialService
         }
     }
 
+    /** Shared validation for preview and confirm; does not persist any item. */
+    public function validateBulkSelection(\App\Models\QuickQuizVersion $draft, array $versionIds): array
+    {
+        return $this->validatePins($draft, $versionIds);
+    }
+
     public function create(array $data, User $actor): QuickQuiz
     {
         return DB::transaction(function () use ($data,$actor) {
