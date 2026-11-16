@@ -3,7 +3,7 @@
 @section('content')
 <div class="admin-v1-heading">
   <div><p class="admin-v1-crumb">Konten / Bank soal</p><h1>Bank soal produksi</h1><p>Kelola draft, pembahasan, dan versi soal yang dapat diterbitkan.</p></div>
-  <a href="{{ route('questions.admin.create') }}" class="button button-primary button-compact">+ Tambah soal</a>
+  <div><a href="{{ route('questions.import.index') }}" class="button button-outline button-compact">Impor CSV</a> <a href="{{ route('questions.admin.create') }}" class="button button-primary button-compact">+ Tambah soal</a></div>
 </div>
 <div class="admin-v1-metrics" aria-label="Ringkasan bank soal">
   <div><strong>{{ $total }}</strong><span>Total soal</span></div><div><strong>{{ $drafts }}</strong><span>Draft</span></div><div><strong>{{ $published }}</strong><span>Terbit</span></div>

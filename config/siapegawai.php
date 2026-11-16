@@ -2,6 +2,9 @@
 
 return [
     // Free registration stays closed until policy approval and the registration switch are valid. Official WhatsApp is optional.
+    'question_import_max_records' => (int) env('SIAPEGAWAI_QUESTION_IMPORT_MAX_RECORDS', 200),
+    'question_import_max_bytes' => (int) env('SIAPEGAWAI_QUESTION_IMPORT_MAX_BYTES', 5242880),
+    'question_import_ttl_hours' => (int) env('SIAPEGAWAI_QUESTION_IMPORT_TTL_HOURS', 24),
     'registration_enabled' => (bool) env('SIAPEGAWAI_REGISTRATION_ENABLED', false),
     'google_auth_enabled' => (bool) env('SIAPEGAWAI_GOOGLE_AUTH_ENABLED', false),
     'account_email_enabled' => (bool) env('SIAPEGAWAI_ACCOUNT_EMAIL_ENABLED', false),

@@ -1,0 +1,106 @@
+/* Q-BULK-IMPORT-01 C-03: feature-scoped Admin Workspace UX. No global layout overrides. */
+.qi-page { --qi-navy:#0B1B40; --qi-ink:#17243A; --qi-muted:#596575; --qi-line:#E2E4E7; --qi-green:#2F765A; --qi-red:#B44B42; color:var(--qi-ink); max-width:1500px; }
+.qi-page *, .qi-page *::before, .qi-page *::after { box-sizing:border-box; }
+.qi-page .qi-heading { margin-bottom:24px; align-items:center; }
+.qi-page > .qi-panel { margin-top:24px; }
+.qi-page .qi-panel { padding:clamp(20px,2vw,30px); }
+.qi-page .qi-panel h2 { font-size:18px; margin:0 0 7px; }
+.qi-page .qi-section-heading { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:20px; }
+.qi-page .qi-section-heading p { font-size:13px; line-height:1.65; color:var(--qi-muted); margin:0; }
+.qi-page .qi-step { font-size:10px!important; font-weight:800; letter-spacing:.11em; color:#946d25!important; margin:0 0 9px!important; }
+.qi-page .qi-muted { font-size:13px; line-height:1.7; color:var(--qi-muted); margin:16px 0 0; }
+.qi-page .qi-icon { height:18px; width:18px; flex:none; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; vertical-align:middle; }
+.qi-page .qi-icon-soft { height:23px; width:23px; color:#748292; }
+.qi-page .button { display:inline-flex; align-items:center; justify-content:center; gap:9px; min-height:42px; text-decoration:none; white-space:normal; line-height:1.35; }
+.qi-page .qi-strong-action { min-height:48px; }
+.qi-page .qi-tool-actions { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.qi-page .qi-callout { padding:14px 16px; display:flex; align-items:flex-start; gap:11px; line-height:1.65; font-size:13px; border:1px solid var(--qi-line); border-left:3px solid var(--qi-navy); border-radius:6px; min-width:0; overflow-wrap:anywhere; }
+.qi-page .qi-callout-info { background:#f3f6fa; border-left-color:var(--qi-navy); }
+.qi-page .qi-callout-success { background:#E8EFE8; color:#205941; border-left-color:var(--qi-green); }
+.qi-page .qi-callout-danger { background:#fdf0ee; color:#8d332d; border-left-color:var(--qi-red); }
+.qi-page .qi-callout + .qi-callout, .qi-page .qi-status-actions { margin-top:16px; }
+.qi-page .qi-upload-form { display:grid; gap:12px; }
+.qi-page .qi-dropzone { padding:26px 20px; border:2px dashed #a9b6c4; border-radius:8px; background:#f8fafc; display:flex; align-items:center; flex-direction:column; gap:11px; text-align:center; transition:border-color .16s,background .16s; }
+.qi-page .qi-dropzone.is-dragover { background:#edf3fa; border-color:var(--qi-navy); }
+.qi-page .qi-upload-icon { width:32px; height:32px; color:var(--qi-navy); }
+.qi-page .qi-dropzone strong { font-size:15px; }
+.qi-page .qi-dropzone > span { font-size:12px; color:var(--qi-muted); }
+.qi-page .qi-dropzone .qi-selected { color:var(--qi-navy); font-weight:700; overflow-wrap:anywhere; }
+.qi-page .qi-label { font-weight:700; font-size:12px; }
+/* One visible picker only: native file input remains keyboard reachable inside its labelled button.
+   No-JS users can still click the label to choose a CSV. */
+.qi-page .qi-choose-label { position:relative; cursor:pointer; }
+.qi-page .qi-choose-label:focus-within { outline:3px solid #B88928; outline-offset:3px; }
+.qi-page .qi-file-input { position:absolute; width:1px; height:1px; padding:0; border:0; opacity:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+.qi-page .qi-submit { justify-self:start; margin-top:4px; }
+.qi-page .qi-summary-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+.qi-page .qi-metric { background:#fff; border:1px solid var(--qi-line); border-top:3px solid var(--qi-navy); border-radius:7px; padding:19px 20px; min-width:0; }
+.qi-page .qi-metric-good { border-top-color:var(--qi-green); }
+.qi-page .qi-metric-bad { border-top-color:var(--qi-red); }
+.qi-page .qi-metric span { font-size:12px; color:var(--qi-muted); display:flex; gap:6px; align-items:center; }
+.qi-page .qi-metric strong { display:block; color:var(--qi-navy); font-size:29px; letter-spacing:-.035em; margin-top:6px; }
+.qi-page .qi-metric-good strong { color:var(--qi-green); }
+.qi-page .qi-metric-bad strong { color:var(--qi-red); }
+.qi-page .qi-status { display:inline-flex; align-items:center; border-radius:4px; padding:4px 9px; font-size:11px; font-weight:750; background:#eef1f5; color:#485a6b; }
+.qi-page .qi-status-ready, .qi-page .qi-status-committed { background:#e6f0e8; color:#276348; }
+.qi-page .qi-status-invalid, .qi-page .qi-status-failed { background:#fbecea; color:#983e38; }
+.qi-page .qi-status-expired { background:#f6eedd; color:#795b1c; }
+.qi-page .qi-table { min-width:600px; }
+.qi-page .qi-table td { vertical-align:top; overflow-wrap:anywhere; }
+.qi-page .qi-row-actions { display:flex; flex-wrap:wrap; align-items:flex-start; gap:12px; }
+.qi-page .qi-row-actions a { padding-top:4px; }
+.qi-page .qi-discard { max-width:340px; position:relative; font-size:12px; }
+.qi-page .qi-discard summary { display:flex; align-items:center; gap:6px; cursor:pointer; color:#983e38; font-weight:700; list-style:none; }
+.qi-page .qi-discard summary::-webkit-details-marker { display:none; }
+.qi-page .qi-discard .qi-icon { width:15px; height:15px; }
+.qi-page .qi-discard form { padding:13px; margin-top:10px; border:1px solid #e7c9c6; border-radius:6px; background:#fff9f8; display:grid; gap:10px; font-size:12px; line-height:1.5; }
+.qi-page .qi-discard form p { margin:0; }
+.qi-page .qi-discard label { display:flex; align-items:flex-start; gap:8px; }
+.qi-page .qi-discard input { flex:none; }
+.qi-page .qi-danger-button { color:#932e2c!important; background:#fff!important; border:1px solid #c78b83!important; font-weight:700; justify-self:start; min-height:38px; }
+.qi-page .qi-danger-button:hover { background:#fceeed!important; }
+.qi-page .qi-discard-detail { margin-top:15px; }
+.qi-page .qi-confirm-form { display:grid; gap:14px; }
+.qi-page .qi-confirm-form label { font-size:13px; line-height:1.5; display:flex; gap:8px; align-items:start; }
+.qi-page .qi-confirm-form .button { justify-self:start; }
+.qi-page .qi-error-list { margin:0; padding-left:16px; line-height:1.6; }
+.qi-page .qi-error-list li + li { margin-top:6px; }
+.qi-page .qi-copy-result { font-size:12px; color:var(--qi-green); min-height:18px; margin:6px 0; }
+.qi-page .qi-empty { color:var(--qi-muted); }
+.qi-page .qi-pagination { display:flex; flex-wrap:wrap; gap:16px; align-items:center; font-size:13px; margin-top:15px; }
+.qi-page :is(button,input,a,summary):focus-visible { outline:3px solid #B88928; outline-offset:3px; }
+/* Dialog is a native top-layer element: do not rely on parent layout positioning. */
+.qi-dialog { position:fixed; inset:0; margin:auto; box-sizing:border-box; width:min(680px,calc(100vw - 32px)); max-width:calc(100vw - 32px); max-height:min(85vh,820px); overflow:auto; padding:0; border:1px solid #d5dfe7; border-radius:8px; color:#17243A; background:#fff; box-shadow:0 14px 42px rgb(11 27 64 / .24); }
+.qi-dialog::backdrop { background:rgb(11 27 64 / .58); }
+.qi-dialog .qi-dialog-head { display:flex; align-items:start; justify-content:space-between; gap:14px; padding:22px 24px 16px; border-bottom:1px solid #e4e8ec; }
+.qi-dialog .qi-dialog-head h2 { margin:0; font-size:20px; line-height:1.35; }
+.qi-dialog .qi-dialog-body { padding:20px 24px; font-size:13px; line-height:1.75; }
+.qi-dialog .qi-guide-list { padding-left:24px; margin:0 0 20px; }
+.qi-dialog .qi-guide-list li { padding-left:5px; margin-bottom:11px; }
+.qi-dialog code { overflow-wrap:anywhere; font-size:12px; background:#f3f5f7; padding:1px 4px; border-radius:3px; }
+.qi-dialog .qi-dialog-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:10px; padding:14px 24px 22px; border-top:1px solid #e4e8ec; }
+.qi-dialog .qi-icon-button { color:#17243a; width:38px; height:38px; display:grid; place-items:center; background:#fff; border:1px solid #cbd4df; border-radius:5px; cursor:pointer; }
+.qi-dialog .qi-icon { width:18px; height:18px; stroke:currentColor; stroke-width:1.8; fill:none; }
+.qi-dialog .qi-step { font-size:10px; color:#946d25; font-weight:800; letter-spacing:.1em; margin:0 0 8px; }
+.qi-dialog .qi-callout { border-left:3px solid #0B1B40; background:#f3f6fa; padding:13px; border-radius:5px; display:flex; align-items:flex-start; gap:9px; }
+.qi-dialog .qi-callout .qi-icon { flex:none; }
+.qi-dialog .button { min-height:42px; }
+.qi-dialog :is(a,button):focus-visible { outline:3px solid #B88928; outline-offset:2px; }
+@media (max-width:760px) {
+ .qi-page > .qi-panel { margin-top:20px; }
+ .qi-page .qi-heading { align-items:start; }
+ .qi-page .qi-summary-grid { gap:8px; }
+ .qi-page .qi-metric { padding:14px 12px; }
+ .qi-page .qi-metric strong { font-size:23px; }
+ .qi-page .qi-tool-actions > * { flex:1 1 100%; }
+ .qi-page .qi-dropzone { padding:20px 12px; }
+ .qi-page .qi-dropzone > strong { font-size:13px; }
+ .qi-page .qi-dropzone > strong::before { content:'Pilih file CSV dari perangkat'; display:block; }
+ .qi-page .qi-dropzone > strong { font-size:0; }
+ .qi-page .qi-dropzone > strong::before { font-size:13px; }
+ .qi-dialog { width:calc(100vw - 20px); max-width:calc(100vw - 20px); max-height:calc(100dvh - 32px); }
+ .qi-dialog .qi-dialog-head, .qi-dialog .qi-dialog-body, .qi-dialog .qi-dialog-actions { padding-left:16px; padding-right:16px; }
+ .qi-dialog .qi-dialog-actions .button { flex:1 1 100%; }
+}
+@media (max-width:375px) { .qi-page .qi-summary-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } .qi-page .qi-metric span { font-size:10px; } .qi-page .qi-metric { padding:12px 8px; } }
+@media (prefers-reduced-motion:reduce) { .qi-page .qi-dropzone { transition:none; } }

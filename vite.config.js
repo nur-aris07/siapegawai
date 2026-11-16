@@ -24,6 +24,8 @@ export default defineConfig({
                 'resources/js/member-workspace-nav.js',
                 'resources/css/pkg-catalog.css',
                 'resources/js/admin-package-catalog.js',
+                'resources/css/admin-question-import.css',
+                'resources/js/admin-question-import.js',
             ],
             refresh: true,
         }),
