@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use App\Services\PublicSeo;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -12,6 +13,10 @@ class AddSecurityHeaders
     {
         $response = $next($request);
         $response->headers->set('X-Content-Type-Options', 'nosniff');
+        // SEO-PUBLIC-01: all non-approved URLs fail closed (including redirects and private pages).
+        if (!app(PublicSeo::class)->indexable($request, $response)) {
+            $response->headers->set('X-Robots-Tag', 'noindex, follow');
+        }
         $response->headers->set('X-Frame-Options', 'DENY');
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');

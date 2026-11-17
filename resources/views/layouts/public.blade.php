@@ -4,8 +4,22 @@
     <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#0B1B40">
     @php($site = app(\App\Services\PublicSiteSettings::class)->all())
-    <meta name="description" content="{{ $site['tagline'] }}. Layanan belajar independen.">
-    <title>@yield('title', 'Siapegawai') — {{ $site['site_name'] }}</title>
+    @php($seo = app(\App\Services\PublicSeo::class)->pageData(request()))
+    <title>{{ $seo['title'] }}</title>
+    <meta name="description" content="{{ $seo['description'] }}">
+    <meta name="robots" content="{{ $seo['robots'] }}">
+    @if($seo['canonical'])
+    <link rel="canonical" href="{{ $seo['canonical'] }}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="{{ $site['site_name'] }}">
+    <meta property="og:locale" content="id_ID">
+    <meta property="og:title" content="{{ $seo['title'] }}">
+    <meta property="og:description" content="{{ $seo['description'] }}">
+    <meta property="og:url" content="{{ $seo['canonical'] }}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ $seo['title'] }}">
+    <meta name="twitter:description" content="{{ $seo['description'] }}">
+    @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 @if(request()->routeIs('page.paket'))@vite(['resources/css/pkg-catalog.css'])@endif
 </head>

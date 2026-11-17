@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\PublicSeoSitemapController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\GoogleAuthController;
@@ -44,6 +45,7 @@ use App\Http\Middleware\EnsureRole;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(AddSecurityHeaders::class)->group(function () {
+Route::get('/sitemap.xml', PublicSeoSitemapController::class)->name('seo.sitemap');
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/bank-soal', [QuestionController::class, 'index'])->name('questions.index');
 Route::get('/latihan-gratis', [FreePracticeController::class, 'intro'])->name('practice.intro');
