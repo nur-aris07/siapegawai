@@ -10,6 +10,7 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/js/app.js',
                 'resources/css/admin-v1.css',
+                'resources/js/admin-navigation.js',
                 'resources/js/admin-questions.js',
                 'resources/js/admin-tryouts.js',
                 'resources/js/admin-bulk-assignment.js',

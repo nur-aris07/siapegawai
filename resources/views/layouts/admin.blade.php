@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0B1B40">
 <title>@yield('title','Administrasi') — Siapegawai</title>
-@vite(['resources/css/app.css', 'resources/css/admin-v1.css', 'resources/js/app.js', 'resources/js/admin-questions.js', 'resources/js/admin-tryouts.js', 'resources/js/admin-participants.js', 'resources/js/admin-quick-quizzes.js'])
+@vite(['resources/css/app.css', 'resources/css/admin-v1.css', 'resources/js/app.js', 'resources/js/admin-navigation.js', 'resources/js/admin-questions.js', 'resources/js/admin-tryouts.js', 'resources/js/admin-participants.js', 'resources/js/admin-quick-quizzes.js'])
 @if(request()->routeIs('admin.site-settings.*'))@vite(['resources/js/admin-site-settings.js'])@endif
 @if(request()->routeIs('admin.packages.*'))@vite(['resources/css/pkg-catalog.css', 'resources/js/admin-package-catalog.js'])@endif
 @if(request()->routeIs('questions.import.*'))@vite(['resources/css/admin-question-import.css','resources/js/admin-question-import.js'])@endif
@@ -18,41 +18,37 @@
     <a class="admin-v1-brand" href="{{ route('admin.dashboard') }}" aria-label="Beranda administrasi Siapegawai"><img src="{{ asset('assets/brand/logo-accent.svg') }}" width="163" height="38" alt="Siapegawai"></a>
     <span class="admin-v1-app-name">Workspace Admin</span>
     <div class="admin-v1-profile"><span class="admin-v1-avatar" aria-hidden="true">{{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}</span><span class="admin-v1-identity"><strong>{{ auth()->user()->name }}</strong><small>{{ auth()->user()->role === 'superadmin' ? 'Superadmin' : 'Admin Operasional' }}</small></span></div>
-    <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="button button-outline button-compact">Keluar</button></form>
+    <form class="admin-v1-header-logout" method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="button button-outline button-compact">Keluar</button></form>
   </div>
 </header>
 <div class="admin-frame admin-v1-frame">
+  <div class="admin-nav-overlay" id="admin-nav-overlay" hidden aria-hidden="true"></div>
   <aside id="admin-primary-navigation" class="admin-sidebar admin-v1-sidebar" aria-label="Navigasi administrasi">
-    <nav aria-label="Menu utama">
-      <span class="admin-v1-nav-section">OPERASIONAL</span>
-      <a href="{{ route('admin.dashboard') }}" @class(['current'=>request()->routeIs('admin.dashboard')]) @if(request()->routeIs('admin.dashboard')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-chart-bar"></use></svg><span>Ringkasan</span></a>
-      <a href="{{ route('registration.index') }}" @class(['current'=>request()->routeIs('registration.*')]) @if(request()->routeIs('registration.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-users"></use></svg><span>Registrasi peserta</span></a>
-      <a href="{{ route('admin.participants.index') }}" @class(['current'=>request()->routeIs('admin.participants.*')]) @if(request()->routeIs('admin.participants.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-users"></use></svg><span>Direktori peserta</span></a>
-      <span class="admin-v1-nav-section">KONTEN LATIHAN</span>
-      <a href="{{ route('questions.admin.index') }}" @class(['current'=>request()->routeIs('questions.admin.*')]) @if(request()->routeIs('questions.admin.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-book"></use></svg><span>Bank soal</span></a>
-      <a href="{{ route('subjects.admin.index') }}" @class(['current'=>request()->routeIs('subjects.admin.*')]) @if(request()->routeIs('subjects.admin.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-book"></use></svg><span>Kategori & topik</span></a>
-      <a href="{{ route('tryouts.admin.index') }}" @class(['current'=>request()->routeIs('tryouts.admin.*')]) @if(request()->routeIs('tryouts.admin.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-clipboard"></use></svg><span>Template tryout</span></a>
-      <a href="{{ route('admin.quick-quizzes.index') }}" @class(['current'=>request()->routeIs('admin.quick-quizzes.*')]) @if(request()->routeIs('admin.quick-quizzes.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-clipboard"></use></svg><span>Quiz Kilat</span></a>
-      <a href="{{ route('admin.classes.index') }}" @class(['current'=>request()->routeIs('admin.classes.*')]) @if(request()->routeIs('admin.classes.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-book"></use></svg><span>Kelas &amp; materi</span></a>
-      @if(auth()->user()->role === 'superadmin')
-      <a href="{{ route('admin.qq-quota.index') }}" @class(['current'=>request()->routeIs('admin.qq-quota.*')]) @if(request()->routeIs('admin.qq-quota.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-clipboard"></use></svg><span>Manfaat Quiz Kilat</span></a>
-      @endif
-      @if(auth()->user()->role === 'superadmin')
-      <a href="{{ route('admin.account-emails.index') }}" @class(['current'=>request()->routeIs('admin.account-emails.*')])><svg class="icon" aria-hidden="true"><use href="#ic-info"></use></svg><span>Email &amp; SMTP</span></a>
-      @endif
-      @if(auth()->user()->role === 'superadmin')
-      <a href="{{ route('admin.site-settings.index') }}" @class(['current'=>request()->routeIs('admin.site-settings.*')]) @if(request()->routeIs('admin.site-settings.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-settings"></use></svg><span>Pengaturan Website</span></a>
-      @endif
-      @if(auth()->user()->role === 'superadmin')
-      <a href="{{ route('admin.packages.index') }}" @class(['current'=>request()->routeIs('admin.packages.*')]) @if(request()->routeIs('admin.packages.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-book"></use></svg><span>Katalog paket</span></a>
-      @endif
-      <span class="admin-v1-nav-section">AKUN</span>
-      <a href="{{ route('admin.security.edit') }}" @class(['current'=>request()->routeIs('admin.security.*')]) @if(request()->routeIs('admin.security.*')) aria-current="page" @endif><svg class="icon" aria-hidden="true"><use href="#ic-users"></use></svg><span>Keamanan akun</span></a>
-      <span class="admin-v1-nav-section">TAHAP BERIKUTNYA</span>
-      <span class="admin-v1-nav-unavailable"><svg class="icon" aria-hidden="true"><use href="#ic-clipboard"></use></svg><span>CAT peserta</span><small>Aktif untuk peserta</small></span>
-
-    </nav>
-    <a class="admin-v1-public-link" href="{{ route('home') }}"><svg class="icon" aria-hidden="true"><use href="#ic-arrow-up-right"></use></svg> Lihat website publik</a>
+    <div class="admin-nav-toolbar">
+      <span class="admin-nav-toolbar-title">Navigasi</span>
+      <button class="admin-nav-collapse-toggle" type="button" id="admin-nav-collapse" aria-controls="admin-primary-navigation" aria-expanded="true" aria-label="Ciutkan sidebar" title="Ciutkan sidebar">
+        <svg class="icon" aria-hidden="true"><use href="#ic-chevron-left"></use></svg>
+      </button>
+      <button class="admin-nav-close" type="button" id="admin-nav-close" aria-label="Tutup navigasi">
+        <svg class="icon" aria-hidden="true"><use href="#ic-x"></use></svg>
+      </button>
+    </div>
+    @include('admin.partials.navigation')
+    <a class="admin-v1-public-link" href="{{ route('home') }}"><svg class="icon" aria-hidden="true"><use href="#ic-arrow-up-right"></use></svg><span class="admin-nav-label">Lihat website publik</span></a>
+    <section class="admin-nav-account" aria-label="Akun admin yang sedang masuk">
+      <p class="admin-nav-account-heading">Akun masuk</p>
+      <div class="admin-nav-account-user">
+        <span class="admin-v1-avatar" aria-hidden="true">{{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}</span>
+        <span class="admin-nav-account-identity">
+          <strong>{{ auth()->user()->name }}</strong>
+          <small>{{ auth()->user()->role === 'superadmin' ? 'Superadmin' : 'Admin Operasional' }}</small>
+        </span>
+      </div>
+      <form method="POST" action="{{ route('logout') }}">
+        @csrf
+        <button class="admin-nav-account-logout" type="submit">Keluar akun</button>
+      </form>
+    </section>
   </aside>
   <main id="main" class="admin-main admin-v1-main" tabindex="-1">
     @include('components.form-errors')

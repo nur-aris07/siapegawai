@@ -1,17 +1,4 @@
-/* Admin workspace v1: no inline events/HTML; Yajra server-side at the same URL. */
-const menuButton = document.getElementById('admin-menu-toggle');
-const menuPanel = document.getElementById('admin-primary-navigation');
-if (menuButton && menuPanel) {
-    const setOpen = (open) => {
-        menuPanel.classList.toggle('is-open', open);
-        menuButton.setAttribute('aria-expanded', String(open));
-        menuButton.setAttribute('aria-label', open ? 'Tutup navigasi admin' : 'Buka navigasi admin');
-    };
-    menuButton.addEventListener('click', () => setOpen(menuButton.getAttribute('aria-expanded') !== 'true'));
-    menuPanel.querySelectorAll('a').forEach(link => link.addEventListener('click', () => setOpen(false)));
-    document.addEventListener('keydown', event => { if (event.key === 'Escape') setOpen(false); });
-}
-
+/* Admin question table only. Navigation is initialized by admin-navigation.js. */
 const table = document.querySelector('[data-questions-table]');
 if (table) {
     const rows = document.getElementById('questions-rows');

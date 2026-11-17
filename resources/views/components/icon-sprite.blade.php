@@ -85,4 +85,17 @@
         <circle cx="12" cy="12" r="9" />
         <path d="M12 8v5M12 16h.01" />
       </symbol>
+      <!-- ADM-NAV-01: distinct semantic group icons (outline, inherits currentColor). -->
+      <symbol id="ic-graduation-cap" viewBox="0 0 24 24">
+        <path d="M2 9 12 4l10 5-10 5L2 9Z" />
+        <path d="M6 11v5c4 3 8 3 12 0v-5M22 9v7" />
+      </symbol>
+      <symbol id="ic-package" viewBox="0 0 24 24">
+        <path d="m3 7 9-4 9 4-9 4-9-4Z" />
+        <path d="M3 7v10l9 4 9-4V7M12 11v10M7.5 5l9 4" />
+      </symbol>
+      <symbol id="ic-shield-check" viewBox="0 0 24 24">
+        <path d="m12 2 8 3v6c0 5-3.4 8.2-8 11-4.6-2.8-8-6-8-11V5l8-3Z" />
+        <path d="m8.5 12 2.4 2.4 4.7-4.8" />
+      </symbol>
     </svg>
