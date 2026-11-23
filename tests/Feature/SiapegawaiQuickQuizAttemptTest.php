@@ -159,11 +159,28 @@ class SiapegawaiQuickQuizAttemptTest extends TestCase
         $this->assertSame('feedback',$attempt->fresh()->phase);
         $this->assertDatabaseCount('qq_quota_usages',1);
 
-        // Five seconds is a SERVER guarantee, not only a JavaScript delay.
-        $this->travel(4)->seconds();
+        // The five-second SERVER deadline begins when the answer is locked.
+        // Anchoring to persisted timestamps avoids wall-clock/rendering drift:
+        // travel(4) after AJAX/Blade processing can already be >= 5s after lock.
+        $freshAttempt = $attempt->fresh();
+        $deadline = $freshAttempt->feedback_until;
+        $lockedAt = $freshAttempt->answers()->firstOrFail()->locked_at;
+        $this->assertNotNull($deadline);
+        $this->assertSame(
+            $lockedAt->getTimestamp() + \App\Services\QuickQuizAttemptService::FEEDBACK_SECONDS,
+            $deadline->getTimestamp(),
+            'Feedback must remain a five-second server-side hold after answer lock.'
+        );
+
+        // At T-1 second the next question must remain unissued (422).
+        $this->travelTo($deadline->copy()->subSecond());
         $this->postJson(route('member.quick-quizzes.next',$attempt),[])
             ->assertUnprocessable()->assertJsonValidationErrors('feedback');
-        $this->travel(2)->seconds();
+        $this->assertSame('feedback', $attempt->fresh()->phase);
+        $this->assertSame(0, $attempt->fresh()->current_index);
+
+        // At the exact deadline the acknowledgement may issue question two.
+        $this->travelTo($deadline->copy());
         $next=$this->postJson(route('member.quick-quizzes.next',$attempt),[])
             ->assertOk()->assertJsonPath('phase','question')->assertJsonPath('index',2);
         $this->assertStringContainsString('Isi soal 2',$next->json('html'));
