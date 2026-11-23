@@ -100,10 +100,31 @@ final class SiapegawaiFigP4MediaRecoveryReadTest extends TestCase
         $this->assertFalse(Storage::disk('question_media_private')->exists($key));
     }
 
+    public function test_allowlist_accepts_only_the_exact_isolated_v02_source_and_restore_identifiers(): void
+    {
+        $allowed = \App\Console\Commands\FigP4MediaIntegrityAudit::class;
+        foreach (['siapegawai_testing','siapegawai_figp4_source',
+            'siapegawai_figp4_restore_verify_testing'] as $database) {
+            $this->assertTrue($allowed::isAllowedTestingDatabase($database));
+        }
+        foreach (['siapegawai','siapegawai_production','siapegawai_testing_typo',
+            'siapegawai_figp4_source_copy','siapegawai_other_source',
+            'siapegawai_figp4_restore_verify_testing_backup'] as $database) {
+            $this->assertFalse($allowed::isAllowedTestingDatabase($database));
+        }
+    }
+
     public function test_wrong_database_identity_is_rejected_before_reference_reads(): void
     {
         $this->publishFixtureReference();
         $this->assertSame(2, $this->runAudit('siapegawai_production'));
+        $this->assertSame(2, $this->runAudit('siapegawai_figp4_source')); // allowlisted, but not the CONNECTED DB
+        // Fetch consumes the Artisan output buffer. Verify every property
+        // against one captured response, not repeated empty reads.
+        $diagnostic = Artisan::output();
+        $this->assertStringContainsString('BLOCKED_DB_IDENTITY_MISMATCH', $diagnostic);
+        $this->assertStringContainsString('--expected-db=siapegawai_testing', $diagnostic);
+        $this->assertStringNotContainsString('questions/aa', $diagnostic);
         $this->assertSame(2, $this->runAudit('siapegawai_fig_restore_verify_testing'));
     }
 }

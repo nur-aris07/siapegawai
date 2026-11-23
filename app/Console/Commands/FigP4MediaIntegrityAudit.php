@@ -25,6 +25,14 @@ final class FigP4MediaIntegrityAudit extends Command
     private const SLOTS = ['stem', 'option_A', 'option_B', 'option_C', 'option_D', 'option_E', 'explanation'];
     private const MIMES = ['image/png', 'image/jpeg', 'image/webp'];
 
+    /** One exact V-02 synthetic source DB; no wildcard for arbitrary *_source. */
+    public static function isAllowedTestingDatabase(string $name): bool
+    {
+        return $name === 'siapegawai_testing'
+            || $name === 'siapegawai_figp4_source'
+            || (bool) preg_match('/^siapegawai_(?:[a-z0-9_]*restore_verify_testing)$/D', $name);
+    }
+
     public function handle(): int
     {
         if (!$this->option('run')) {
@@ -36,7 +44,7 @@ final class FigP4MediaIntegrityAudit extends Command
             $expected = (string) $this->option('expected-db');
             $limitRaw = (string) $this->option('max-rows');
             if (!app()->environment('testing')
-                || !preg_match('/^siapegawai_(?:testing|[a-z0-9_]*restore_verify_testing)$/D', $expected)
+                || !self::isAllowedTestingDatabase($expected)
                 || !preg_match('/^[1-9][0-9]{0,5}$/D', $limitRaw)
                 || (int) $limitRaw > 50000) {
                 throw new \RuntimeException('Environment, DB identity or bounded row limit invalid; isolated testing only.');
@@ -44,7 +52,12 @@ final class FigP4MediaIntegrityAudit extends Command
             $configured = DB::connection()->getDatabaseName();
             $actual = DB::selectOne('select database() as db')?->db;
             if ($configured !== $expected || $actual !== $expected) {
-                throw new \RuntimeException('Configured/connected DB identity mismatch; STOP.');
+                // No reference reads: do not mistake this for broken restored media.
+                // Do not print the actual DB identity or connection details in QA logs.
+                $this->warn('BLOCKED_DB_IDENTITY_MISMATCH | --expected-db must match the configured AND connected database.');
+                $this->line('NEXT | For current siapegawai_testing: php artisan siapegawai:fig-p4-media-audit --env=testing --run --expected-db=siapegawai_testing');
+                $this->warn('V-02 OPEN | Source/restore audit requires separate configured connections and private roots.');
+                return 2;
             }
             $diskName = QuestionMediaStorageService::DISK;
             if (config('filesystems.disks.'.$diskName.'.driver') !== 'local'
