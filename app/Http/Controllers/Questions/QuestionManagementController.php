@@ -6,6 +6,9 @@ use App\Http\Requests\Questions\QuestionContentRequest;
 use App\Models\Question;
 use App\Models\Subject;
 use App\Services\QuestionEditorialService;
+use App\Services\QuestionEditorialMediaCoordinator;
+use App\Services\QuestionMediaBatchService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -87,33 +90,70 @@ class QuestionManagementController extends Controller
         return view('questions.admin.create', ['subjects'=>$this->subjects()]);
     }
 
-    public function store(QuestionContentRequest $request, QuestionEditorialService $service): RedirectResponse
+    public function store(QuestionContentRequest $request, QuestionEditorialService $service, QuestionMediaBatchService $batch): RedirectResponse
     {
         Gate::authorize('create', Question::class);
-        $question = $service->create($request->validated(), $request->user());
-        return redirect()->route('questions.admin.edit', $question)->with('success', 'Draft soal dibuat. Tinjau substansi sebelum menerbitkan.');
+        $question = DB::transaction(function () use ($request, $service, $batch): Question {
+            $created = $service->create($request->validated(), $request->user());
+            $batch->attach($created, $request->user(), array_values($request->file('media_files', [])),
+                array_values($request->input('media_slots', [])), array_values($request->input('media_positions', [])), array_values($request->input('media_alts', [])),
+                array_values($request->input('media_captions', [])));
+            $batch->cleanupEmptyOptionalE($created);
+            return $created;
+        }, 3);
+        return redirect()->route('questions.admin.edit', $question)->with('success', 'Draft dan gambar yang dipilih berhasil disimpan. Tinjau versi sebelum publikasi.');
     }
 
-    public function edit(Question $question): View
+    public function edit(Question $question, QuestionEditorialMediaCoordinator $coordinator): View
     {
         Gate::authorize('view', $question);
-        $question->load(['topic.subject', 'latestVersion.options', 'currentVersion']);
+        $question->load(['topic.subject', 'latestVersion.options', 'latestVersion.media', 'currentVersion.options', 'currentVersion.media']);
         return view('questions.admin.edit', [
             'question'=>$question,
             'version'=>$question->latestVersion,
             'subjects'=>$this->subjects($question),
+            'editToken'=>$coordinator->editToken($question),
         ]);
     }
 
-    public function update(QuestionContentRequest $request, Question $question, QuestionEditorialService $service): RedirectResponse
+    public function update(QuestionContentRequest $request, Question $question, QuestionEditorialService $service,
+        QuestionMediaBatchService $batch, QuestionEditorialMediaCoordinator $coordinator): RedirectResponse
     {
         Gate::authorize('update', $question);
-        $result = $service->saveDraft($question, $request->validated(), $request->user());
+        $files = array_values($request->file('media_files', []));
+        $result = DB::transaction(function () use ($request, $question, $service, $batch, $coordinator, $files): string {
+            $token = $request->input('edit_token');
+            if ($files !== []) {
+                $coordinator->checkToken($question, $token);
+                // Uploaded media requires a draft; transparently start a revision from a published version.
+                $latest = $question->fresh()->versions()->orderByDesc('version_number')->firstOrFail();
+                if ($latest->review_status === 'published') {
+                    $service->startRevision($question, $request->user(), $token);
+                    $token = $coordinator->editToken($question);
+                }
+            }
+            $result = $service->saveDraft($question, $request->validated(), $request->user(), $token);
+            if ($request->has('media_existing_ids')) {
+                $coordinator->organize($question, $request->user(),
+                    array_values($request->input('media_existing_ids', [])),
+                    array_values($request->input('media_existing_slots', [])),
+                    array_values($request->input('media_existing_positions', [])),
+                    array_values($request->input('media_existing_alts', [])),
+                    array_values($request->input('media_existing_captions', [])),
+                    array_values($request->input('media_existing_remove', [])),
+                    $coordinator->editToken($question));
+            }
+            $batch->attach($question->fresh(), $request->user(), $files,
+                array_values($request->input('media_slots', [])), array_values($request->input('media_positions', [])), array_values($request->input('media_alts', [])),
+                array_values($request->input('media_captions', [])));
+            $batch->cleanupEmptyOptionalE($question);
+            return $result;
+        }, 3);
         return redirect()->route('questions.admin.edit', $question)->with(
-            $result === 'unchanged' ? 'status' : 'success',
-            $result === 'unchanged'
+            $result === 'unchanged' && $files === [] ? 'status' : 'success',
+            $result === 'unchanged' && $files === []
                 ? 'Tidak ada perubahan konten. Tidak dibuat versi baru.'
-                : 'Draft soal tersimpan. Versi yang sudah terbit tetap utuh.',
+                : 'Draft dan gambar berhasil disimpan tanpa mengubah versi terbit.',
         );
     }
 
@@ -121,7 +161,7 @@ class QuestionManagementController extends Controller
     {
         Gate::authorize('publish', $question);
         $request->validate(['confirmed_review'=>['required','accepted']]);
-        $service->publish($question, $request->user());
+        $service->publish($question, $request->user(), $request->input('edit_token'));
         return redirect()->route('questions.admin.edit', $question)->with('success', 'Soal berhasil diterbitkan setelah konfirmasi review.');
     }
 
@@ -132,9 +172,18 @@ class QuestionManagementController extends Controller
             'confirmed_discard' => ['required', 'accepted'],
             'discard_reason' => ['required', 'string', 'min:10', 'max:500'],
         ]);
-        $service->discardDraft($question, $request->user(), $data['discard_reason']);
+        $service->discardDraft($question, $request->user(), $data['discard_reason'], $request->input('edit_token'));
         return redirect()->route('questions.admin.edit', $question)
             ->with('success', 'Draft revisi dibatalkan. Versi yang telah terbit tetap aktif.');
+    }
+
+    public function startRevision(Request $request, Question $question, QuestionEditorialService $service): RedirectResponse
+    {
+        Gate::authorize('update', $question);
+        $input = $request->validate(['edit_token'=>['required','string','size:64']]);
+        $service->startRevision($question, $request->user(), $input['edit_token']);
+        return redirect()->route('questions.admin.edit', $question)
+            ->with('success', 'Draft revisi disiapkan, dengan salinan media privat dan versi terbit tetap utuh.');
     }
 
     public function archive(Request $request, Question $question, QuestionEditorialService $service): RedirectResponse

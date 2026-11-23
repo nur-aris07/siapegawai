@@ -24,6 +24,17 @@
   <section class="admin-v1-panel"><h2>Soal diarsipkan</h2><p>Konten tersimpan untuk audit. Soal arsip tidak dapat diedit atau diterbitkan.</p><div class="admin-v1-text-block">{{ $version?->body }}</div></section>
 @else
   @include('questions.admin.form', ['action'=>route('questions.admin.update',$question), 'method'=>'PUT'])
+  @if(!$pendingDraft && $activeVersion)
+    {{-- C-03: one editor/composer only; the published snapshot is in the preview tab above. --}}
+    <section class="admin-v1-panel fig-editor-start-revision">
+      <h2>Mulai revisi dengan gambar</h2>
+      <p>Sebelum menambah atau mengganti gambar, buat draft revisi. Salinan media mendapat object key privat baru; versi aktif tidak diubah.</p>
+      <form method="POST" action="{{ route('questions.admin.start-revision',$question) }}">@csrf
+        <input type="hidden" name="edit_token" value="{{ $editToken }}">
+        <button class="button button-outline" type="submit">Mulai draft revisi</button>
+      </form>
+    </section>
+  @endif
   <div class="admin-v1-decision-grid">
     <section class="admin-v1-panel">
       <h2>Review dan terbitkan</h2>
@@ -32,7 +43,11 @@
         @if($activeVersion)
           <p class="admin-v1-muted">Versi {{ $activeVersion->version_number }} masih aktif. Menerbitkan revisi akan menggantikan versi aktif dengan versi {{ $pendingDraft->version_number }}. Jika isi draft sama persis dengan versi aktif, sistem akan menolak publikasi duplikat. Gunakan Batalkan draft revisi bila perubahan tidak diperlukan.</p>
         @endif
+        @if($pendingDraft->media->isNotEmpty())
+          <p class="fig-editor-lock" role="status">Publikasi soal bergambar masih terkunci di runtime normal sampai FIG-P3/P4. Draft dan preview admin tetap tersedia.</p>
+        @endif
         <form method="POST" action="{{ route('questions.admin.publish',$question) }}" class="admin-v1-action-form">@csrf
+          <input type="hidden" name="edit_token" value="{{ $editToken }}">
           <label class="check-line"><input type="checkbox" name="confirmed_review" value="1" required><span>Saya sudah memeriksa kunci dan pembahasan soal ini.</span></label>
           <button type="submit" class="button button-primary button-compact">{{ $activeVersion ? 'Terbitkan revisi v'.$pendingDraft->version_number : 'Terbitkan versi '.$pendingDraft->version_number }}</button>
         </form>
@@ -42,6 +57,7 @@
             <p>Buang draft revisi ini dan kembali menggunakan versi terbit v{{ $activeVersion->version_number }}. Tindakan ini tidak dapat diurungkan; keputusan tetap dicatat pada audit.</p>
             <form method="POST" action="{{ route('questions.admin.discard-draft', $question) }}" class="admin-v1-action-form">
               @csrf
+              <input type="hidden" name="edit_token" value="{{ $editToken }}">
               <label class="admin-v1-field">Alasan pembatalan draft (wajib)
                 <textarea name="discard_reason" minlength="10" maxlength="500" rows="2" required placeholder="Contoh: Revisi tidak diperlukan karena kunci versi aktif sudah benar">{{ old('discard_reason') }}</textarea>
               </label>

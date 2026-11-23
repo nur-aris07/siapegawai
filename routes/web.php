@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\Questions\QuestionMediaManagementController;
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FreePracticeController;
@@ -248,6 +249,13 @@ Route::prefix('admin')->middleware(['auth', EnsureActiveAccount::class, EnsureRo
     Route::post('/soal/{question}/publish', [QuestionManagementController::class, 'publish'])->middleware('throttle:15,1')->name('questions.admin.publish');
     Route::post('/soal/{question}/discard-draft', [QuestionManagementController::class, 'discardDraft'])->middleware('throttle:15,1')->name('questions.admin.discard-draft');
     Route::post('/soal/{question}/archive', [QuestionManagementController::class, 'archive'])->middleware('throttle:15,1')->name('questions.admin.archive');
+    // FIG-P2: admin-only private question media; never use these routes from participant contexts.
+    Route::post('/soal/{question}/mulai-revisi', [QuestionManagementController::class, 'startRevision'])->middleware('throttle:15,1')->name('questions.admin.start-revision');
+    Route::post('/soal/{question}/media', [QuestionMediaManagementController::class, 'upload'])->middleware('throttle:20,1')->name('questions.admin.media.upload');
+    Route::post('/soal/{question}/media/urut', [QuestionMediaManagementController::class, 'reorder'])->middleware('throttle:20,1')->name('questions.admin.media.reorder');
+    Route::post('/soal/{question}/media/{media}/lepas', [QuestionMediaManagementController::class, 'detach'])->middleware('throttle:20,1')->name('questions.admin.media.detach');
+    Route::post('/soal/{question}/media/{media}/metadata', [QuestionMediaManagementController::class, 'metadata'])->middleware('throttle:20,1')->name('questions.admin.media.metadata');
+    Route::get('/soal/{question}/media/{media}/preview', [QuestionMediaManagementController::class, 'preview'])->middleware('throttle:90,1')->name('questions.admin.media.preview');
     // S4.2: Subject and topic catalog.
     Route::get('/materi', [SubjectCatalogController::class, 'index'])->name('subjects.admin.index');
     Route::post('/materi', [SubjectCatalogController::class, 'store'])->middleware('throttle:30,1')->name('subjects.admin.store');

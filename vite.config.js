@@ -12,6 +12,8 @@ export default defineConfig({
                 'resources/css/admin-v1.css',
                 'resources/js/admin-navigation.js',
                 'resources/js/admin-questions.js',
+                'resources/css/admin-question-figural.css',
+                'resources/js/admin-question-figural.js',
                 'resources/js/admin-tryouts.js',
                 'resources/js/admin-bulk-assignment.js',
                 'resources/css/admin-bulk-assignment.css',
