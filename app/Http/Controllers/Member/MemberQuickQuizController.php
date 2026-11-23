@@ -56,6 +56,7 @@ class MemberQuickQuizController extends Controller
     {
         $attempt->load('version.quiz');
         $item = $service->currentItem($attempt);
+        $item?->version?->loadMissing('media');
         abort_unless($item, 500);
         $answer = $attempt->answers()->where('quick_quiz_version_item_id', $item->id)->first();
         $correct = $attempt->phase === 'feedback' ? $item->version->options->firstWhere('is_correct', true) : null;
@@ -110,7 +111,7 @@ class MemberQuickQuizController extends Controller
         if ($attempt->status==='active') return redirect()->route('member.quick-quizzes.take',$attempt);
         $attempt->load('version.quiz');
         // Only locked questions; an interrupted/abandoned session does not leak unseen keys.
-        $answers=$attempt->answers()->with('item.version.options')->orderBy('id')->get();
+        $answers=$attempt->answers()->with(['item.version.options','item.version.media'])->orderBy('id')->get();
         return view('member.quick-quizzes.result',compact('attempt','answers'));
     }
 

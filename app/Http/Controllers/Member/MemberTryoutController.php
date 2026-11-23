@@ -38,7 +38,7 @@ class MemberTryoutController extends Controller
         $attempt=$service->expire($attempt);
         if ($attempt->status !== 'in_progress') return redirect()->route('member.tryouts.result',$attempt);
         $attempt->load('package');
-        $items=$attempt->package->items()->with(['version.options','version.question.topic.subject'])->get();
+        $items=$attempt->package->items()->with(['version.options','version.media','version.question.topic.subject'])->get();
         $answers=$attempt->answers()->get()->keyBy('tryout_package_item_id');
         return view('member.tryouts.take',compact('attempt','items','answers'));
     }
@@ -69,7 +69,7 @@ class MemberTryoutController extends Controller
         $attempt=$service->expire($attempt);
         if ($attempt->status === 'in_progress') return redirect()->route('member.tryouts.take',$attempt);
         $attempt->load('package');
-        $items=$attempt->package->items()->with(['version.options','version.question'])->get();
+        $items=$attempt->package->items()->with(['version.options','version.media','version.question'])->get();
         $answers=$attempt->answers()->get()->keyBy('tryout_package_item_id');
         $subjectAnalysis = $analysis->forAttempt($attempt);
         return view('member.tryouts.result',compact('attempt','items','answers','subjectAnalysis'));

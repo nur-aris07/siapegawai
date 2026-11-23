@@ -8,7 +8,13 @@
 <div class="member-review-list">@foreach($items as $n=>$item)
 @php($saved=$answers->get($item->id))
 @php($correct=$item->version?->options?->firstWhere('is_correct',true))
-<article class="member-review-item"><div class="member-question-meta">Soal {{ $n+1 }} · {{ $item->version?->question?->code }} · v{{ $item->version?->version_number }}</div><h3>{{ $item->version?->body }}</h3><p>Jawabanmu: <strong>{{ $saved?->answer_label ?: 'Tidak dijawab' }}</strong> · Kunci: <strong>{{ $correct?->label ?: '—' }}</strong> @if($saved?->answer_label && $correct?->label===$saved->answer_label)<span class="member-right">Benar</span>@else<span class="member-wrong">Belum tepat</span>@endif</p><p class="member-explanation">{{ $item->version?->explanation }}</p></article>
+<article class="member-review-item"><div class="member-question-meta">Soal {{ $n+1 }} · {{ $item->version?->question?->code }} · v{{ $item->version?->version_number }}</div><h3>{{ $item->version?->body }}</h3><x-question-version-media :version="$item->version" media-slot="stem" domain="cat" :attempt="$attempt" :item="$item" /><p>Jawabanmu: <strong>{{ $saved?->answer_label ?: 'Tidak dijawab' }}</strong> · Kunci: <strong>{{ $correct?->label ?: '—' }}</strong> @if($saved?->answer_label && $correct?->label===$saved->answer_label)<span class="member-right">Benar</span>@else<span class="member-wrong">Belum tepat</span>@endif</p><ul class="fig-participant-result-options" aria-label="Seluruh pilihan jawaban">
+@foreach($item->version?->options ?? [] as $choice)
+<li><strong>{{ $choice->label }}.</strong> <span>{{ $choice->body }}<x-question-version-media :version="$item->version" :media-slot="'option_'.$choice->label" domain="cat" :attempt="$attempt" :item="$item" /></span>
+@if($correct?->label === $choice->label)<em> Kunci benar</em>@elseif($saved?->answer_label === $choice->label)<em> Pilihan Anda</em>@endif
+</li>
+@endforeach
+</ul><div class="member-explanation">{{ $item->version?->explanation }}<x-question-version-media :version="$item->version" media-slot="explanation" domain="cat" :attempt="$attempt" :item="$item" /></div></article>
 @endforeach</div>
 <p class="member-disclaimer">Hasil latihan berdasarkan versi soal yang dibekukan saat template diterbitkan. Penilaian ini bukan simulasi resmi BKN.</p>
 @endsection

@@ -8,10 +8,10 @@
 @php($saved=$answers->get($item->id))
 <section class="member-question" data-member-question="{{ $n }}" data-item-id="{{ $item->id }}" @if($n!==0) hidden @endif>
 <div class="member-question-meta">{{ $item->subject_code_snapshot ?? 'MATERI' }} · Soal {{ $n+1 }} dari {{ $items->count() }}</div>
-<h2 tabindex="-1">{{ $item->version?->body }}</h2>
+<h2 tabindex="-1">{{ $item->version?->body }}</h2><x-question-version-media :version="$item->version" media-slot="stem" domain="class" :attempt="$attempt" :item="$item" :class-id="$class->id" />
 <div class="member-options" role="radiogroup" aria-label="Pilihan jawaban soal {{ $n+1 }}">
 @foreach($item->version?->options ?? [] as $choice)
-<label class="member-option"><input type="radio" name="answer_{{ $item->id }}" value="{{ $choice->label }}" @checked($saved?->answer_label===$choice->label)><span class="member-option-letter">{{ $choice->label }}</span><span>{{ $choice->body }}</span></label>
+<label class="member-option"><input type="radio" name="answer_{{ $item->id }}" value="{{ $choice->label }}" @checked($saved?->answer_label===$choice->label)><span class="member-option-letter">{{ $choice->label }}</span><span>{{ $choice->body }}<x-question-version-media :version="$item->version" :media-slot="'option_'.$choice->label" domain="class" :attempt="$attempt" :item="$item" :class-id="$class->id" /></span></label>
 @endforeach
 </div></section>
 @endforeach

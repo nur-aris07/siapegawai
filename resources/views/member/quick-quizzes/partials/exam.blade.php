@@ -11,6 +11,7 @@
     </div>
     <div class="qq-question-label">{{ $item->subject_code_snapshot ?? 'SOAL' }} · {{ $item->topic_name_snapshot ?? 'Quiz Kilat' }}</div>
     <h2 id="qq-question-title" tabindex="-1">{{ $item->version->body }}</h2>
+    <x-question-version-media :version="$item->version" media-slot="stem" domain="qq" :attempt="$attempt" :item="$item" />
     @if($attempt->phase === 'question')
         <form id="qq-answer-form" action="{{ route('member.quick-quizzes.answer', $attempt) }}" method="POST">
             @csrf
@@ -21,7 +22,7 @@
                     <label class="qq-answer-choice">
                         <input type="radio" name="answer" value="{{ $opt->label }}" required>
                         <span class="qq-letter">{{ $opt->label }}</span>
-                        <span class="qq-option-text">{{ $opt->body }}</span>
+                        <span class="qq-option-text">{{ $opt->body }}<x-question-version-media :version="$item->version" :media-slot="'option_'.$opt->label" domain="qq" :attempt="$attempt" :item="$item" /></span>
                     </label>
                 @endforeach
             </fieldset>
@@ -44,7 +45,7 @@
                     <div role="listitem" class="qq-answer-choice {{ $isCorrect ? 'qq-answer-choice--correct' : ($isIncorrectSelection ? 'qq-answer-choice--incorrect' : '') }}">
                         <span class="qq-choice-marker" aria-hidden="true">{{ $isCorrect ? '✓' : ($isIncorrectSelection ? '×' : '○') }}</span>
                         <span class="qq-letter">{{ $opt->label }}</span>
-                        <span class="qq-option-text">{{ $opt->body }}</span>
+                        <span class="qq-option-text">{{ $opt->body }}<x-question-version-media :version="$item->version" :media-slot="'option_'.$opt->label" domain="qq" :attempt="$attempt" :item="$item" /></span>
                         @if($isCorrect)
                             <span class="qq-choice-tag">{{ $isSelectedCorrect ? 'Jawaban Anda · benar' : 'Kunci benar' }}</span>
                         @elseif($isIncorrectSelection)
@@ -56,6 +57,7 @@
             <div class="qq-explanation" aria-label="Pembahasan soal">
                 <h3>Pembahasan</h3>
                 <p>{{ $item->version->explanation }}</p>
+                <x-question-version-media :version="$item->version" media-slot="explanation" domain="qq" :attempt="$attempt" :item="$item" />
             </div>
         </div>
         <form method="POST" action="{{ route('member.quick-quizzes.next', $attempt) }}" id="qq-next-form">

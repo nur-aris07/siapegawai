@@ -63,7 +63,7 @@ class MemberClassPracticeController extends Controller
         $attempt=$service->expire($attempt);
         if ($attempt->status!=='in_progress') return redirect()->route('member.class-practices.result',[$class,$attempt]);
         $attempt->load('practice');
-        $items=$attempt->practice->items()->with(['version.options'])->get();
+        $items=$attempt->practice->items()->with(['version.options','version.media'])->get();
         $answers=$attempt->answers()->get()->keyBy('class_practice_item_id');
         return view('member.class-practices.take',compact('class','attempt','items','answers'));
     }
@@ -99,7 +99,7 @@ class MemberClassPracticeController extends Controller
         $attempt=$service->expire($attempt);
         if ($attempt->status==='in_progress') return redirect()->route('member.class-practices.take',[$class,$attempt]);
         $attempt->load('practice');
-        $items=$attempt->practice->items()->with(['version.options','version.question'])->get();
+        $items=$attempt->practice->items()->with(['version.options','version.media','version.question'])->get();
         $answers=$attempt->answers()->get()->keyBy('class_practice_item_id');
         return view('member.class-practices.result',compact('class','attempt','items','answers'));
     }

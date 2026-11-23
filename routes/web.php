@@ -37,6 +37,7 @@ use App\Http\Controllers\Admin\BulkQuestionAssignmentController;
 use App\Http\Controllers\Member\MemberClassMediaController;
 use App\Http\Controllers\Member\MemberClassPracticeController;
 use App\Http\Controllers\Member\MemberQuickQuizController;
+use App\Http\Controllers\Member\QuestionParticipantMediaController;
 use App\Http\Controllers\Member\MemberQuickQuizAnalyticsController;
 use App\Http\Controllers\Member\MemberDomainAnalyticsController;
 use App\Http\Middleware\AddSecurityHeaders;
@@ -104,6 +105,7 @@ Route::middleware('auth')->group(function () {
         // S7.3: Latihan Kelas, isolated from CAT attempts/history.
         Route::prefix('kelas-saya/{class}/latihan')->group(function () {
             Route::get('/', [MemberClassPracticeController::class,'index'])->name('member.class-practices.index');
+            Route::get('/sesi/{attempt}/item/{item}/gambar/{media}', [QuestionParticipantMediaController::class,'practice'])->name('member.class-practices.media');
             Route::get('/sesi/{attempt}', [MemberClassPracticeController::class,'take'])->name('member.class-practices.take');
             Route::patch('/sesi/{attempt}/jawaban', [MemberClassPracticeController::class,'save'])->middleware('throttle:120,1')->name('member.class-practices.save');
             Route::post('/sesi/{attempt}/kumpulkan', [MemberClassPracticeController::class,'submit'])->middleware('throttle:15,1')->name('member.class-practices.submit');
@@ -117,6 +119,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/riwayat', [MemberQuickQuizController::class,'history'])->name('member.quick-quizzes.history');
             // QQ-ANALYTICS-01: completed-only historical snapshots; before the /{quiz} catch-all.
             Route::get('/analisis', [MemberQuickQuizAnalyticsController::class,'index'])->name('member.quick-quizzes.analytics');
+            Route::get('/sesi/{attempt}/item/{item}/gambar/{media}', [QuestionParticipantMediaController::class,'qq'])->name('member.quick-quizzes.media');
             Route::get('/sesi/{attempt}', [MemberQuickQuizController::class,'take'])->name('member.quick-quizzes.take');
             Route::post('/sesi/{attempt}/jawab', [MemberQuickQuizController::class,'answer'])->middleware('throttle:120,1')->name('member.quick-quizzes.answer');
             Route::post('/sesi/{attempt}/lanjut', [MemberQuickQuizController::class,'next'])->middleware('throttle:120,1')->name('member.quick-quizzes.next');
@@ -128,6 +131,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [MemberTryoutController::class, 'index'])->name('member.tryouts.index');
             Route::get('/riwayat', [MemberHistoryController::class, 'index'])->name('member.tryouts.history');
             Route::post('/{package}/mulai', [MemberTryoutController::class, 'start'])->middleware('throttle:10,1')->name('member.tryouts.start');
+            Route::get('/sesi/{attempt}/item/{item}/gambar/{media}', [QuestionParticipantMediaController::class,'cat'])->name('member.tryouts.media');
             Route::get('/sesi/{attempt}', [MemberTryoutController::class, 'take'])->name('member.tryouts.take');
             Route::patch('/sesi/{attempt}/jawaban', [MemberTryoutController::class, 'save'])->middleware('throttle:120,1')->name('member.tryouts.save');
             Route::post('/sesi/{attempt}/kumpulkan', [MemberTryoutController::class, 'submit'])->middleware('throttle:15,1')->name('member.tryouts.submit');
