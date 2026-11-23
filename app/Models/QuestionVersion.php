@@ -11,4 +11,5 @@ class QuestionVersion extends Model
     protected function casts(): array { return ['reviewed_at' => 'datetime', 'published_at' => 'datetime']; }
     public function question(): BelongsTo { return $this->belongsTo(Question::class); }
     public function options(): HasMany { return $this->hasMany(QuestionOption::class)->orderBy('sort_order'); }
+    public function media(): HasMany { return $this->hasMany(QuestionVersionMedia::class, 'question_version_id')->orderBy('slot')->orderBy('position'); }
 }

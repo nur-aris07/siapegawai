@@ -47,6 +47,15 @@ return [
             'throw' => true,
         ],
 
+        // FIG-P1: question-version media is not publicly served or symlinked.
+        'question_media_private' => [
+            'driver' => 'local',
+            'root' => storage_path('app/siapegawai-question-media'),
+            'visibility' => 'private',
+            'serve' => false,
+            'throw' => true,
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
