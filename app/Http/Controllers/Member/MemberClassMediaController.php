@@ -21,6 +21,18 @@ class MemberClassMediaController extends Controller
             ->where('user_id', $request->user()->id)->where('status', 'active')->exists(), 404);
         $disk = Storage::disk('class_media_private');
         abort_unless($disk->exists($media->private_path), 404);
+        // FIG-P4 E02/V02: never serve corrupted/restored bytes merely because
+        // their object key exists. This GET is strictly read-only.
+        $root = realpath($disk->path(''));
+        $real = realpath($disk->path($media->private_path));
+        abort_unless($root && $real && !is_link($disk->path($media->private_path))
+            && str_starts_with($real, rtrim($root, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR)
+            && is_file($real) && is_readable($real)
+            && is_int($media->size_bytes) && $media->size_bytes > 0
+            && filesize($real) === $media->size_bytes
+            && is_string($media->sha256) && preg_match('/^[a-f0-9]{64}$/D', $media->sha256)
+            && hash_equals($media->sha256, (string) hash_file('sha256', $real))
+            && file_get_contents($real, false, null, 0, 5) === '%PDF-', 404);
         return $disk->download($media->private_path, 'materi-'.$material->id.'-'.$media->id.'.pdf', [
             'Content-Type' => 'application/pdf', 'Cache-Control' => 'private, no-store, max-age=0',
             'Pragma' => 'no-cache', 'X-Content-Type-Options' => 'nosniff',
