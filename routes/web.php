@@ -13,6 +13,7 @@ use App\Http\Controllers\SessionController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\Questions\QuestionManagementController;
 use App\Http\Controllers\Questions\QuestionImportController;
+use App\Http\Controllers\Questions\QuestionQcController;
 use App\Http\Controllers\Admin\SubjectCatalogController;
 use App\Http\Controllers\Admin\TryoutManagementController;
 use App\Http\Controllers\Admin\ParticipantManagementController;
@@ -241,12 +242,17 @@ Route::prefix('admin')->middleware(['auth', EnsureActiveAccount::class, EnsureRo
     // Q-BULK-IMPORT-01: specific routes must precede /soal/{question}.
     Route::get('/soal/impor', [QuestionImportController::class, 'index'])->name('questions.import.index');
     Route::post('/soal/impor', [QuestionImportController::class, 'upload'])->middleware('throttle:10,1')->name('questions.import.upload');
+    Route::get('/soal/impor/template-zip', [QuestionImportController::class,'zipTemplate'])->name('questions.import.zip-template');
     Route::get('/soal/impor/template', [QuestionImportController::class, 'template'])->name('questions.import.template');
     Route::get('/soal/impor/referensi', [QuestionImportController::class, 'references'])->name('questions.import.references');
     Route::get('/soal/impor/{batch}', [QuestionImportController::class, 'show'])->name('questions.import.show');
+    Route::get('/soal/impor/{batch}/gambar/{index}',[QuestionImportController::class,'image'])->whereNumber('index')->name('questions.import.media-preview');
     Route::get('/soal/impor/{batch}/kesalahan', [QuestionImportController::class, 'errors'])->name('questions.import.errors');
     Route::post('/soal/impor/{batch}/konfirmasi', [QuestionImportController::class, 'confirm'])->middleware('throttle:5,1')->name('questions.import.confirm');
     Route::delete('/soal/impor/{batch}', [QuestionImportController::class, 'discard'])->middleware('throttle:10,1')->name('questions.import.discard');
+    Route::get('/soal/qc', [QuestionQcController::class,'index'])->name('questions.qc.index');
+    Route::get('/soal/qc/{question}', [QuestionQcController::class,'show'])->name('questions.qc.show');
+    Route::post('/soal/qc/{question}/tandai', [QuestionQcController::class,'mark'])->middleware('throttle:20,1')->name('questions.qc.mark');
     Route::get('/soal', [QuestionManagementController::class, 'index'])->middleware('throttle:120,1')->name('questions.admin.index');
     Route::get('/soal/buat', [QuestionManagementController::class, 'create'])->name('questions.admin.create');
     Route::post('/soal', [QuestionManagementController::class, 'store'])->middleware('throttle:30,1')->name('questions.admin.store');

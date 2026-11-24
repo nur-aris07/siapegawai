@@ -1,12 +1,16 @@
 @extends('layouts.admin')
-@section('title','Hasil Validasi Impor CSV')
+@section('title','Content Studio · Hasil Impor')
 @section('content')
 <div class="qi-page">
- <div class="admin-v1-heading qi-heading"><div><p class="admin-v1-crumb"><a href="{{ route('questions.import.index') }}">Impor CSV</a> / Hasil</p><h1>Hasil validasi CSV</h1><p>Batch {{ $batch->id }} · {{ $batch->created_at->format('d M Y H:i') }}</p></div><a class="button button-outline" href="{{ route('questions.import.index') }}">Impor baru</a></div>
+ <div class="admin-v1-heading qi-heading"><div><p class="admin-v1-crumb"><a href="{{ route('questions.import.index') }}">Impor CSV</a> / Hasil</p><h1>Hasil validasi {{ $isZip ? "ZIP+CSV bergambar" : "CSV" }}</h1><p>Batch {{ $batch->id }} · {{ $batch->created_at->format('d M Y H:i') }}</p></div><a class="button button-outline" href="{{ route('questions.import.index') }}">Impor baru</a></div>
  <div class="qi-summary-grid" aria-label="Ringkasan validasi"><div class="qi-metric"><span>Total record</span><strong>{{ $preview['total'] }}</strong></div><div class="qi-metric qi-metric-good"><span><svg class="qi-icon" aria-hidden="true"><use href="#ic-check"></use></svg> Valid</span><strong>{{ $preview['valid'] }}</strong></div><div class="qi-metric @if($preview['invalid']) qi-metric-bad @endif"><span><svg class="qi-icon" aria-hidden="true"><use href="#ic-alert-circle"></use></svg> Invalid</span><strong>{{ $preview['invalid'] }}</strong></div></div>
  <section class="admin-v1-panel qi-panel" aria-labelledby="qi-status-title">
   <div class="qi-section-heading"><div><h2 id="qi-status-title">Status batch: <span class="qi-status qi-status-{{ $batch->status }}">{{ ['ready'=>'Siap dikonfirmasi','invalid'=>'Perlu perbaikan','failed'=>'Gagal diproses','expired'=>'Kedaluwarsa','committed'=>'Tersimpan'][$batch->status] ?? $batch->status }}</span></h2><p>Ukuran: {{ number_format($batch->byte_count,0,',','.') }} byte · Tenggat: {{ $batch->expires_at->format('d M Y H:i') }}</p></div></div>
-  @if($batch->status === 'committed')<div class="qi-callout qi-callout-success" role="status"><svg class="qi-icon" aria-hidden="true"><use href="#ic-check"></use></svg><span><strong>Berhasil:</strong> {{ $batch->result['count'] ?? 0 }} soal tersimpan sebagai draft. Tidak ada publish atau assignment otomatis.</span></div>
+  @if($batch->status === 'committed')
+  @if($isZip)
+  <p><a class="button button-outline" href="{{ route('questions.qc.index') }}">Lanjut ke QC Workspace</a></p>
+  @endif
+  <div class="qi-callout qi-callout-success" role="status"><svg class="qi-icon" aria-hidden="true"><use href="#ic-check"></use></svg><span><strong>Berhasil:</strong> {{ $batch->result['count'] ?? 0 }} soal tersimpan sebagai draft. Tidak ada publish atau assignment otomatis.</span></div>
   @elseif($batch->expires_at->isPast())<div class="qi-callout qi-callout-danger" role="alert"><svg class="qi-icon" aria-hidden="true"><use href="#ic-alert-circle"></use></svg><span>Batch telah kedaluwarsa. Unggah kembali CSV yang sudah diperbaiki.</span></div>
   @elseif($preview['invalid'])<div class="qi-callout qi-callout-danger" role="alert"><svg class="qi-icon" aria-hidden="true"><use href="#ic-alert-circle"></use></svg><span><strong>{{ $preview['invalid'] }} record invalid.</strong> Konfirmasi tidak tersedia. Perbaiki file dan unggah ulang seluruh batch; tidak ada soal disimpan parsial.</span></div>
   @else<div class="qi-callout qi-callout-success" role="status"><svg class="qi-icon" aria-hidden="true"><use href="#ic-check"></use></svg><span><strong>Seluruh record valid saat preview.</strong> Kode dan referensi diperiksa kembali sebelum commit.</span></div>@endif
@@ -23,13 +27,25 @@
 @endforeach</pre><p class="qi-copy-result" data-qi-copy-result role="status" aria-live="polite"></p>@endif
   <div class="table-scroll" tabindex="0" aria-label="Kesalahan per record"><table class="data-table admin-v1-table qi-table"><thead><tr><th>Record</th><th>Baris sumber</th><th>Kode</th><th>Masalah</th></tr></thead><tbody>
   @forelse(collect($preview['errors'])->forPage(max(1,(int) request()->query('page',1)),30) as $error)<tr><td>{{ $error['record'] }}</td><td>{{ $error['line'] }}</td><td>{{ $error['code'] }}</td><td><ul class="qi-error-list">@foreach($error['messages'] as $message)<li>{{ $message }}</li>@endforeach</ul></td></tr>
-  @empty<tr><td colspan="4" class="qi-empty">Tidak ditemukan kesalahan pada batch ini.</td></tr>@endforelse</tbody></table></div>
+  @empty
+<tr><td colspan="4" class="qi-empty">Tidak ditemukan kesalahan pada batch ini.</td></tr>
+@endforelse
+</tbody></table></div>
   @if(count($preview['errors'])>30)<nav class="qi-pagination" aria-label="Halaman kesalahan">Halaman {{ max(1,(int) request()->query('page',1)) }} dari {{ (int) ceil(count($preview['errors'])/30) }} @if((int)request()->query('page',1)>1)<a href="{{ route('questions.import.show', ['batch'=>$batch->id,'page'=>(int)request()->query('page',1)-1]) }}">Sebelumnya</a>@endif @if((int)request()->query('page',1)<ceil(count($preview['errors'])/30))<a href="{{ route('questions.import.show', ['batch'=>$batch->id,'page'=>(int)request()->query('page',1)+1]) }}">Berikutnya</a>@endif</nav>@endif
  </section>
- <section class="admin-v1-panel qi-panel" aria-labelledby="qi-preview-title"><div class="qi-section-heading"><div><h2 id="qi-preview-title">Pratinjau soal</h2><p>Menampilkan maksimal 20 record pertama. Tidak ada soal dibuat pada tahap ini.</p></div></div>
+ <section class="admin-v1-panel qi-panel" aria-labelledby="qi-preview-title"><div class="qi-section-heading"><div><h2 id="qi-preview-title">Pratinjau soal</h2><p>Menampilkan maksimal 30 record pertama. Tidak ada soal dibuat pada tahap ini.</p></div></div>
   <div class="table-scroll" tabindex="0" aria-label="Pratinjau soal"><table class="data-table admin-v1-table qi-table"><thead><tr><th>Record</th><th>Baris</th><th>Kode</th><th>Pertanyaan</th><th>Validasi</th></tr></thead><tbody>
-  @forelse(collect($preview['items'])->take(20) as $item)<tr><td>{{ $item['record'] }}</td><td>{{ $item['line'] }}</td><td>{{ $item['code'] }}</td><td>{{ $item['body'] }}</td><td><span class="qi-status {{ $item['valid'] ? 'qi-status-ready' : 'qi-status-invalid' }}">{{ $item['valid'] ? 'Valid' : 'Invalid' }}</span></td></tr>
-  @empty<tr><td colspan="5" class="qi-empty">Pratinjau tidak tersedia.</td></tr>@endforelse</tbody></table></div>
+  @forelse(collect($preview['items'])->take(30) as $item)<tr><td>{{ $item['record'] }}</td><td>{{ $item['line'] }}</td><td>{{ $item['code'] }}</td><td>{{ $item['body'] ?: '(media gambar)' }}
+  @if($isZip)
+  @foreach($item['media'] ?? [] as $media)
+   <figure class="qi-media-preview"><img src="{{ route('questions.import.media-preview',[$batch->id,$media['index']]) }}" alt="{{ $media['alt_text'] ?: 'Gambar soal untuk tinjauan' }}" loading="lazy"><figcaption>{{ $media['slot'] }} · {{ $media['alt_text'] }} · Hak: belum diverifikasi</figcaption></figure>
+  @endforeach
+  @endif
+  </td><td><span class="qi-status {{ $item['valid'] ? 'qi-status-ready' : 'qi-status-invalid' }}">{{ $item['valid'] ? 'Valid' : 'Invalid' }}</span></td></tr>
+  @empty
+<tr><td colspan="5" class="qi-empty">Pratinjau tidak tersedia.</td></tr>
+@endforelse
+</tbody></table></div>
  </section>
 </div>
 @endsection

@@ -104,7 +104,7 @@ class QuestionCsvImportService
     }
 
     /** Shared field contract mirrors QuestionContentRequest without changing the existing editor. */
-    public function inspect(array $records): array
+    public function inspect(array $records, ?array $mediaSlotsByCode = null): array
     {
         $subjects = Subject::query()->with('topics')->get()->keyBy('code');
         $seen = []; $items = []; $errors = []; $valid = 0;
@@ -118,22 +118,36 @@ class QuestionCsvImportService
             $topicValid = $subject?->status === 'active' && $topic?->status === 'active';
             $input = array_intersect_key($row, array_flip(['code','body','explanation','option_a','option_b','option_c','option_d','option_e','correct_option']));
             $input['topic_id'] = $topicValid ? $topic->id : null;
+            $mediaSlots = $mediaSlotsByCode === null ? [] : ($mediaSlotsByCode[$row['code']] ?? []);
+            $hasMedia = fn (string $slot): bool => in_array($slot, $mediaSlots, true);
+            $zip = $mediaSlotsByCode !== null;
+            if ($zip) {
+                $input['figural_draft'] = true;
+                $input['option_e_media_exists'] = $hasMedia('option_E');
+            }
             // Form request contract: max/min lengths, code regex, A-D and E rules.
             $validator = Validator::make($input, [
                 'code'=>['required','string','max:48','regex:/^[A-Z0-9][A-Z0-9-]*$/'],
                 'topic_id'=>['required','integer'],
-                'body'=>['required','string','min:12','max:5000'],
-                'explanation'=>['required','string','min:12','max:5000'],
-                'option_a'=>['required','string','max:1200'],
-                'option_b'=>['required','string','max:1200'],
-                'option_c'=>['required','string','max:1200'],
-                'option_d'=>['required','string','max:1200'],
+                'body'=>array_values(array_filter([$zip ? 'nullable':'required','string',$zip ? null:'min:12','max:5000'])),
+                'explanation'=>array_values(array_filter([$zip ? 'nullable':'required','string',$zip ? null:'min:12','max:5000'])),
+                'option_a'=>[$zip ? 'nullable':'required','string','max:1200'],
+                'option_b'=>[$zip ? 'nullable':'required','string','max:1200'],
+                'option_c'=>[$zip ? 'nullable':'required','string','max:1200'],
+                'option_d'=>[$zip ? 'nullable':'required','string','max:1200'],
                 'option_e'=>['nullable','string','max:1200'],
                 'correct_option'=>['required', Rule::in(['A','B','C','D','E'])],
             ]);
             $messages = $validator->errors()->all();
+            if ($zip) {
+                foreach (['body'=>'stem','explanation'=>'explanation','option_a'=>'option_A','option_b'=>'option_B','option_c'=>'option_C','option_d'=>'option_D'] as $field=>$slot) {
+                    $length = mb_strlen($row[$field]);
+                    if (($length < ($field === 'body' || $field === 'explanation' ? 12 : 1)) && !$hasMedia($slot))
+                        $messages[] = $field.': teks atau gambar valid wajib tersedia.';
+                }
+            }
             if (!$topicValid) $messages[] = 'subject_code/topic_slug: pasangan materi-topik tidak aktif, tidak ditemukan, atau tidak cocok.';
-            if ($row['correct_option'] === 'E' && $row['option_e'] === '') $messages[] = 'correct_option: kunci E memerlukan opsi E.';
+            if ($row['correct_option'] === 'E' && $row['option_e'] === '' && !$hasMedia('option_E')) $messages[] = 'correct_option: kunci E memerlukan opsi E.';
             if (isset($existing[$row['code']])) $messages[] = 'code: kode sudah terdaftar pada bank soal.';
             if (isset($seen[$row['code']])) $messages[] = 'code: kode duplikat di dalam file (record '.$seen[$row['code']].').';
             if ($row['code'] !== '') $seen[$row['code']] ??= $index+1;

@@ -92,15 +92,67 @@
  .qi-page .qi-summary-grid { gap:8px; }
  .qi-page .qi-metric { padding:14px 12px; }
  .qi-page .qi-metric strong { font-size:23px; }
- .qi-page .qi-tool-actions > * { flex:1 1 100%; }
+ .qi-page.qi-import-page .qi-tool-actions-main .button { flex:1 1 100%; }
  .qi-page .qi-dropzone { padding:20px 12px; }
  .qi-page .qi-dropzone > strong { font-size:13px; }
- .qi-page .qi-dropzone > strong::before { content:'Pilih file CSV dari perangkat'; display:block; }
- .qi-page .qi-dropzone > strong { font-size:0; }
- .qi-page .qi-dropzone > strong::before { font-size:13px; }
+
  .qi-dialog { width:calc(100vw - 20px); max-width:calc(100vw - 20px); max-height:calc(100dvh - 32px); }
  .qi-dialog .qi-dialog-head, .qi-dialog .qi-dialog-body, .qi-dialog .qi-dialog-actions { padding-left:16px; padding-right:16px; }
  .qi-dialog .qi-dialog-actions .button { flex:1 1 100%; }
 }
 @media (max-width:375px) { .qi-page .qi-summary-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } .qi-page .qi-metric span { font-size:10px; } .qi-page .qi-metric { padding:12px 8px; } }
 @media (prefers-reduced-motion:reduce) { .qi-page .qi-dropzone { transition:none; } }
+
+/* Content Studio visual R3: task-dense, scoped admin controls; do not alter other admin forms. */
+.qi-page.qi-import-page > .qi-panel { margin-top:20px; }
+.qi-page.qi-import-page .qi-panel { padding:clamp(16px,1.3vw,24px); }
+.qi-page.qi-import-page .qi-section-heading { margin-bottom:14px; }
+.qi-page.qi-import-page .qi-tool-actions { display:grid; gap:12px; align-items:start; }
+.qi-page.qi-import-page .qi-tool-actions-main,
+.qi-page.qi-import-page .qi-tool-actions-links { display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; }
+.qi-page.qi-import-page .qi-tool-actions-main .button { min-height:42px; font-size:12px; padding:10px 14px; }
+.qi-page.qi-import-page .qi-tool-actions-links { border-top:1px solid var(--qi-line); padding-top:10px; }
+.qi-page.qi-import-page .qi-text-action { display:inline-flex; align-items:center; gap:6px; min-height:36px; padding:6px 2px; border:0; border-radius:4px; background:transparent; color:var(--qi-navy); cursor:pointer; font:inherit; font-size:12px; font-weight:650; text-decoration:none; }
+.qi-page.qi-import-page .qi-text-action:hover { text-decoration:underline; text-underline-offset:3px; }
+.qi-page.qi-import-page .qi-text-action .qi-icon { width:16px; height:16px; }
+.qi-page.qi-import-page .qi-muted { margin-top:10px; }
+.qi-page.qi-import-page .qi-upload-form { gap:10px; }
+.qi-page.qi-import-page .qi-format-chooser { display:flex; flex-wrap:wrap; gap:8px; min-width:0; border:0; padding:0; margin:0; }
+.qi-page.qi-import-page .qi-format-chooser legend { margin:0 0 7px; padding:0; font-size:12px; font-weight:700; color:var(--qi-ink); }
+.qi-page.qi-import-page .qi-format-option { display:inline-flex; align-items:center; flex:0 1 auto; gap:9px; padding:7px 12px; min-height:44px; max-width:100%; border:1px solid #d4dce5; border-radius:6px; background:#fff; color:var(--qi-ink); cursor:pointer; line-height:1.3; }
+.qi-page.qi-import-page .qi-format-option:has(input:checked) { border-color:#7894b8; background:#f1f5fa; }
+.qi-page.qi-import-page .qi-format-option:hover { border-color:#93a9c1; }
+/* The global .shell-admin input:not([type="checkbox"]) incorrectly treats radio as full-width text input. */
+.shell-admin .qi-page.qi-import-page .qi-format-chooser input[type="radio"] { appearance:auto; -webkit-appearance:radio; display:block; flex:0 0 18px; width:18px; min-width:18px; max-width:18px; height:18px; min-height:18px; max-height:18px; margin:0; padding:0; border:0; border-radius:50%; box-shadow:none; background:transparent; accent-color:var(--qi-navy); cursor:pointer; }
+.qi-page.qi-import-page .qi-format-option-copy { display:grid; gap:1px; min-width:0; }
+.qi-page.qi-import-page .qi-format-option-copy strong { font-size:12px; font-weight:700; }
+.qi-page.qi-import-page .qi-format-option-copy small { font-size:11px; color:var(--qi-muted); white-space:nowrap; }
+.qi-page.qi-import-page .qi-mode-description { font-size:12px; line-height:1.55; }
+.qi-page.qi-import-page .qi-dropzone { padding:16px 18px; gap:6px; border-width:1.5px; }
+.qi-page.qi-import-page .qi-upload-icon { width:24px; height:24px; }
+.qi-page.qi-import-page .qi-dropzone strong { font-size:13px; line-height:1.45; }
+.qi-page.qi-import-page .qi-dropzone .qi-choose-label { min-height:42px; font-size:12px; padding:9px 14px; }
+.qi-page.qi-import-page .qi-dropzone .qi-selected { font-size:11px; font-weight:600; }
+.qi-page.qi-import-page .qi-upload-hint { font-size:12px; }
+.qi-page.qi-import-page .qi-submit { min-height:44px; }
+.qi-page.qi-import-page .qi-format-option:focus-within { outline:3px solid #B88928; outline-offset:2px; }
+.qi-page .qi-media-preview { max-width:200px; overflow-wrap:anywhere; margin:10px 0; }
+.qi-page .qi-media-preview img { max-width:100%; height:auto; display:block; border:1px solid #E2E4E7; border-radius:6px; }
+.qi-page .qi-media-preview figcaption { font-size:12px; line-height:1.4; color:#596575; }
+.qi-page .qi-media-preview :focus-visible {outline:3px solid #B88928;outline-offset:3px;}
+
+.qi-page .qi-qc-media-image { max-width:min(100%,240px);height:auto;display:block;border-radius:6px; }
+
+/* F1: server-side QC search, topic and version-status filters. */
+.qi-qc-filters{display:flex;flex-wrap:wrap;align-items:end;gap:12px;margin-block:16px}
+.qi-qc-filters label{font-size:.875rem;font-weight:600}
+.qi-qc-filters input,.qi-qc-filters select{min-width:160px;max-width:100%;padding:9px;border:1px solid var(--border-color,#cad4df);border-radius:8px}
+@media(max-width:600px){.qi-qc-filters{display:grid;grid-template-columns:1fr}.qi-qc-filters input,.qi-qc-filters select{width:100%}}
+
+@media (max-width:560px) {
+ .qi-page.qi-import-page .qi-format-chooser { gap:8px; }
+ .qi-page.qi-import-page .qi-format-option { flex:1 1 100%; }
+ .qi-page.qi-import-page .qi-tool-actions-links { gap:4px 14px; }
+ .qi-page.qi-import-page .qi-text-action { min-height:44px; }
+ .qi-page.qi-import-page .qi-dropzone { padding:16px 12px; }
+}
