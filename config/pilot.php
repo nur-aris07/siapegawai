@@ -2,6 +2,7 @@
 return [
     'qa_test_database' => env('SG_PILOT_QA_DB'),
     'mode' => false, // No production activation in this work item.
+    'support_email' => 'siapegawai@gmail.com', // Owner-confirmed pilot-only fallback, no outbound mail.
     'admission_enabled' => false,
     'starts_enabled' => false,
     'mail_enabled' => false,

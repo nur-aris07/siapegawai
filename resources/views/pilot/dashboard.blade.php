@@ -3,6 +3,7 @@
 @section('content')
 <h1>Uji coba Quick Quiz</h1><p>Program terbatas, gratis, dan tidak berafiliasi dengan penyelenggara seleksi.</p>
 <p><a href="{{ route('member.quick-quizzes.index') }}">Quiz Kilat</a> · <a href="{{ route('member.quick-quizzes.history') }}">Riwayat</a></p>
+@include('pilot.faq')
 <form method="POST" action="{{ route('pilot.research') }}">@csrf
 <input type="hidden" name="binding" value="{{ app(\App\Services\PilotAccessService::class)->binding() }}">
 <input type="hidden" name="research_binding" value="{{ app(\App\Services\PilotAccessService::class)->researchBinding() }}">
