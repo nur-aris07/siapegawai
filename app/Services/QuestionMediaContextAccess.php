@@ -42,6 +42,8 @@ final class QuestionMediaContextAccess
     {
         $attempt = QuickQuizAttempt::query()->whereKey($attemptId)->where('user_id',$userId)->first();
         abort_unless($attempt, 404);
+        $pilot=app(PilotAccessService::class);
+        if ($pilot->enabled()) { $u=\App\Models\User::query()->find($userId); abort_unless($u && $pilot->admitted($u,$attempt),404); }
         $item = QuickQuizVersionItem::query()->whereKey($itemId)
             ->where('quick_quiz_version_id',$attempt->quick_quiz_version_id)
             ->where('question_version_id',$media->question_version_id)->first();

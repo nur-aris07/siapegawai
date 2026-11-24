@@ -44,9 +44,7 @@ final class FigP4ClassPdfRestoreFixture extends Command
         }
         try {
             // Exact DB + environment guard on ALL modes; never use this command on restored/production schemas.
-            if (!app()->environment('testing')
-                || DB::connection()->getDatabaseName() !== self::DATABASE
-                || DB::selectOne('SELECT DATABASE() AS db')?->db !== self::DATABASE) {
+            if (!\App\Support\IsolatedQaDatabase::matchesConnection()) {
                 throw new RuntimeException('Isolated QA database identity mismatch.');
             }
             if (config('filesystems.disks.class_media_private.driver') !== 'local'

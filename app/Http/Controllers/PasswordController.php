@@ -20,6 +20,11 @@ class PasswordController extends Controller
     public function sendLink(Request $request): RedirectResponse
     {
         $request->validate(['email' => ['required', 'email']]);
+        $pilot=app(\App\Services\PilotAccessService::class);
+        if ($pilot->enabled()) {
+            $u=User::query()->where('email',mb_strtolower(trim($request->input('email'))))->first();
+            if (!$u || !$pilot->canReset($u) || config('pilot.mail_enabled')!==true || !app()->environment('testing')) return back()->with('success','Jika email terdaftar, instruksi pemulihan akan dikirim.');
+        }
         Password::sendResetLink(['email' => mb_strtolower(trim($request->input('email')))]);
         return back()->with('success', 'Jika email terdaftar, instruksi pemulihan akan dikirim.');
     }
@@ -37,6 +42,8 @@ class PasswordController extends Controller
             function ($user, $password) {
                 DB::transaction(function () use ($user, $password): void {
                     $account = User::query()->whereKey($user->getKey())->lockForUpdate()->firstOrFail();
+                    $pilot=app(\App\Services\PilotAccessService::class);
+                    if ($pilot->enabled()) abort_unless($pilot->canReset($account),403);
                     $isAdmin = $account->isAdmin();
                     $before = (int) $account->admin_security_version;
                     $changes = [

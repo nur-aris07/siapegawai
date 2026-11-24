@@ -21,24 +21,30 @@ class QuickQuizAttemptService
     public function __construct(private readonly QuickQuizQuotaService $quota) {}
 
     /** One active attempt per participant across quizzes, preventing double-tab starts. */
-    public function start(User $user, QuickQuiz $quiz, string $key): QuickQuizAttempt
+    public function start(User $user, QuickQuiz $quiz, string $key, ?int $expectedVersion = null): QuickQuizAttempt
     {
         if (!preg_match('/^[A-Za-z0-9_-]{12,80}$/D', $key)) {
             throw ValidationException::withMessages(['attempt'=>'Permintaan memulai tidak valid.']);
         }
-        return DB::transaction(function () use ($user,$quiz,$key) {
+        return DB::transaction(function () use ($user,$quiz,$key,$expectedVersion) {
             // Same user-row mutex as the quota service, held across active-check and debit.
             $lockedUser = User::query()->lockForUpdate()->findOrFail($user->id);
             abort_unless($lockedUser->role==='participant' && $lockedUser->status==='active', 403);
+            $pilot=app(PilotAccessService::class);
+            if ($pilot->enabled()) {
+                $quiz=QuickQuiz::query()->lockForUpdate()->findOrFail($quiz->id);
+                $pilot->assertStart($lockedUser,$quiz,$expectedVersion);
+            }
             $already = QuickQuizAttempt::query()->where('user_id',$user->id)
                 ->where('status','active')->orderBy('id')->lockForUpdate()->get();
             foreach ($already as $attempt) {
+                if ($pilot->enabled()) abort_unless($pilot->admitted($lockedUser,$attempt),403);
                 $this->settle($attempt, CarbonImmutable::now('UTC'));
                 if ($attempt->status === 'active') return $attempt;
             }
             // Old idempotency keys always return their old attempt, not a new charge.
             $existing = QuickQuizAttempt::query()->where('user_id',$user->id)->where('start_key',$key)->first();
-            if ($existing) return $existing;
+            if ($existing) { if ($pilot->enabled()) abort_unless($pilot->admitted($lockedUser,$existing),403); return $existing; }
             $quiz = QuickQuiz::query()->lockForUpdate()->findOrFail($quiz->id);
             abort_unless($quiz->status === 'published' && $quiz->current_version_id, 404);
             $version = $quiz->currentVersion;
@@ -48,18 +54,20 @@ class QuickQuizAttemptService
                 throw ValidationException::withMessages(['attempt'=>'Susunan quiz terbit tidak valid.']);
             }
             $now = CarbonImmutable::now('UTC');
-            $charged = $this->quota->startWithQuota($lockedUser, $key, function () use ($lockedUser,$version,$count,$key,$now): string {
+            $charged = $this->quota->startWithQuota($lockedUser, $key, function () use ($lockedUser,$version,$count,$key,$now,$pilot): string {
                 $attempt = QuickQuizAttempt::query()->create([
                     'user_id'=>$lockedUser->id,'quick_quiz_version_id'=>$version->id,
                     'start_key'=>$key,'status'=>'active','phase'=>'question','current_index'=>0,
                     'total_questions'=>$count,'started_at'=>$now,'last_seen_at'=>$now,
                     'question_started_at'=>$now,'question_expires_at'=>$now->addSeconds($version->seconds_per_question),
                 ]);
+                if ($pilot->enabled()) $pilot->recordStart($lockedUser,$attempt);
                 return 'qq:'.$attempt->id;
             }, $now);
             if (!str_starts_with($charged['attempt_ref'], 'qq:')) throw new \LogicException('Referensi attempt QQ tidak sesuai.');
             $attempt = QuickQuizAttempt::query()->findOrFail((int) substr($charged['attempt_ref'],3));
             abort_unless((int)$attempt->user_id === (int)$user->id,403);
+            if ($pilot->enabled()) abort_unless($pilot->admitted($lockedUser,$attempt),403);
             if (!$attempt->qq_quota_usage_id) {
                 $attempt->update(['qq_quota_usage_id'=>$charged['usage_id']]);
             }
@@ -71,7 +79,10 @@ class QuickQuizAttemptService
     public function read(QuickQuizAttempt $attempt): QuickQuizAttempt
     {
         return DB::transaction(function () use ($attempt) {
+            $pilot=app(PilotAccessService::class);
+            $owner=$pilot->enabled()?User::query()->lockForUpdate()->findOrFail($attempt->user_id):null;
             $attempt = QuickQuizAttempt::query()->lockForUpdate()->findOrFail($attempt->id);
+            if ($pilot->enabled()) abort_unless($pilot->admitted($owner,$attempt),403);
             $this->settle($attempt, CarbonImmutable::now('UTC'));
             return $attempt->fresh();
         }, 3);
@@ -81,7 +92,10 @@ class QuickQuizAttemptService
     public function answer(QuickQuizAttempt $attempt, int $itemId, ?string $label): QuickQuizAttempt
     {
         return DB::transaction(function () use ($attempt,$itemId,$label) {
+            $pilot=app(PilotAccessService::class);
+            $owner=$pilot->enabled()?User::query()->lockForUpdate()->findOrFail($attempt->user_id):null;
             $attempt = QuickQuizAttempt::query()->lockForUpdate()->findOrFail($attempt->id);
+            if ($pilot->enabled()) abort_unless($pilot->admitted($owner,$attempt),403);
             $now=CarbonImmutable::now('UTC');
             $this->settle($attempt,$now);
             abort_unless($attempt->status==='active',409);
@@ -101,7 +115,10 @@ class QuickQuizAttemptService
     public function next(QuickQuizAttempt $attempt): QuickQuizAttempt
     {
         return DB::transaction(function () use ($attempt) {
+            $pilot=app(PilotAccessService::class);
+            $owner=$pilot->enabled()?User::query()->lockForUpdate()->findOrFail($attempt->user_id):null;
             $attempt = QuickQuizAttempt::query()->lockForUpdate()->findOrFail($attempt->id);
+            if ($pilot->enabled()) abort_unless($pilot->admitted($owner,$attempt),403);
             $now=CarbonImmutable::now('UTC');
             $this->settle($attempt,$now);
             abort_unless($attempt->status==='active' && $attempt->phase==='feedback',409);

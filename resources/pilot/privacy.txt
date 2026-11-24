@@ -1,0 +1,37 @@
+DRAFT — KHUSUS QA SINTETIS. Tidak berlaku untuk peserta nyata.
+Operator layanan: Admin SIAPEGAWAI (perorangan); siapegawai@gmail.com. Hosting Hostinger direncanakan, belum dibeli.
+
+## 5. Draft peserta — Kebijakan Privasi (teks yang diajukan)
+
+**DRAFT — belum berlaku. Versi usulan: PILOT-LEGAL-v1. Tanggal efektif: belum ditetapkan.** Penanda [KONFIRMASI] di bawah tidak boleh dipublikasikan sebagai policy efektif.
+
+### 5.1 Siapa yang mengelola layanan
+
+SIAPEGAWAI adalah layanan belajar independen yang dikelola secara perorangan oleh [KONFIRMASI nama pengendali data dan alamat korespondensi yang diperlukan], dengan domain siapegawai.com. Kebijakan ini berlaku khusus untuk uji coba Quick Quiz (QQ) terbatas, gratis, dan berdasarkan undangan. Pertanyaan mengenai privasi dan hak data dapat diajukan ke siapegawai@gmail.com.
+
+### 5.2 Data yang kami gunakan dan alasannya
+
+Kami menggunakan nama dan alamat email Anda untuk mengelola undangan, akun, autentikasi, bantuan dan komunikasi yang diperlukan bagi layanan. Kata sandi disimpan dalam bentuk hash; tautan pengaturan ulang kata sandi bersifat terbatas masa berlakunya. Saat Anda berlatih, sistem menyimpan edisi dan versi soal, waktu pengerjaan, pilihan jawaban, ketepatan, status sesi, pemakaian kuota, hasil dan riwayat untuk menyediakan latihan, pembahasan, hasil, serta pemulihan sesi sesuai aturan sistem. Sistem dapat mencatat sesi, alamat IP, informasi browser, peristiwa akses dan keamanan untuk menjaga layanan serta menelusuri gangguan. Kami menyimpan versi ketentuan yang Anda setujui, waktu dan sumber persetujuan untuk pertanggungjawaban.
+
+Kami tidak meminta NIK, nomor peserta CPNS, data pembayaran atau nomor WhatsApp untuk uji coba ini. Jangan mengirim kata sandi atau data sensitif melalui email bantuan. Jika Anda menghubungi kami, kami menggunakan informasi dalam pesan yang diperlukan untuk menangani permintaan Anda.
+
+Data yang diperlukan bagi penyediaan layanan digunakan untuk memenuhi permintaan penggunaan layanan; catatan keamanan dan pertanggungjawaban digunakan atas dasar yang sah sesuai tujuan dan hukum yang berlaku. Riset produk mempunyai persetujuan terpisah dan opsional, dijelaskan dalam pemberitahuan riset. Kami tidak menjual data Anda atau menggunakan data untuk iklan tertarget dalam uji coba ini. Skor latihan bukan keputusan administratif, kelulusan CPNS, atau penilaian resmi pemerintah.
+
+### 5.3 Pihak yang membantu pemrosesan dan lokasi
+
+Kami merencanakan penggunaan layanan hosting Hostinger untuk aplikasi, database dan penyimpanan cadangan [KONFIRMASI entitas kontraktual, negara/region server dan backup, pemroses/subpemroses yang relevan]. Kanal bantuan menggunakan Gmail. Undangan dan pengaturan ulang kata sandi dikirim melalui [KONFIRMASI provider dan lokasi pemrosesan email]. Pihak penyedia layanan hanya dilibatkan sesuai peran dan dasar pemrosesan yang relevan. Jika pemrosesan melibatkan transfer ke luar Indonesia, kami menilai dan menerapkan persyaratan perlindungan transfer yang berlaku sebelum dilakukan. Data juga dapat diungkap bila diwajibkan hukum. Akses pengelola dibatasi pada kebutuhan layanan.
+
+### 5.4 Berapa lama data disimpan
+
+Usulan masa simpan: akun dan riwayat latihan sampai 90 hari setelah penutupan uji coba; undangan yang tidak digunakan sampai 30 hari; log rutin 30 hari; komunikasi bantuan sampai 90 hari setelah penyelesaian; token reset berlaku 60 menit dan dibersihkan setelah kedaluwarsa. Catatan persetujuan dan audit minimum dapat disimpan sampai 12 bulan jika masih mempunyai dasar yang sah. Data riset yang masih dapat dikaitkan kepada peserta dihapus setelah analisis, paling lambat 90 hari setelah penutupan dan dalam 30 hari setelah analisis selesai. Backup diputar dengan target maksimum 30 hari [KONFIRMASI cycle aktual]. Data dihapus lebih awal jika diwajibkan atau tidak lagi diperlukan. Penyimpanan khusus karena kewajiban hukum atau sengketa dibatasi pada data yang perlu. Peserta dapat meminta akses atau salinan datanya sebelum masa simpan berakhir.
+
+### 5.5 Keamanan, cookie dan hak Anda
+
+Kami menggunakan cookie/sesi teknis untuk login, keamanan dan operasi latihan, bukan pelacakan iklan. Kami menerapkan langkah pengamanan yang sesuai seperti pembatasan akses, HTTPS, penyimpanan kata sandi ter-hash dan pemisahan data privat. Tidak ada sistem yang bebas risiko. Bila terjadi kegagalan pelindungan data, kami akan melakukan penanganan dan pemberitahuan sesuai kewajiban hukum.
+
+Anda dapat meminta informasi, akses atau salinan, koreksi, pembatasan atau penghentian pemrosesan, penghapusan/pemusnahan, penarikan persetujuan, dan menggunakan hak lainnya sesuai peraturan yang berlaku. Kirim permintaan ke siapegawai@gmail.com. Kami dapat memverifikasi identitas secara proporsional dan memberi tahu hasil penanganan. Persetujuan riset dapat ditarik tanpa kehilangan hak latihan. Jika Anda meminta berhenti menggunakan layanan, akses dapat dihentikan dan data ditangani berdasarkan permintaan dan dasar hukum yang berlaku; kami tidak menghapus data hanya karena kuota habis atau cohort ditutup. Hasil yang sudah benar-benar anonim dan tidak bisa dikaitkan kembali mungkin tidak dapat dipisahkan per orang.
+
+### 5.6 Perubahan kebijakan
+
+Kami menyampaikan perubahan yang relevan sebelum diterapkan, menyediakan versi kebijakan yang berlaku dan meminta persetujuan baru jika diperlukan. Untuk perubahan material, penggunaan baru dapat dibatasi sampai ketentuan yang berlaku disetujui. Riset tidak dilanjutkan otomatis berdasarkan persetujuan versi lama jika tujuan/notice berubah secara material. Hubungi email resmi untuk pertanyaan atau pengaduan.
+

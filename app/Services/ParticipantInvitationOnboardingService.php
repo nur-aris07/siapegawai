@@ -28,6 +28,8 @@ class ParticipantInvitationOnboardingService
 
     public function legalReady(): bool
     {
+        $pilot=app(PilotAccessService::class);
+        if ($pilot->enabled()) return $pilot->legalReady();
         $version = config('siapegawai.privacy_version');
         // The public registration switch and WhatsApp number are unrelated to legal consent for an existing invitation.
         return config('siapegawai.privacy_approved') === true
@@ -37,15 +39,28 @@ class ParticipantInvitationOnboardingService
     }
 
     /** Returns false on an authenticated replay of an already accepted invitation. */
-    public function accept(User $owner): bool
+    public function accept(User $owner, string $binding = '', bool $research = false, string $researchBinding = ''): bool
     {
         if (! $this->legalReady()) {
             throw ValidationException::withMessages(['consent' => 'Kebijakan belum disahkan pengelola. Aktivasi belum tersedia.']);
         }
-        return DB::transaction(function () use ($owner): bool {
+        return DB::transaction(function () use ($owner,$binding,$research,$researchBinding): bool {
             $user = User::query()->whereKey($owner->getKey())->lockForUpdate()->firstOrFail();
             abort_unless($this->isAdminInvitation($user), 403);
-            if ($user->status === 'active' && AuditLog::query()->where('subject_type', 'user')
+            $pilot=app(PilotAccessService::class);
+            if ($pilot->enabled()) {
+                $pilot->validateConsent($binding);
+                if ($research) $pilot->validateResearchBinding($researchBinding);
+                abort_unless($pilot->grant($user),403);
+                if ($user->status==='active' && !$pilot->currentConsent($user)) {
+                    ConsentRecord::query()->create(['user_id'=>$user->id,'policy_version'=>config('pilot.policy_version'),'agreed_at'=>now('UTC'),'source'=>'pilot_reconsent']);
+                    $pilot->audit($user,'pilot.legal_accepted','user',$user->id,['binding'=>$binding]);
+                    $pilot->research($user,$research,true);
+                    return true;
+                }
+                if ($user->status==='pending') abort_unless($pilot->inWindow($user),403);
+            }
+            if ($user->status === 'active'  && AuditLog::query()->where('subject_type', 'user')
                 ->where('subject_id', $user->id)->where('action', 'participant.invitation_accepted')->exists()) {
                 return false;
             }
@@ -74,7 +89,8 @@ class ParticipantInvitationOnboardingService
                     'policy_version' => config('siapegawai.privacy_version')],
                 'created_at' => now(),
             ]);
-            app(AccountEmailService::class)->record($user, 'invitation_activated');
+            if ($pilot->enabled()) { $pilot->audit($user,'pilot.legal_accepted','user',$user->id,['binding'=>$binding]); $pilot->research($user,$research,true); }
+            else app(AccountEmailService::class)->record($user, 'invitation_activated');
             return true;
         }, 3);
     }

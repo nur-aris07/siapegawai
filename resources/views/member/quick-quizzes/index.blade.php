@@ -5,7 +5,9 @@
 @include('components.form-errors')
 @include('member.quick-quizzes.partials.quota')
 <nav class="qq-analytics-page-links qq-analytics-entry-links" aria-label="Navigasi hasil Quiz Kilat">
+    @unless(config('pilot.mode'))
     <a class="qq-analytics-action" href="{{ route('member.quick-quizzes.analytics') }}">Analisis Quiz Kilat →</a>
+    @endunless
     <a class="qq-analytics-action qq-analytics-action--secondary" href="{{ route('member.quick-quizzes.history') }}">Lihat riwayat Quiz Kilat →</a>
 </nav>
 @if($active)

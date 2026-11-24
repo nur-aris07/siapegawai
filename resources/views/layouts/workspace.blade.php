@@ -25,10 +25,16 @@
         </button>
         <nav id="participant-workspace-nav" aria-label="Navigasi utama peserta" class="workspace-nav" data-workspace-nav>
             <a href="{{ route('dashboard') }}" @if(request()->routeIs('dashboard')) aria-current="page" @endif>Ringkasan</a>
+            @unless(config('pilot.mode'))
             <a href="{{ route('member.tryouts.index') }}" @if(request()->routeIs('member.tryouts.*')) aria-current="page" @endif>Tryout saya</a>
+            @endunless
+            @unless(config('pilot.mode'))
             <a href="{{ route('member.classes.index') }}" @if(request()->routeIs('member.classes.*')) aria-current="page" @endif>Kelas saya</a>
+            @endunless
             <a href="{{ route('member.quick-quizzes.index') }}" @if(request()->routeIs('member.quick-quizzes.*')) aria-current="page" @endif>Quiz Kilat</a>
+            @unless(config('pilot.mode'))
             <a href="{{ route('member.analytics.index') }}" @if(request()->routeIs('member.analytics.index')) aria-current="page" @endif>Analisis kemampuan</a>
+            @endunless
         </nav>
         <details class="workspace-account" data-workspace-account>
             <summary aria-label="Buka menu akun peserta">

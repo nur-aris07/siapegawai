@@ -12,8 +12,8 @@ class PageController extends Controller
 {
     public function about(): View { return $this->show('tentang'); }
     public function contact(): View { return $this->show('kontak'); }
-    public function privacy(): View { return $this->show('privasi'); }
-    public function terms(): View { return $this->show('syarat-layanan'); }
+    public function privacy(): View { return config('pilot.mode') ? view('pilot.legal',['document'=>'privacy']) : $this->show('privasi'); }
+    public function terms(): View { return config('pilot.mode') ? view('pilot.legal',['document'=>'terms']) : $this->show('syarat-layanan'); }
     public function classes(): View { return $this->show('kelas'); }
     public function packages(MemberPlanService $service): View
     {

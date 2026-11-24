@@ -1,6 +1,10 @@
 @extends('layouts.admin')
 @section('title','Detail Peserta')
 @section('content')
+@if(config('pilot.mode') && auth()->user()->role==='superadmin' && app(\App\Services\PilotAccessService::class)->grant($participant)?->status==='active')
+<section class="admin-v1-panel"><h2>Akses cohort pilot</h2><form method="POST" action="{{ route('pilot.revoke',$participant) }}">@csrf
+<label>Alasan pencabutan<input name="reason" required maxlength="500"></label><button class="button button-outline">Cabut akses memulai baru</button></form></section>
+@endif
 <div class="admin-v1-heading"><div><p class="admin-v1-crumb"><a href="{{ route('admin.participants.index') }}">Direktori peserta</a> / Detail akun</p><h1>Detail peserta</h1><p>Informasi akun dan pengamanan akses tanpa mengubah hasil tryout.</p></div></div>
 <div class="admin-v1-catalog-grid">
  <section class="admin-v1-panel">

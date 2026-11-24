@@ -43,9 +43,8 @@ final class FigP3DemoFixtures extends Command
 
     public function handle(QuestionEditorialService $editorial, QuestionEditorialMediaCoordinator $coord, QuestionMediaStorageService $storage): int
     {
-        if (!app()->environment('testing') || DB::connection()->getDatabaseName() !== 'siapegawai_testing'
-            || DB::selectOne('select database() as db')->db !== 'siapegawai_testing') {
-            $this->error('FAIL-CLOSED: command hanya boleh di APP_ENV=testing dan database siapegawai_testing.');
+        if (!\App\Support\IsolatedQaDatabase::matchesConnection()) {
+            $this->error('FAIL-CLOSED: command hanya boleh di APP_ENV=testing dan database QA yang dipin secara eksplisit.');
             return self::FAILURE;
         }
         if ((int)(bool)$this->option('dry-run') + (int)(bool)$this->option('apply') + (int)(bool)$this->option('verify') !== 1) {
@@ -98,7 +97,7 @@ final class FigP3DemoFixtures extends Command
             return self::FAILURE;
         }
         if ($this->option('dry-run')) {
-            $this->info('DRY RUN PASS | DB siapegawai_testing | tidak ada write.');
+            $this->info('DRY RUN PASS | DB '.DB::connection()->getDatabaseName().' | tidak ada write.');
             $this->line('Rencana: 30 soal/8 media, QQ 30, CAT 3, kelas 3 + enrollment.');
             $this->line('Akun QA '.($bootstrap ? 'dibuat bila belum ada; credentials acak dicetak sekali saat apply' : 'menggunakan ID existing').'.');
             $this->line('Topic TIU '.($topic ? 'sudah tersedia' : 'dibuat oleh seeder existing saat apply').'.');

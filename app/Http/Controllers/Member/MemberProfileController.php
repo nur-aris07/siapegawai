@@ -23,6 +23,7 @@ class MemberProfileController extends Controller
 
     public function update(Request $request): RedirectResponse
     {
+        if (config('pilot.mode')) $request->validate(['whatsapp_number'=>'prohibited']);
         $data = $request->validate([
             'name' => ['required','string','min:2','max:120'],
             'whatsapp_number' => ['nullable','string','regex:/^\+?[1-9][0-9]{7,14}$/'],
@@ -30,6 +31,7 @@ class MemberProfileController extends Controller
         DB::transaction(function () use ($request, $data): void {
             $user = User::query()->whereKey($request->user()->id)->lockForUpdate()->firstOrFail();
             abort_unless($user->role === 'participant' && $user->status === 'active',403);
+            if (config('pilot.mode')) abort_unless(app(\App\Services\PilotAccessService::class)->eligible($user),403);
             $changes = [];
             foreach (['name','whatsapp_number'] as $field) {
                 $new = $data[$field] ?? null;
@@ -61,6 +63,7 @@ class MemberProfileController extends Controller
         DB::transaction(function () use ($request, $data): void {
             $user = User::query()->whereKey($request->user()->id)->lockForUpdate()->firstOrFail();
             abort_unless($user->role === 'participant' && $user->status === 'active',403);
+            if (config('pilot.mode')) abort_unless(app(\App\Services\PilotAccessService::class)->eligible($user),403);
             if (!Hash::check($data['current_password'], $user->password)) {
                 throw ValidationException::withMessages(['current_password'=>'Kata sandi saat ini tidak sesuai.']);
             }

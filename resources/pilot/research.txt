@@ -1,0 +1,15 @@
+DRAFT — KHUSUS QA SINTETIS. Tidak berlaku untuk peserta nyata.
+Operator layanan: Admin SIAPEGAWAI (perorangan); siapegawai@gmail.com. Hosting Hostinger direncanakan, belum dibeli.
+
+## 7. Draft pemberitahuan riset & consent copy
+
+**DRAFT — versi usulan PILOT-RESEARCH-v1, belum efektif.**
+
+Kami ingin memahami apakah QQ mudah digunakan, apakah pembahasan jelas, mengapa peserta ingin kembali, dan beban pengelolaan pilot. Dengan izin Anda, pengelola dapat menelaah riwayat latihan Anda untuk tujuan tersebut dan meminta tanggapan opsional. Catatan riset menggunakan kode peserta; kode masih dapat dikaitkan dengan Anda selama alias map disimpan. Tidak ada rekaman audio/video, kutipan yang dapat mengidentifikasi Anda, publikasi data per orang, atau pemasaran dari riset ini. Hasil digunakan internal, dengan pengendalian risiko identifikasi ulang karena jumlah peserta kecil. Partisipasi bukan syarat latihan. Anda dapat menolak atau menarik izin melalui pengaturan akun atau email resmi. Data riset yang masih dapat diidentifikasi akan dihentikan penggunaannya dan dihapus sesuai kebijakan/hukum; hasil yang benar-benar anonim mungkin tidak dapat dipisahkan kembali. Retensi sesuai §5.4. Wawancara tetap sukarela walaupun Anda mencentang izin ini.
+
+**Required checkbox (unchecked):** “Saya telah membaca Kebijakan Privasi dan menyetujui Syarat Layanan pilot yang berlaku. Saya memahami pemrosesan data yang diperlukan untuk menyediakan layanan.”
+
+**Optional checkbox (unchecked, independen):** “Saya secara sukarela mengizinkan penggunaan data latihan dan tanggapan saya untuk riset produk sesuai Pemberitahuan Riset. Saya memahami bahwa izin ini dapat ditarik tanpa memengaruhi hak latihan.”
+
+**Pre-invitation notice:** sebelum provisioning, berikan tautan/teks notice kepada calon peserta dewasa, jelaskan tujuan undangan dan email yang dibutuhkan, mintakan kesediaan menerima undangan. Jangan menghubungi daftar yang belum menyatakan kesediaan. Tidak ada rekrutmen aktual sampai GO. Catat kesediaan minimal di roster privat sesuai retensi; jangan memasukkan roster ke Git.
+

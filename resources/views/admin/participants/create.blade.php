@@ -15,9 +15,11 @@
    <input id="participant-invite-email" name="email" type="email" required maxlength="255" autocomplete="off" value="{{ old('email') }}">
   </label>
   @error('email')<p class="field-error" role="alert">{{ $message }}</p>@enderror
+@unless(config('pilot.mode'))
   <label class="admin-v1-field" for="participant-invite-wa">Nomor WhatsApp peserta (opsional)
    <input id="participant-invite-wa" name="whatsapp_number" inputmode="tel" maxlength="24" autocomplete="off" value="{{ old('whatsapp_number') }}" placeholder="08… atau 628…">
   </label>
+@endunless
   @error('whatsapp_number')<p class="field-error" role="alert">{{ $message }}</p>@enderror
   <p class="admin-v1-muted">Email dikirimi tautan sekali pakai melalui fitur pemulihan password. Password dan tautan rahasia tidak ditampilkan kepada admin. Kesediaan pengiriman email harus diperiksa pada lingkungan operasional.</p>
   <div class="account-actions"><button class="button button-primary" type="submit">Buat akun &amp; kirim undangan</button> <a class="button button-outline" href="{{ route('admin.participants.index') }}">Batal</a></div>

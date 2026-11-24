@@ -46,7 +46,7 @@ use App\Http\Middleware\EnsureAdminSessionVersion;
 use App\Http\Middleware\EnsureRole;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(AddSecurityHeaders::class)->group(function () {
+Route::middleware([AddSecurityHeaders::class, \App\Http\Middleware\EnsurePilotParticipantScope::class])->group(function () {
 Route::get('/sitemap.xml', PublicSeoSitemapController::class)->name('seo.sitemap');
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/bank-soal', [QuestionController::class, 'index'])->name('questions.index');
@@ -84,7 +84,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/aktivasi', [RegistrationController::class, 'status'])->name('registration.status');
     // ADM-USERS-01: owner-only consent after invitation password reset. Never a public registration shortcut.
     Route::post('/aktivasi/undangan', [ParticipantInvitationController::class, 'accept'])
-        ->middleware('throttle:5,1')->name('participant.invitation.accept');
+        ->middleware('throttle:pilot-legal-consent')->name('participant.invitation.accept');
     Route::middleware([EnsureActiveAccount::class, EnsureRole::class.':participant'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'participant'])->name('dashboard');
         Route::post('/paket/{plan}/ajukan', [PackageUpgradeController::class, 'store'])->middleware('throttle:5,1')->name('member.packages.request.store');
@@ -92,6 +92,7 @@ Route::middleware('auth')->group(function () {
         // ANL-DOMAIN-01: read-only hub; routes for individual domain histories remain intact.
         Route::get('/analisis-kemampuan', [MemberDomainAnalyticsController::class, 'index'])->name('member.analytics.index');
         // S7: private participant profile and manually enrolled classes.
+        Route::post('/profil/riset', [\App\Http\Controllers\PilotController::class,'research'])->name('pilot.research');
         Route::get('/profil', [MemberProfileController::class,'edit'])->name('member.profile.edit');
         Route::post('/profil/hubungkan-google', [GoogleAuthController::class, 'link'])->middleware('throttle:3,1')->name('google.link');
         Route::patch('/profil', [MemberProfileController::class,'update'])->middleware('throttle:12,1')->name('member.profile.update');
@@ -222,6 +223,7 @@ Route::prefix('admin')->middleware(['auth', EnsureActiveAccount::class, EnsureRo
     Route::post('/peserta', [ParticipantInvitationController::class, 'store'])->middleware('throttle:10,1')->name('admin.participants.store');
     Route::post('/peserta/{user}/undangan/kirim-ulang', [ParticipantInvitationController::class, 'resend'])
         ->middleware('throttle:3,1')->name('admin.participants.invitation.resend');
+    Route::post('/peserta/{user}/pilot-revoke', [\App\Http\Controllers\PilotController::class,'revoke'])->name('pilot.revoke');
     Route::get('/peserta/{user}', [ParticipantManagementController::class, 'show'])->name('admin.participants.show');
     Route::post('/peserta/{user}/paket', [ParticipantManagementController::class, 'changePlan'])
         ->middleware('throttle:10,1')->name('admin.participants.plan');

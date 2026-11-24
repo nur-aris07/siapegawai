@@ -152,8 +152,7 @@ class QuestionEditorialService
             $hasMedia = $draft->media->isNotEmpty();
             $this->mediaCoordinator->checkToken($q, $token, $hasMedia);
             // No enabled-by-default toggle. Figural publishing is restricted to explicitly configured isolated QA.
-            if ($hasMedia && !(app()->environment('testing')
-                && DB::connection()->getDatabaseName() === 'siapegawai_testing'
+            if ($hasMedia && !(\App\Support\IsolatedQaDatabase::matchesConnection()
                 && config('question_media.figural_publish_qa') === true)) {
                 throw ValidationException::withMessages(['publish' => 'Publikasi soal bergambar masih dikunci sampai FIG-P3/P4 diterima. Draft dan preview admin tetap tersedia.']);
             }

@@ -8,7 +8,12 @@
 @if($active)
 <p>Anda masih memiliki sesi aktif. Lanjutkan sesi itu terlebih dahulu tanpa mengurangi kuota.</p><a class="button button-primary" href="{{ route('member.quick-quizzes.take',$active) }}">Lanjutkan sesi →</a>
 @elseif($quotaToday['allowed'] && ($quotaToday['unlimited'] || $quotaToday['remaining']>0))
-<form method="POST" action="{{ route('member.quick-quizzes.start',$quiz) }}">@csrf<input type="hidden" name="start_key" value="{{ $startKey }}"><button type="submit" class="button button-primary">Mulai dan gunakan 1 kuota →</button></form>
+<form method="POST" action="{{ route('member.quick-quizzes.start',$quiz) }}">
+    @csrf
+    @if(config('pilot.mode'))
+        <input type="hidden" name="expected_version" value="{{ $quiz->current_version_id }}">
+    @endif
+    <input type="hidden" name="start_key" value="{{ $startKey }}"><button type="submit" class="button button-primary">Mulai dan gunakan 1 kuota →</button></form>
 @else
 <p>Belum dapat memulai: manfaat harian belum dikonfigurasi atau sisa kuota telah habis.</p>
 @endif

@@ -1,0 +1,16 @@
+DRAFT — KHUSUS QA SINTETIS. Tidak berlaku untuk peserta nyata.
+Operator layanan: Admin SIAPEGAWAI (perorangan); siapegawai@gmail.com. Hosting Hostinger direncanakan, belum dibeli.
+
+## 6. Draft peserta — Syarat Layanan
+
+**DRAFT — belum berlaku. Versi usulan: PILOT-LEGAL-v1 (bundle yang sama dengan kebijakan privasi).**
+
+1. **Layanan.** SIAPEGAWAI merupakan layanan belajar independen persiapan SKD CPNS, bukan penyelenggara seleksi pemerintah, bukan afiliasi BKN, dan tidak menjamin kelulusan. Pilot hanya mencakup satu edisi QQ TIU 30 soal, tanpa pembayaran, untuk peserta dewasa yang diundang. CAT/Tryout, Kelas, paket berbayar dan pendaftaran publik tidak termasuk.
+2. **Akun dan akses.** Undangan bersifat pribadi. Peserta mengatur kata sandinya sendiri, masuk ke akun, membaca ketentuan, dan menyelesaikan persetujuan sebelum aktivasi. Akses mengikuti cohort, versi edisi, masa kesempatan mulai tujuh hari dan kuota yang berlaku; tidak dapat dialihkan. Jangan berbagi akun, tautan reset atau kata sandi. Aktivasi akun gratis bukan jaminan semua fitur terbuka.
+3. **Latihan.** Timer, aturan pengiriman jawaban, umpan balik dan skor mengikuti mekanisme latihan yang dijelaskan di aplikasi. Waktu yang tersisa dapat terus berjalan saat koneksi terputus atau akses dihentikan untuk reconsent. Hasil merupakan evaluasi internal, bukan skor resmi SKD. Laporkan soal tidak jelas atau masalah teknis; kami tidak mengubah riwayat skor diam-diam.
+4. **Penggunaan yang wajar.** Gunakan layanan untuk belajar sendiri. Jangan mencoba mengakses akun, sesi, media atau data pengguna lain, mengganggu sistem, menyalahgunakan undangan, atau mendistribusikan materi tanpa izin. Hak penggunaan terbatas pada belajar pribadi; hak pihak ketiga dan pengecualian berdasarkan hukum tetap dihormati.
+5. **Pengakhiran dan penghentian.** Anda dapat berhenti tanpa biaya atau penalti. Setelah periode akses atau soft revoke, sesi baru tidak dapat dimulai; sesi yang sebelumnya sah dapat dilanjutkan sesuai lifecycle, dan review milik sendiri dapat diakses selama hak yang sah, status akun, ketentuan privasi dan retensi mengizinkan. Demi keamanan, hak cipta atau penanganan insiden, pengelola dapat menahan starts atau menangguhkan akses secara proporsional. Permintaan penghentian pemrosesan atau penghapusan data ditangani terpisah. Pengelola memberi informasi sejauh aman dan sesuai kewajiban hukum.
+6. **Keterbatasan pilot.** Pilot adalah uji coba; gangguan dapat terjadi dan layanan dapat ditunda atau dihentikan demi keselamatan data dan kualitas. Kami berupaya memperbaiki masalah yang dilaporkan tetapi tidak menjanjikan layanan tanpa gangguan atau hasil belajar tertentu. Ketentuan ini tidak menghapus tanggung jawab pengelola atau hak peserta yang tidak dapat dikesampingkan menurut hukum.
+7. **Riset.** Mengikuti wawancara atau memberi izin data latihan untuk riset bersifat pilihan. Menolak atau menarik persetujuan tidak mengubah skor, kuota atau hak latihan. Tidak ada pembayaran atau transaksi pada pilot.
+8. **Bantuan dan perselisihan.** Hubungi siapegawai@gmail.com untuk masalah akun, konten, keamanan atau hak data. Kami mengupayakan penyelesaian melalui komunikasi yang wajar, tanpa membatasi hak pengaduan atau upaya hukum menurut peraturan Indonesia. Perubahan ketentuan material diberitahukan sebelum berlaku dan dapat memerlukan persetujuan baru.
+

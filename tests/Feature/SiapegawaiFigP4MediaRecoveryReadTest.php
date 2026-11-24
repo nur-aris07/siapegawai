@@ -55,10 +55,10 @@ final class SiapegawaiFigP4MediaRecoveryReadTest extends TestCase
         return [$key, $bytes];
     }
 
-    private function runAudit(string $db = 'siapegawai_testing'): int
+    private function runAudit(?string $db = null): int
     {
         return Artisan::call('siapegawai:fig-p4-media-audit', [
-            '--run' => true, '--expected-db' => $db,
+            '--run' => true, '--expected-db' => $db ?? DB::connection()->getDatabaseName(),
         ]);
     }
 
@@ -126,5 +126,16 @@ final class SiapegawaiFigP4MediaRecoveryReadTest extends TestCase
         $this->assertStringContainsString('--expected-db=siapegawai_testing', $diagnostic);
         $this->assertStringNotContainsString('questions/aa', $diagnostic);
         $this->assertSame(2, $this->runAudit('siapegawai_fig_restore_verify_testing'));
+    }
+    public function test_pilot_qa_guard_requires_exact_pinned_testing_name(): void
+    {
+        $guard = \App\Support\IsolatedQaDatabase::class;
+        $pinned = 'siapegawai_pilot_access_0123456789ab_testing';
+        config(['pilot.qa_test_database'=>$pinned]);
+        $this->assertTrue($guard::acceptsName($pinned));
+        $this->assertFalse($guard::acceptsName('siapegawai_pilot_access_0123456789ac_testing'));
+        $this->assertFalse($guard::acceptsName('siapegawai_pilot_access_0123456789ab_browser'));
+        config(['pilot.qa_test_database'=>'siapegawai']);
+        $this->assertFalse($guard::acceptsName('siapegawai'));
     }
 }

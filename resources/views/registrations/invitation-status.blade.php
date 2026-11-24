@@ -4,7 +4,7 @@
 <section class="account-panel account-panel-wide" aria-labelledby="invite-activation-title">
  <div class="account-heading"><span class="account-kicker">UNDANGAN PESERTA</span><h1 id="invite-activation-title">Aktifkan akun GRATIS Anda</h1><p>Undangan dari pengelola tidak memberikan akses belajar sebelum Anda mengatur password dan menyetujui kebijakan.</p></div>
  <dl class="status-details"><dt>Alamat akun</dt><dd>{{ auth()->user()->email }}</dd><dt>Status</dt><dd>{{ auth()->user()->status === 'active' ? 'Aktif' : 'Menunggu onboarding' }}</dd><dt>Password</dt><dd>{{ $passwordSet ? 'Sudah diatur melalui tautan undangan' : 'Belum diatur' }}</dd></dl>
- @if(auth()->user()->status === 'active')
+ @if(auth()->user()->status === 'active' && (!config('pilot.mode') || app(\App\Services\PilotAccessService::class)->currentConsent(auth()->user())))
   <p>Akun GRATIS sudah aktif.</p><a class="button button-primary" href="{{ route('dashboard') }}">Buka dashboard</a>
  @elseif(! $passwordSet)
   <p>Periksa email undangan dan gunakan tautan pengaturan password. Jika email tidak diterima, hubungi pengelola untuk pengiriman ulang. Admin tidak pernah mengetahui password Anda.</p>
@@ -13,6 +13,12 @@
  @else
   <form method="POST" action="{{ route('participant.invitation.accept') }}">
    @csrf
+   @if(config('pilot.mode'))
+    <input type="hidden" name="research_binding" value="{{ app(\App\Services\PilotAccessService::class)->researchBinding() }}">
+    <input type="hidden" name="binding" value="{{ app(\App\Services\PilotAccessService::class)->binding() }}">
+    @foreach(['privacy','terms','research'] as $doc)<details><summary>{{ $doc }}</summary>@foreach(explode("\n",app(\App\Services\PilotAccessService::class)->document($doc)) as $line) @if(trim($line)!=='')<p>{{ $line }}</p>@endif @endforeach</details>@endforeach
+    <label class="check-line"><input type="checkbox" name="research" value="1"> Saya bersedia mengikuti riset opsional.</label>
+   @endif
    <label class="check-line"><input type="checkbox" name="consent" value="1" required><span>Saya telah membaca dan menyetujui <a href="{{ route('page.privasi') }}" target="_blank" rel="noopener noreferrer">kebijakan privasi</a> dan <a href="{{ route('page.syarat-layanan') }}" target="_blank" rel="noopener noreferrer">syarat layanan</a>.</span></label>
    @error('consent')<p class="field-error" role="alert">{{ $message }}</p>@enderror
    <div class="account-actions"><button class="button button-primary" type="submit">Setujui &amp; aktifkan akun GRATIS</button></div>

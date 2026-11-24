@@ -28,7 +28,7 @@ final class FigP4MediaIntegrityAudit extends Command
     /** One exact V-02 synthetic source DB; no wildcard for arbitrary *_source. */
     public static function isAllowedTestingDatabase(string $name): bool
     {
-        return $name === 'siapegawai_testing'
+        return \App\Support\IsolatedQaDatabase::acceptsName($name)
             || $name === 'siapegawai_figp4_source'
             || (bool) preg_match('/^siapegawai_(?:[a-z0-9_]*restore_verify_testing)$/D', $name);
     }

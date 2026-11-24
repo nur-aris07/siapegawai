@@ -18,11 +18,12 @@ class MemberQuickQuizController extends Controller
 {
     public function index(Request $request, QuickQuizQuotaService $quota): View
     {
-        $quizzes = QuickQuiz::query()->where('status','published')
+        $pilot=app(\App\Services\PilotAccessService::class);
+        $quizzes = QuickQuiz::query()->where('status','published')->when($pilot->enabled(),fn($q)=>$q->where('current_version_id',$pilot->canStart($request->user())?$pilot->version():0))
             ->whereHas('currentVersion',fn($q)=>$q->where('status','published'))
             ->with(['currentVersion'=>fn($q)=>$q->withCount('items')])->orderByDesc('id')->paginate(12);
         $quotaToday = $quota->remaining($request->user());
-        $active = QuickQuizAttempt::query()->where('user_id',$request->user()->id)->where('status','active')
+        $active = QuickQuizAttempt::query()->where('user_id',$request->user()->id)->where('status','active')->when($pilot->enabled(),fn($q)=>$pilot->scopeAttempts($q,$request->user()))
             ->with('version.quiz')->latest('id')->first();
         return view('member.quick-quizzes.index',compact('quizzes','quotaToday','active'));
     }
@@ -30,10 +31,12 @@ class MemberQuickQuizController extends Controller
     public function show(Request $request, QuickQuiz $quiz, QuickQuizQuotaService $quota): View
     {
         abort_unless($quiz->status==='published' && $quiz->currentVersion?->status==='published',404);
+        $pilot=app(\App\Services\PilotAccessService::class);
+        if ($pilot->enabled()) { abort_unless($pilot->canStart($request->user()),403); abort_unless((int)$quiz->current_version_id===$pilot->version(),404); }
         $quiz->load('currentVersion');
         $count=$quiz->currentVersion->items()->count();
         $quotaToday=$quota->remaining($request->user());
-        $active=QuickQuizAttempt::query()->where('user_id',$request->user()->id)->where('status','active')
+        $active=QuickQuizAttempt::query()->where('user_id',$request->user()->id)->where('status','active')->when($pilot->enabled(),fn($q)=>$pilot->scopeAttempts($q,$request->user()))
             ->with('version.quiz')->latest('id')->first();
         $startKey=Str::random(40);
         return view('member.quick-quizzes.show',compact('quiz','count','quotaToday','active','startKey'));
@@ -42,7 +45,9 @@ class MemberQuickQuizController extends Controller
     public function start(Request $request, QuickQuiz $quiz, QuickQuizAttemptService $service): RedirectResponse
     {
         $validated=$request->validate(['start_key'=>['required','string','regex:/^[A-Za-z0-9_-]{12,80}$/D']]);
-        $attempt=$service->start($request->user(),$quiz,$validated['start_key']);
+        $pilot=app(\App\Services\PilotAccessService::class);
+        $version=$pilot->enabled()?(int)$request->validate(['expected_version'=>'required|integer'])['expected_version']:null;
+        $attempt=$service->start($request->user(),$quiz,$validated['start_key'],$version);
         return redirect()->route($attempt->status==='active'?'member.quick-quizzes.take':'member.quick-quizzes.result',$attempt);
     }
 
@@ -117,8 +122,9 @@ class MemberQuickQuizController extends Controller
 
     public function history(Request $request): View
     {
+        $pilot=app(\App\Services\PilotAccessService::class);
         $attempts=QuickQuizAttempt::query()->where('user_id',$request->user()->id)
-            ->where('status','!=','active')->with('version.quiz')->latest('id')->paginate(15);
+            ->where('status','!=','active')->when($pilot->enabled(),fn($q)=>$pilot->scopeAttempts($q,$request->user()))->with('version.quiz')->latest('id')->paginate(15);
         return view('member.quick-quizzes.history',compact('attempts'));
     }
 }

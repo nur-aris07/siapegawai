@@ -13,6 +13,7 @@ class DashboardController extends Controller
 {
     public function participant(Request $request): View
     {
+        if (config('pilot.mode')) return view('pilot.dashboard');
         return view('dashboard.index', ['user' => $request->user(), 'availableTryouts' => TryoutPackage::query()->where('status','published')->count(), 'memberAttempts' => TryoutAttempt::query()->where('user_id',$request->user()->id)->count()]);
     }
     public function admin(Request $request): View

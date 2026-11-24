@@ -33,6 +33,8 @@ class ParticipantInvitationController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $actor = $this->superadmin($request);
+        $pilot=app(\App\Services\PilotAccessService::class);
+        if ($pilot->enabled()) $request->validate(['whatsapp_number'=>'prohibited']);
         if (is_string($request->input('email'))) {
             $request->merge(['email' => mb_strtolower(trim($request->input('email')))]);
         }
@@ -41,7 +43,8 @@ class ParticipantInvitationController extends Controller
             'email' => ['required', 'email:rfc', 'max:255', Rule::unique('users', 'email')],
             'whatsapp_number' => ['nullable', 'regex:/^(?:\+?62|0)8\d{7,12}$/'],
         ]);
-        $member = DB::transaction(function () use ($data, $actor): User {
+        $member = DB::transaction(function () use ($data, $actor, $pilot): User {
+            if ($pilot->enabled()) $pilot->lockAdmission();
             $number = preg_replace('/\D/', '', $data['whatsapp_number'] ?? '');
             $member = new User();
             $member->name = $data['name'];
@@ -60,6 +63,7 @@ class ParticipantInvitationController extends Controller
                 'after_summary' => ['role' => 'participant', 'status' => 'pending', 'source' => 'admin_invitation'],
                 'created_at' => now(),
             ]);
+            if ($pilot->enabled()) $pilot->issue($member,$actor);
             return $member;
         }, 3);
         $sent = $this->sendInvitation($member, $actor);
@@ -87,7 +91,10 @@ class ParticipantInvitationController extends Controller
         $owner = $request->user();
         abort_unless($owner && $owner->role === 'participant', 403);
         $request->validate(['consent' => ['required', 'accepted']]);
-        $onboarding->accept($owner);
+        $pilot=app(\App\Services\PilotAccessService::class);
+        if ($pilot->enabled()) $request->validate(['binding'=>'required|string','research'=>'nullable|boolean','research_binding'=>'required_if:research,1|nullable|string']);
+        $onboarding->accept($owner,(string)$request->input('binding',''),$request->boolean('research'),(string)$request->input('research_binding',''));
+        $owner->refresh();
         return redirect()->route('dashboard')->with('success', 'Akun GRATIS aktif. Akses mengikuti hak paket dasar.');
     }
 
@@ -95,6 +102,8 @@ class ParticipantInvitationController extends Controller
     {
         // Log/array mailers may expose the reset token in application logs or have no delivery.
         // Do not dispatch real invitations through these drivers outside isolated tests.
+        $pilot=app(\App\Services\PilotAccessService::class);
+        if ($pilot->enabled() && (!$pilot->canReset($user) || config('pilot.mail_enabled')!==true || !app()->environment('testing'))) return false;
         $mailer = config('mail.default');
         if (! app()->environment('testing') && in_array($mailer, ['log', 'array'], true)) {
             $status = null;
