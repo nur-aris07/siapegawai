@@ -50,7 +50,7 @@ for (const host of document.querySelectorAll('[data-bulk-assignment]')) {
   const review=$('[data-bulk-review]'), summary=$('[data-bulk-summary]'), errors=$('[data-bulk-errors]');
   const previewBtn=$('[data-bulk-preview]'), confirmBtn=$('[data-bulk-confirm]');
   const create=host.dataset.mode==='create', max=Number(host.dataset.max)||100;
-  const choices=new Map(); let page=1, more=false, totalPages=1, totalResults=0, visible=[], token=null, busy=false, seq=0;
+  const choices=new Map(); let page=1, more=false, totalPages=1, totalResults=0, candidateScope=false, visible=[], token=null, busy=false, seq=0;
   const csrf=document.querySelector('input[name="_token"]')?.value??'';
   function announce(message,isError=false){status.textContent=message;status.classList.toggle('sg-bulk-assign__status--error',isError);}
   function invalidate(){token=null;if(confirmBtn)confirmBtn.disabled=true;review.hidden=true;}
@@ -89,10 +89,10 @@ for (const host of document.querySelectorAll('[data-bulk-assignment]')) {
   makeSortable(selected,()=>{syncOrder();announce('Urutan pilihan diperbarui. Periksa sebelum melanjutkan.');});
   function refreshPageActions(){
     $('[data-bulk-page]').textContent=`Halaman ${page} dari ${totalPages}`;
-    $('[data-bulk-page]').title=`${totalResults} hasil ditemukan`;
+    $('[data-bulk-page]').title=`${totalResults} ${candidateScope?'kandidat (metadata)':'hasil'} ditemukan`;
     $('[data-bulk-prev]').disabled=page<=1;
     $('[data-bulk-next]').disabled=!more;
-    $('[data-bulk-select-page]').disabled=visible.length===0 || visible.every(item=>choices.has(item.id)) || choices.size>=max;
+    $('[data-bulk-select-page]').disabled=visible.length===0 || visible.every(item=>item.eligible===false||choices.has(item.id)) || choices.size>=max;
     $('[data-bulk-unselect-page]').disabled=!visible.some(item=>choices.has(item.id));
   }
   function renderResults(){
@@ -100,14 +100,14 @@ for (const host of document.querySelectorAll('[data-bulk-assignment]')) {
     if(!visible.length){const tr=document.createElement('tr');const td=document.createElement('td');td.colSpan=3;td.textContent='Tidak ditemukan soal yang cocok.';tr.append(td);results.append(tr);}
     visible.forEach(item=>{
       const tr=document.createElement('tr');const check=document.createElement('td');const input=document.createElement('input');
-      input.type='checkbox';input.checked=choices.has(item.id);input.setAttribute('aria-label',`Pilih ${item.code}`);
+      input.type='checkbox';input.checked=choices.has(item.id);input.disabled=item.eligible===false&&!input.checked;input.setAttribute('aria-label',`Pilih ${item.code}`);
       input.addEventListener('change',()=>{
-        if(input.checked){if(choices.size>=max){input.checked=false;announce(`Maksimal ${max} soal dapat dipilih.`,true);return;}choices.set(item.id,item);}
+        if(input.checked){if(item.eligible===false){input.checked=false;return;}if(choices.size>=max){input.checked=false;announce(`Maksimal ${max} soal dapat dipilih.`,true);return;}choices.set(item.id,item);}
         else choices.delete(item.id);
         invalidate();renderSelected();refreshPageActions();
       });check.append(input);
       const name=document.createElement('td');name.textContent=`${item.code} · ${item.subject||'—'} · v${item.version}`;
-      const desc=document.createElement('td');desc.textContent=String(item.summary??'');
+      const desc=document.createElement('td');desc.textContent=String(item.summary??'')+(item.eligible===false?' — Tidak dapat dipilih: '+String(item.eligibility_reason??'Versi tidak layak'):'');
       tr.append(check,name,desc);results.append(tr);
     });
     refreshPageActions();
@@ -125,8 +125,8 @@ for (const host of document.querySelectorAll('[data-bulk-assignment]')) {
     try{const data=await fetchData(url);if(my!==seq)return;
       visible=(data.data||[]).map(x=>({...x,id:Number(x.id??x.version_id)})).filter(x=>Number.isInteger(x.id)&&x.id>0);
       totalPages=Math.max(1,Number(data.last_page)||1);
-      totalResults=Math.max(0,Number(data.total_results)||0);
-      more=!!data.has_more;renderResults();announce(`${visible.length} hasil pada halaman ${page} dari ${totalPages}; ${choices.size} soal dipilih dari semua halaman.`);
+      totalResults=Math.max(0,Number(data.total_results)||0);candidateScope=data.eligibility_scope==='CANDIDATES_METADATA_ONLY';
+      more=!!data.has_more;renderResults();announce(`${visible.length} ${candidateScope?'kandidat (metadata; integritas file diperiksa saat simpan)':'hasil'} pada halaman ${page} dari ${totalPages}; ${choices.size} soal dipilih dari semua halaman.`);
     }catch(e){if(my===seq){visible=[];more=false;totalPages=Math.max(1,page);totalResults=0;renderResults();announce(`Pencarian gagal: ${e.message}`,true);}}
   }
   const ids=()=>Array.from(choices.keys());
@@ -151,7 +151,7 @@ for (const host of document.querySelectorAll('[data-bulk-assignment]')) {
   $('[data-bulk-prev]').addEventListener('click',()=>{if(page>1){page--;search();}});
   $('[data-bulk-next]').addEventListener('click',()=>{if(more){page++;search();}});
   $('[data-bulk-select-page]').addEventListener('click',()=>{
-    let added=0;visible.forEach(x=>{if(!choices.has(x.id)&&choices.size<max){choices.set(x.id,x);added++;}});
+    let added=0;visible.forEach(x=>{if(x.eligible!==false&&!choices.has(x.id)&&choices.size<max){choices.set(x.id,x);added++;}});
     invalidate();renderSelected();renderResults();announce(`${added} soal ditambahkan dari halaman ini. Total ${choices.size}/${max}.`);
   });
   $('[data-bulk-unselect-page]').addEventListener('click',()=>{

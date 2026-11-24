@@ -108,6 +108,13 @@ class BulkQuestionAssignmentService
             $query->where(fn($q)=>$q->where('code','like',$like)->orWhereHas('currentVersion',fn($v)=>$v->where('body','like',$like)));
         }
         if ($subject!=='') $query->whereHas('topic.subject',fn($q)=>$q->where('code',$subject));
+        if ($domain==='qq') {
+            $rows=$query->with('currentVersion.media')->orderBy('code')->paginate(15,['*'],'page',$page);
+            $eligibility=app(QuickQuizPinEligibility::class);
+            return ['data'=>$rows->getCollection()->map(fn(Question $q)=>$eligibility->candidate($q))->all(),
+                'page'=>$page,'current_page'=>$rows->currentPage(),'last_page'=>$rows->lastPage(),
+                'total_results'=>$rows->total(),'has_more'=>$rows->hasMorePages(),'eligibility_scope'=>'CANDIDATES_METADATA_ONLY'];
+        }
         $rows=$query->orderBy('code')->simplePaginate(15,['*'],'page',$page);
         return ['data'=>$rows->getCollection()->map(fn(Question $q)=>[
             'id'=>(int)$q->current_version_id, 'code'=>$q->code,

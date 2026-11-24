@@ -6,6 +6,7 @@ use App\Models\Question;
 use App\Models\QuickQuiz;
 use App\Models\Subject;
 use App\Services\QuickQuizEditorialService;
+use App\Services\QuickQuizPinEligibility;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -66,14 +67,9 @@ class QuickQuizManagementController extends Controller
     {
         Gate::authorize('viewAny',QuickQuiz::class);
         $data=$request->validate(['q'=>['nullable','string','max:100'],'subject'=>['nullable','string','max:12'],'page'=>['nullable','integer','min:1','max:10000']]);
-        $query=Question::query()->with(['topic.subject','currentVersion.options'])
+        $query=Question::query()->with(['topic.subject','currentVersion.options','currentVersion.media'])
             ->where('status','published')->whereNotNull('current_version_id')
-            ->whereHas('currentVersion',fn($v)=>$v->where('review_status','published')->whereNotNull('published_at')
-                ->whereNotNull('explanation')->whereRaw("TRIM(explanation) <> ''")
-                ->whereHas('options',null,'>=',4)
-                ->whereHas('options',null,'<=',5)
-                ->whereHas('options',fn($o)=>$o->where('is_correct',true),'=',1)
-                ->whereDoesntHave('options',fn($o)=>$o->whereNotNull('score_weight')))
+            ->whereHas('currentVersion',fn($v)=>$v->where('review_status','published')->whereNotNull('published_at'))
             ->whereHas('topic',fn($q)=>$q->where('status','active')->whereHas('subject',fn($s)=>$s->where('status','active')));
         if (!empty($data['subject'])) $query->whereHas('topic.subject',fn($s)=>$s->where('code',$data['subject']));
         if (!empty($data['q'])) {
@@ -82,18 +78,10 @@ class QuickQuizManagementController extends Controller
                 ->orWhereHas('currentVersion',fn($v)=>$v->where('body','like',$term)));
         }
         $page=$query->orderBy('code')->paginate(30,['*'],'page',$data['page']??1);
-        return response()->json(['data'=>$page->getCollection()
-            ->filter(fn(Question $q)=>$q->currentVersion && $q->currentVersion->options->count()>=4 &&
-                $q->currentVersion->options->count()<=5 &&
-                $q->currentVersion->options->where('is_correct',true)->count()===1 &&
-                trim((string)$q->currentVersion->explanation)!=='' &&
-                !$q->currentVersion->options->contains(fn($o)=>$o->score_weight!==null))
-            ->map(fn(Question $q)=>[
-                'version_id'=>$q->current_version_id,'code'=>$q->code,
-                'subject'=>$q->topic?->subject?->code,
-                'version'=>$q->currentVersion?->version_number,
-                'summary'=>Str::limit($q->currentVersion?->body??'',95),
-            ])->values(),'has_more'=>$page->hasMorePages(), 'current_page'=>$page->currentPage(), 'last_page'=>$page->lastPage(), 'total_results'=>$page->total()]);
+        $eligibility=app(QuickQuizPinEligibility::class);
+        return response()->json(['data'=>$page->getCollection()->map(fn(Question $q)=>$eligibility->candidate($q))->values(),
+            'has_more'=>$page->hasMorePages(),'current_page'=>$page->currentPage(),'last_page'=>$page->lastPage(),
+            'total_results'=>$page->total(),'eligibility_scope'=>'CANDIDATES_METADATA_ONLY']);
     }
 
     private function editorData(?QuickQuiz $quiz=null): array
@@ -103,7 +91,7 @@ class QuickQuizManagementController extends Controller
             $v=$item->version;
             return ['version_id'=>$v->id,'code'=>$v->question?->code??'',
                 'subject'=>$v->question?->topic?->subject?->code??'',
-                'version'=>$v->version_number,'summary'=>Str::limit($v->body,95)];
+                'version'=>$v->version_number,'summary'=>QuickQuizPinEligibility::summary($v)];
         }) : collect();
         return ['quiz'=>$quiz,'draft'=>$draft,'selected'=>$selected,
             'subjects'=>Subject::query()->where('status','active')->orderBy('sort_order')->get()];

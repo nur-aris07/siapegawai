@@ -140,6 +140,8 @@ class SiapegawaiAdminInvitationTest extends TestCase
 
     public function test_historical_pending_registration_is_not_treated_as_an_admin_invitation(): void
     {
+        // Isolate invitation authorization from the independently closed legal gate.
+        $this->legal();
         $pending = $this->account('participant', 'pending');
         $this->actingAs($pending)->post(route('participant.invitation.accept'), ['consent'=>'1'])->assertForbidden();
         $this->assertSame('pending', $pending->fresh()->status);

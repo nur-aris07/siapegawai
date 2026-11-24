@@ -37,7 +37,7 @@ class QuickQuizEditorialService
         $oldIds = $draft->items()->pluck('question_version_id')->map(fn ($id)=>(int)$id)->all();
         $seenQuestions=[];
         foreach ($ids as $id) {
-            $v=QuestionVersion::query()->with(['question.topic.subject','options'])->find($id);
+            $v=QuestionVersion::query()->with(['question.topic.subject','options','media'])->find($id);
             if (!$v || $v->review_status !== 'published' || !$v->published_at || !$v->question) {
                 $this->reject('version_ids','Semua soal harus menggunakan versi terbit.');
             }
@@ -52,13 +52,9 @@ class QuickQuizEditorialService
                     $this->reject('version_ids','Soal baru harus berasal dari versi aktif dan kategori/topik aktif.');
                 }
             }
-            // Quiz Kilat v1 has binary scoring only; weighted options belong to another assessment domain.
-            if ($v->options->count() < 4 || $v->options->count() > 5 ||
-                $v->options->where('is_correct',true)->count() !== 1 ||
-                $v->options->contains(fn ($option) => $option->score_weight !== null) ||
-                trim($v->body) === '' || trim((string)$v->explanation) === '') {
-                $this->reject('version_ids','Quiz Kilat membutuhkan 4–5 pilihan, satu jawaban benar, dan satu pembahasan tanpa skor berbobot.');
-            }
+            // Published content can be text, mixed, or image-only. Recheck private bytes on every mutation.
+            $reason=app(QuickQuizPinEligibility::class)->reason($v,true);
+            if ($reason!==null) $this->reject('version_ids',QuickQuizPinEligibility::message($reason));
         }
         return $ids;
     }
